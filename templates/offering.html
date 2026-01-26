@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}{{ offering.get_title(lang) }}{% endblock %}
+
+{% block content %}
+<section class="offering-detail">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="/offerings">{% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}</a>
+            <span>›</span>
+            <span>{{ offering.get_title(lang) }}</span>
+        </nav>
+
+        {% if request.query_params.get('success') %}
+        <div class="alert alert-success">
+            {% if request.query_params.get('success') == 'registered' %}
+                {% if lang == 'de' %}Erfolgreich registriert!{% elif lang == 'pl' %}Pomyślnie zarejestrowano!{% else %}Successfully registered!{% endif %}
+            {% elif request.query_params.get('success') == 'contributed' %}
+                {% if lang == 'de' %}Danke für Ihren Beitrag zum kollektiven Topf!{% elif lang == 'pl' %}Dziękujemy za wkład do wspólnego funduszu!{% else %}Thank you for your contribution to the collective pot!{% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if request.query_params.get('error') %}
+        <div class="alert alert-error">
+            {% if request.query_params.get('error') == 'registration_closed' %}
+                {% if lang == 'de' %}Registrierung ist geschlossen{% elif lang == 'pl' %}Rejestracja jest zamknięta{% else %}Registration is closed{% endif %}
+            {% elif request.query_params.get('error') == 'contributions_closed' %}
+                {% if lang == 'de' %}Beiträge sind geschlossen{% elif lang == 'pl' %}Wpłaty są zamknięte{% else %}Contributions are closed{% endif %}
+            {% else %}
+                {% if lang == 'de' %}Ein Fehler ist aufgetreten{% elif lang == 'pl' %}Wystąpił błąd{% else %}An error occurred{% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="offering-layout">
+            <div class="offering-main">
+                <header class="offering-header">
+                    <h1>{{ offering.get_title(lang) }}</h1>
+                    {% if offering._threshold_reached %}
+                    <span class="badge badge-success badge-large">
+                        {% if lang == 'de' %}Schwelle erreicht!{% elif lang == 'pl' %}Próg osiągnięty!{% else %}Threshold Reached!{% endif %}
+                    </span>
+                    {% endif %}
+                </header>
+
+                <div class="offering-description">
+                    {{ offering.get_description(lang) }}
+                </div>
+
+                <!-- Dates Section - Table Layout -->
+                <table class="info-table">
+                    {% if offering.event_date %}
+                    <tr>
+                        <td class="info-label">{% if lang == 'de' %}Veranstaltung{% elif lang == 'pl' %}Wydarzenie{% else %}Event Date{% endif %}</td>
+                        <td class="info-value">{{ offering.event_date.strftime('%d.%m.%Y') }}{% if offering.event_date.hour != 0 or offering.event_date.minute != 0 %}, {{ offering.event_date.strftime('%H:%M') }}{% endif %}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td class="info-label">{% if lang == 'de' %}Registrierung bis{% elif lang == 'pl' %}Rejestracja do{% else %}Register by{% endif %}</td>
+                        <td class="info-value">{{ offering.registration_deadline.strftime('%d.%m.%Y') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">{% if lang == 'de' %}Beiträge bis{% elif lang == 'pl' %}Wpłaty do{% else %}Contribute by{% endif %}</td>
+                        <td class="info-value">{{ offering.contribution_deadline.strftime('%d.%m.%Y, %H:%M') }}</td>
+                    </tr>
+                </table>
+
+                <!-- Cost Breakdown -->
+                <div class="cost-breakdown">
+                    <h3>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% else %}Cost Breakdown{% endif %}</h3>
+                    <p class="transparency-note">
+                        {% if lang == 'de' %}
+                            Volle Transparenz darüber, was dieses Angebot braucht und warum
+                        {% elif lang == 'pl' %}
+                            Pełna przejrzystość tego, czego potrzebuje ta oferta i dlaczego
+                        {% else %}
+                            Full transparency of what this offering needs and why
+                        {% endif %}
+                    </p>
+                    <table class="cost-table">
+                        {% if offering.facilitator_cost and offering.facilitator_cost > 0 %}
+                        <tr>
+                            <td>{% if lang == 'de' %}Honorar{% elif lang == 'pl' %}Wynagrodzenie{% else %}Facilitator{% endif %}</td>
+                            <td class="cost-amount">€{{ "%.2f"|format(offering.facilitator_cost) }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if offering.materials_cost and offering.materials_cost > 0 %}
+                        <tr>
+                            <td>{% if lang == 'de' %}Materialien{% elif lang == 'pl' %}Materiały{% else %}Materials{% endif %}</td>
+                            <td class="cost-amount">€{{ "%.2f"|format(offering.materials_cost) }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if offering.meals_cost and offering.meals_cost > 0 %}
+                        <tr>
+                            <td>{% if lang == 'de' %}Mahlzeiten{% elif lang == 'pl' %}Posiłki{% else %}Meals{% endif %}</td>
+                            <td class="cost-amount">€{{ "%.2f"|format(offering.meals_cost) }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if offering.space_cost and offering.space_cost > 0 %}
+                        <tr>
+                            <td>{% if lang == 'de' %}Raum{% elif lang == 'pl' %}Przestrzeń{% else %}Space{% endif %}</td>
+                            <td class="cost-amount">€{{ "%.2f"|format(offering.space_cost) }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if offering.sustainability_contribution and offering.sustainability_contribution > 0 %}
+                        <tr>
+                            <td>{% if lang == 'de' %}Nachhaltigkeit{% elif lang == 'pl' %}Zrównoważoność{% else %}Sustainability{% endif %}</td>
+                            <td class="cost-amount">€{{ "%.2f"|format(offering.sustainability_contribution) }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr class="cost-total">
+                            <td><strong>{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}</strong></td>
+                            <td class="cost-amount"><strong>€{{ "%.2f"|format(offering.threshold_amount) }}</strong></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Organizer (visible on mobile) -->
+                {% if offering.organizer_name %}
+                <div class="organizer-section mobile-only">
+                    <h3>{% if lang == 'de' %}Organisator{% elif lang == 'pl' %}Organizator{% else %}Organizer{% endif %}</h3>
+                    <div class="organizer-details">
+                        <strong>{{ offering.organizer_name }}</strong>
+                        {% if offering.organizer_email %}
+                        <a href="mailto:{{ offering.organizer_email }}">📧 {{ offering.organizer_email }}</a>
+                        {% endif %}
+                        {% if offering.organizer_phone %}
+                        <a href="tel:{{ offering.organizer_phone }}">📞 {{ offering.organizer_phone }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <aside class="offering-sidebar">
+                <!-- Progress Card -->
+                <div class="sidebar-card">
+                    <h3>{% if lang == 'de' %}Kollektiver Fortschritt{% elif lang == 'pl' %}Postęp zbiorowy{% else %}Collective Progress{% endif %}</h3>
+                    
+                    <div class="progress-ring-container">
+                        <svg class="progress-ring" viewBox="0 0 120 120">
+                            <circle class="progress-ring-bg" cx="60" cy="60" r="50" />
+                            <circle class="progress-ring-fill" cx="60" cy="60" r="50" 
+                                    stroke-dasharray="{{ (offering._percent * 3.14159)|round(1) }}, 314.159"
+                                    stroke-dashoffset="0" />
+                        </svg>
+                        <div class="progress-ring-text">
+                            <span class="progress-value">{{ "%.0f"|format(offering._percent) }}%</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-stats">
+                        <div class="stat-primary">€{{ "%.2f"|format(offering._total) }}</div>
+                        <div class="stat-secondary">{% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} €{{ "%.2f"|format(offering.threshold_amount) }}</div>
+                        {% if offering._remaining > 0 %}
+                        <div class="stat-remaining">€{{ "%.2f"|format(offering._remaining) }} {% if lang == 'de' %}verbleibend{% elif lang == 'pl' %}pozostało{% else %}remaining{% endif %}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="participant-count">
+                        👥 {{ offering._reg_count }} {% if lang == 'de' %}registriert{% elif lang == 'pl' %}zarejestrowanych{% else %}registered{% endif %}{% if offering.max_participants %} / {{ offering.max_participants }}{% endif %}
+                    </div>
+                </div>
+
+                <!-- Organizer Card (desktop) -->
+                {% if offering.organizer_name %}
+                <div class="sidebar-card desktop-only">
+                    <h3>{% if lang == 'de' %}Organisator{% elif lang == 'pl' %}Organizator{% else %}Organizer{% endif %}</h3>
+                    <div class="organizer-details">
+                        <strong>{{ offering.organizer_name }}</strong>
+                        {% if offering.organizer_email %}
+                        <a href="mailto:{{ offering.organizer_email }}">📧 {{ offering.organizer_email }}</a>
+                        {% endif %}
+                        {% if offering.organizer_phone %}
+                        <a href="tel:{{ offering.organizer_phone }}">📞 {{ offering.organizer_phone }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if offering._registration_open %}
+                <!-- Registration Card -->
+                <div class="sidebar-card">
+                    <h3>{% if lang == 'de' %}Absicht registrieren{% elif lang == 'pl' %}Zarejestruj zamiar{% else %}Register Intention{% endif %}</h3>
+                    <p class="card-note">
+                        {% if lang == 'de' %}
+                            Getrennt von Beiträgen — registrieren Sie Ihren Wunsch teilzunehmen
+                        {% elif lang == 'pl' %}
+                            Oddzielone od wpłat — zarejestruj chęć uczestnictwa
+                        {% else %}
+                            Separate from contributions — register your desire to participate
+                        {% endif %}
+                    </p>
+                    <form action="/offering/{{ offering.id }}/register" method="post">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">{% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię{% else %}Name{% endif %}</label>
+                            <input type="text" id="name" name="name">
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-full">
+                            {% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj{% else %}Register{% endif %}
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+
+                {% if offering._contribution_open %}
+                <!-- Contribution Card -->
+                <div class="sidebar-card">
+                    <h3>{% if lang == 'de' %}Anonym beitragen{% elif lang == 'pl' %}Wpłać anonimowo{% else %}Contribute Anonymously{% endif %}</h3>
+                    <p class="card-note">
+                        {% if lang == 'de' %}
+                            Geben Sie, was sich richtig anfühlt aus Ihrer aktuellen Lebenssituation
+                        {% elif lang == 'pl' %}
+                            Daj to, co czujesz, że jest słuszne z twojego obecnego miejsca w życiu
+                        {% else %}
+                            Give what feels right from your current place in life
+                        {% endif %}
+                    </p>
+                    
+                    <div class="contribution-options">
+                        <div class="contribution-option">
+                            <span class="option-icon">💶</span>
+                            <span>{% if lang == 'de' %}Finanziell (Euro){% elif lang == 'pl' %}Finansowy (Euro){% else %}Financial (Euro){% endif %}</span>
+                        </div>
+                        <div class="contribution-option">
+                            <span class="option-icon">🪙</span>
+                            <span>{% if lang == 'de' %}UBECrc Token{% elif lang == 'pl' %}Tokeny UBECrc{% else %}UBECrc Tokens{% endif %}</span>
+                        </div>
+                        <div class="contribution-option">
+                            <span class="option-icon">🕐</span>
+                            <span>{% if lang == 'de' %}Arbeitsstunden{% elif lang == 'pl' %}Godziny pracy{% else %}Work Hours{% endif %}</span>
+                        </div>
+                    </div>
+                    
+                    <a href="/offering/{{ offering.id }}/contribute" class="btn btn-primary btn-full">
+                        {% if lang == 'de' %}Jetzt beitragen{% elif lang == 'pl' %}Wpłać teraz{% else %}Contribute Now{% endif %} →
+                    </a>
+                    
+                    <p class="anonymity-hint">
+                        🔒 {% if lang == 'de' %}Ihr Beitrag ist vollständig anonym{% elif lang == 'pl' %}Twój wkład jest całkowicie anonimowy{% else %}Your contribution is fully anonymous{% endif %}
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- Guiding Questions -->
+                <div class="guiding-questions">
+                    <h4>{% if lang == 'de' %}Leitfragen{% elif lang == 'pl' %}Pytania przewodnie{% else %}Guiding Questions{% endif %}</h4>
+                    <ul>
+                        <li>{% if lang == 'de' %}„Was bedeutet dieses Angebot für mich?"{% elif lang == 'pl' %}„Co ta oferta dla mnie znaczy?"{% else %}"What does this offering mean to me?"{% endif %}</li>
+                        <li>{% if lang == 'de' %}„Was ist meine aktuelle Kapazität zu geben?"{% elif lang == 'pl' %}„Jaka jest moja obecna zdolność dawania?"{% else %}"What is my current capacity to give?"{% endif %}</li>
+                        <li>{% if lang == 'de' %}„Was würde ich mir wünschen, dass andere beitragen, wenn sie in meiner Situation wären?"{% elif lang == 'pl' %}„Co chciałbym, żeby inni wnieśli, gdyby byli w mojej sytuacji?"{% else %}"What would I want others to contribute if they were in my situation?"{% endif %}</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}{% if lang == 'de' %}Vielen Dank{% elif lang == 'pl' %}Dziękujemy{% else %}Thank You{% endif %}{% endblock %}
+
+{% block content %}
+<section class="contribution-flow">
+    <div class="container container-narrow">
+        
+        <!-- Progress Steps -->
+        <div class="flow-steps">
+            <div class="step completed">
+                <span class="step-number">✓</span>
+                <span class="step-label">{% if lang == 'de' %}Angaben{% elif lang == 'pl' %}Dane{% else %}Details{% endif %}</span>
+            </div>
+            <div class="step-line completed"></div>
+            <div class="step completed">
+                <span class="step-number">✓</span>
+                <span class="step-label">{% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}</span>
+            </div>
+            <div class="step-line completed"></div>
+            <div class="step completed">
+                <span class="step-number">✓</span>
+                <span class="step-label">{% if lang == 'de' %}Fertig{% elif lang == 'pl' %}Gotowe{% else %}Done{% endif %}</span>
+            </div>
+        </div>
+
+        <div class="flow-card thankyou-card">
+            <div class="thankyou-icon">🌱</div>
+            <h1>{% if lang == 'de' %}Vielen Dank!{% elif lang == 'pl' %}Dziękujemy!{% else %}Thank You!{% endif %}</h1>
+            
+            <p class="thankyou-message">
+                {% if lang == 'de' %}
+                    Ihr Beitrag wurde erfolgreich zum kollektiven Topf hinzugefügt.
+                {% elif lang == 'pl' %}
+                    Twój wkład został pomyślnie dodany do wspólnego funduszu.
+                {% else %}
+                    Your contribution has been successfully added to the collective pot.
+                {% endif %}
+            </p>
+
+            <!-- Contribution Receipt -->
+            <div class="receipt-card">
+                <h3>{% if lang == 'de' %}Ihre Zusage{% elif lang == 'pl' %}Twoja deklaracja{% else %}Your Pledge{% endif %}</h3>
+                
+                <div class="receipt-items">
+                    {% if contribution_data.euro and contribution_data.euro > 0 %}
+                    <div class="receipt-item">
+                        <span class="receipt-icon">💶</span>
+                        <span class="receipt-label">{% if lang == 'de' %}Finanziell{% elif lang == 'pl' %}Finansowy{% else %}Financial{% endif %}</span>
+                        <span class="receipt-value">€{{ "%.2f"|format(contribution_data.euro) }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if contribution_data.tokens and contribution_data.tokens > 0 %}
+                    <div class="receipt-item">
+                        <span class="receipt-icon">🪙</span>
+                        <span class="receipt-label">UBECrc Tokens</span>
+                        <span class="receipt-value">{{ "%.0f"|format(contribution_data.tokens) }} <small>(€{{ "%.2f"|format(contribution_data.tokens_eur) }})</small></span>
+                    </div>
+                    {% endif %}
+
+                    {% if contribution_data.hours and contribution_data.hours > 0 %}
+                    <div class="receipt-item">
+                        <span class="receipt-icon">🕐</span>
+                        <span class="receipt-label">{{ contribution_data.hours_category.replace('_', ' ').title() }}</span>
+                        <span class="receipt-value">{{ contribution_data.hours }}h <small>(€{{ "%.2f"|format(contribution_data.hours_eur) }})</small></span>
+                    </div>
+                    {% endif %}
+
+                    <div class="receipt-total">
+                        <span>{% if lang == 'de' %}Gesamtwert{% elif lang == 'pl' %}Łączna wartość{% else %}Total{% endif %}</span>
+                        <span class="total-value">€{{ "%.2f"|format(contribution_data.total_eur) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Updated Progress -->
+            <div class="progress-update">
+                <h3>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% else %}Progress{% endif %}</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: {{ [new_percent, 100]|min }}%"></div>
+                </div>
+                <div class="progress-stats">
+                    <span class="progress-amount">€{{ "%.2f"|format(new_total) }} / €{{ "%.2f"|format(offering.threshold_amount) }}</span>
+                    <span class="progress-percent">{{ "%.0f"|format(new_percent) }}%</span>
+                </div>
+
+                {% if threshold_just_reached %}
+                <div class="threshold-celebration">
+                    🎉 
+                    {% if lang == 'de' %}
+                        <strong>Schwelle erreicht!</strong> Dank Ihres Beitrags kann dieses Angebot stattfinden!
+                    {% elif lang == 'pl' %}
+                        <strong>Próg osiągnięty!</strong> Dzięki twojemu wkładowi ta oferta może się odbyć!
+                    {% else %}
+                        <strong>Threshold reached!</strong> Thanks to your contribution, this offering can take place!
+                    {% endif %}
+                </div>
+                {% elif new_remaining > 0 %}
+                <p class="remaining-info">
+                    {% if lang == 'de' %}
+                        Noch <strong>€{{ "%.2f"|format(new_remaining) }}</strong> benötigt
+                    {% elif lang == 'pl' %}
+                        Pozostało <strong>€{{ "%.2f"|format(new_remaining) }}</strong>
+                    {% else %}
+                        Still need <strong>€{{ "%.2f"|format(new_remaining) }}</strong>
+                    {% endif %}
+                </p>
+                {% endif %}
+            </div>
+
+            {% if contribution_data.hours and contribution_data.hours > 0 %}
+            <!-- Hours Next Steps -->
+            <div class="next-steps-box">
+                <h3>{% if lang == 'de' %}Nächste Schritte{% elif lang == 'pl' %}Następne kroki{% else %}Next Steps{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Sie haben Arbeitsstunden zugesagt. Der Organisator wird sich mit Ihnen in Verbindung setzen, um die Details zu besprechen.
+                    {% elif lang == 'pl' %}
+                        Zadeklarowałeś godziny pracy. Organizator skontaktuje się z tobą, aby omówić szczegóły.
+                    {% else %}
+                        You've pledged work hours. The organizer will contact you to discuss the details.
+                    {% endif %}
+                </p>
+                {% if offering.organizer_email %}
+                <p>
+                    {% if lang == 'de' %}Kontakt{% elif lang == 'pl' %}Kontakt{% else %}Contact{% endif %}:
+                    <a href="mailto:{{ offering.organizer_email }}">{{ offering.organizer_email }}</a>
+                </p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Share -->
+            <div class="share-section">
+                <h3>{% if lang == 'de' %}Teilen{% elif lang == 'pl' %}Udostępnij{% else %}Share{% endif %}</h3>
+                <p class="share-message">
+                    {% if lang == 'de' %}
+                        Helfen Sie uns, die Schwelle zu erreichen — teilen Sie dieses Angebot mit anderen.
+                    {% elif lang == 'pl' %}
+                        Pomóż nam osiągnąć próg — podziel się tą ofertą z innymi.
+                    {% else %}
+                        Help us reach the threshold — share this offering with others.
+                    {% endif %}
+                </p>
+                <div class="share-buttons">
+                    <button type="button" class="btn btn-outline" onclick="navigator.clipboard.writeText('{{ request.url_for('offering_detail', offering_id=offering.id) }}'); this.innerHTML='✓ {% if lang == 'de' %}Kopiert{% elif lang == 'pl' %}Skopiowano{% else %}Copied{% endif %}';">
+                        🔗 {% if lang == 'de' %}Link kopieren{% elif lang == 'pl' %}Kopiuj link{% else %}Copy Link{% endif %}
+                    </button>
+                    <a href="mailto:?subject={{ offering.get_title(lang)|urlencode }}&body={{ request.url_for('offering_detail', offering_id=offering.id) }}" class="btn btn-outline">
+                        ✉️ Email
+                    </a>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flow-actions centered">
+                <a href="/offering/{{ offering.id }}" class="btn btn-primary">
+                    {% if lang == 'de' %}Zum Angebot{% elif lang == 'pl' %}Do oferty{% else %}View Offering{% endif %}
+                </a>
+                <a href="/offerings" class="btn btn-secondary">
+                    {% if lang == 'de' %}Alle Angebote{% elif lang == 'pl' %}Wszystkie oferty{% else %}All Offerings{% endif %}
+                </a>
+            </div>
+        </div>
+
+        <!-- Quote -->
+        <div class="flow-reminder">
+            <p>
+                {% if lang == 'de' %}
+                    „Wie eine Pflanze, die mehr gibt als sie nimmt — Sauerstoff, Nahrung, Schönheit, Schutz — 
+                    so nährt auch Ihr Beitrag die Gemeinschaft."
+                {% elif lang == 'pl' %}
+                    „Jak roślina, która daje więcej niż bierze — tlen, pożywienie, piękno, schronienie — 
+                    tak i twój wkład karmi społeczność."
+                {% else %}
+                    "Like a plant that gives more than it takes — oxygen, food, beauty, shelter — 
+                    so too does your contribution nourish the community."
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

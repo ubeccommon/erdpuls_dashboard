@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <h1>
+            {% if lang == 'de' %}
+                Die Gemeinschaft hält jedes Angebot ins Sein
+            {% elif lang == 'pl' %}
+                Społeczność utrzymuje każdą ofertę w bycie
+            {% else %}
+                The community holds each offering into being
+            {% endif %}
+        </h1>
+        <p class="hero-subtitle">
+            {% if lang == 'de' %}
+                Kollektives Threshold-Modell — Beitragen Sie anonym, was sich für Ihre aktuelle Lebenssituation richtig anfühlt
+            {% elif lang == 'pl' %}
+                Model Zbiorowego Progu — Wnieś anonimowo to, co wydaje Ci się odpowiednie z Twojej obecnej perspektywy życiowej
+            {% else %}
+                Collective Threshold Model — Contribute anonymously what feels right from your current place in life
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<section class="fund-banner">
+    <div class="container">
+        <div class="fund-info">
+            <span class="fund-label">
+                {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}
+            </span>
+            <span class="fund-balance">€{{ "%.2f"|format(fund_balance) }}</span>
+            <a href="/fund" class="fund-link">
+                {% if lang == 'de' %}Mehr erfahren{% elif lang == 'pl' %}Dowiedz się więcej{% else %}Learn more{% endif %} →
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="offerings-section">
+    <div class="container">
+        <h2>
+            {% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne Oferty{% else %}Current Offerings{% endif %}
+        </h2>
+        
+        {% if offerings %}
+        <div class="offerings-grid">
+            {% for offering in offerings %}
+            <article class="offering-card {% if offering._threshold_reached %}threshold-reached{% endif %}">
+                <div class="offering-header">
+                    <h3>
+                        <a href="/offering/{{ offering.id }}">
+                            {{ offering.get_title(lang) }}
+                        </a>
+                    </h3>
+                    {% if offering._threshold_reached %}
+                    <span class="badge badge-success">
+                        {% if lang == 'de' %}Schwelle erreicht!{% elif lang == 'pl' %}Próg osiągnięty!{% else %}Threshold Reached!{% endif %}
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <p class="offering-description">
+                    {{ offering.get_description(lang)[:200] }}{% if offering.get_description(lang)|length > 200 %}...{% endif %}
+                </p>
+                
+                <div class="offering-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ [offering._percent, 100]|min }}%"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span class="amount-raised">€{{ "%.0f"|format(offering._total) }}</span>
+                        <span class="amount-separator">/</span>
+                        <span class="amount-goal">€{{ "%.0f"|format(offering.threshold_amount) }}</span>
+                        <span class="percent">({{ "%.0f"|format(offering._percent) }}%)</span>
+                    </div>
+                </div>
+                
+                <div class="offering-meta">
+                    <div class="meta-item">
+                        <span class="meta-icon">👥</span>
+                        <span>{{ offering._reg_count }} 
+                            {% if lang == 'de' %}registriert{% elif lang == 'pl' %}zarejestrowanych{% else %}registered{% endif %}
+                            {% if offering.max_participants %}/ {{ offering.max_participants }}{% endif %}
+                        </span>
+                    </div>
+                    {% if offering.event_date %}
+                    <div class="meta-item">
+                        <span class="meta-icon">📅</span>
+                        <span>{{ offering.event_date.strftime('%d.%m.%Y') }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <a href="/offering/{{ offering.id }}" class="btn btn-primary">
+                    {% if lang == 'de' %}Details anzeigen{% elif lang == 'pl' %}Zobacz szczegóły{% else %}View Details{% endif %}
+                </a>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>
+                {% if lang == 'de' %}
+                    Derzeit keine offenen Angebote. Schauen Sie bald wieder vorbei!
+                {% elif lang == 'pl' %}
+                    Obecnie brak otwartych ofert. Zajrzyj wkrótce ponownie!
+                {% else %}
+                    No offerings currently open. Check back soon!
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="principles-section">
+    <div class="container">
+        <h2>
+            {% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% else %}How It Works{% endif %}
+        </h2>
+        <div class="principles-grid">
+            <div class="principle-card">
+                <div class="principle-icon">🙈</div>
+                <h3>{% if lang == 'de' %}Anonymität{% elif lang == 'pl' %}Anonimowość{% else %}Anonymity{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Niemand weiß, wer was beigetragen hat — nicht einmal die Organisatoren
+                    {% elif lang == 'pl' %}
+                        Nikt nie wie, kto ile wpłacił — nawet organizatorzy
+                    {% else %}
+                        No one knows who contributed what — not even organizers
+                    {% endif %}
+                </p>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon">🔍</div>
+                <h3>{% if lang == 'de' %}Transparenz{% elif lang == 'pl' %}Przejrzystość{% else %}Transparency{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Volle Sichtbarkeit darüber, was jedes Angebot braucht und warum
+                    {% elif lang == 'pl' %}
+                        Pełna widoczność tego, czego potrzebuje każda oferta i dlaczego
+                    {% else %}
+                        Full visibility of what each offering needs and why
+                    {% endif %}
+                </p>
+            </div>
+            <div class="principle-card">
+                <div class="principle-icon">🤲</div>
+                <h3>{% if lang == 'de' %}Vertrauen{% elif lang == 'pl' %}Zaufanie{% else %}Trust{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Wir vertrauen darauf, dass die Gemeinschaft hält, was entstehen will
+                    {% elif lang == 'pl' %}
+                        Ufamy, że społeczność utrzyma to, co chce się pojawić
+                    {% else %}
+                        We trust the community will hold what wants to emerge
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,43 @@
+"""
+Erdpuls Collective Threshold Model - FastAPI Application
+"""
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+
+from .config import get_settings
+from .routers import api_router, web_router, auth_router
+
+settings = get_settings()
+
+# Create FastAPI app
+app = FastAPI(
+    title=settings.app_name,
+    description="Collective Threshold Model - A community-held approach to reciprocal economics",
+    version="1.0.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Include routers
+app.include_router(api_router)
+app.include_router(web_router)
+app.include_router(auth_router)
+
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy", "app": settings.app_name}

@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Bearbeiten{% elif lang == 'pl' %}Edytuj{% else %}Edit{% endif %}: {{ offering.get_title(lang) }}
+{% endblock %}
+
+{% block content %}
+<section class="create-offering-page">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="/dashboard">{% if lang == 'de' %}Dashboard{% elif lang == 'pl' %}Panel{% else %}Dashboard{% endif %}</a>
+            <span>›</span>
+            <a href="/dashboard/offering/{{ offering.id }}">{{ offering.get_title(lang) }}</a>
+            <span>›</span>
+            <span>{% if lang == 'de' %}Bearbeiten{% elif lang == 'pl' %}Edytuj{% else %}Edit{% endif %}</span>
+        </nav>
+
+        <header class="page-header">
+            <h1>{% if lang == 'de' %}Angebot bearbeiten{% elif lang == 'pl' %}Edytuj ofertę{% else %}Edit Offering{% endif %}</h1>
+        </header>
+
+        {% if request.query_params.get('error') %}
+        <div class="alert alert-error">
+            {% set error = request.query_params.get('error') %}
+            {% if error == 'invalid_registration_date' %}
+                {% if lang == 'de' %}Ungültiges Registrierungsdatum{% elif lang == 'pl' %}Nieprawidłowa data rejestracji{% else %}Invalid registration deadline date{% endif %}
+            {% elif error == 'invalid_contribution_date' %}
+                {% if lang == 'de' %}Ungültiges Beitragsdatum{% elif lang == 'pl' %}Nieprawidłowa data wpłat{% else %}Invalid contribution deadline date{% endif %}
+            {% else %}
+                {% if lang == 'de' %}Ein Fehler ist aufgetreten{% elif lang == 'pl' %}Wystąpił błąd{% else %}An error occurred{% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <form action="/dashboard/offering/{{ offering.id }}/edit" method="post" class="create-form">
+            <div class="form-section">
+                <h2>{% if lang == 'de' %}Grundinformationen{% elif lang == 'pl' %}Podstawowe informacje{% else %}Basic Information{% endif %}</h2>
+                
+                <div class="form-group">
+                    <label for="title">{% if lang == 'de' %}Titel (Englisch){% elif lang == 'pl' %}Tytuł (angielski){% else %}Title (English){% endif %} *</label>
+                    <input type="text" id="title" name="title" value="{{ offering.title }}" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="title_de">{% if lang == 'de' %}Titel (Deutsch){% elif lang == 'pl' %}Tytuł (niemiecki){% else %}Title (German){% endif %}</label>
+                        <input type="text" id="title_de" name="title_de" value="{{ offering.title_de or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="title_pl">{% if lang == 'de' %}Titel (Polnisch){% elif lang == 'pl' %}Tytuł (polski){% else %}Title (Polish){% endif %}</label>
+                        <input type="text" id="title_pl" name="title_pl" value="{{ offering.title_pl or '' }}">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">{% if lang == 'de' %}Beschreibung (Englisch){% elif lang == 'pl' %}Opis (angielski){% else %}Description (English){% endif %} *</label>
+                    <textarea id="description" name="description" rows="5" required>{{ offering.description }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description_de">{% if lang == 'de' %}Beschreibung (Deutsch){% elif lang == 'pl' %}Opis (niemiecki){% else %}Description (German){% endif %}</label>
+                    <textarea id="description_de" name="description_de" rows="5">{{ offering.description_de or '' }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description_pl">{% if lang == 'de' %}Beschreibung (Polnisch){% elif lang == 'pl' %}Opis (polski){% else %}Description (Polish){% endif %}</label>
+                    <textarea id="description_pl" name="description_pl" rows="5">{{ offering.description_pl or '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% else %}Cost Breakdown{% endif %}</h2>
+                <p class="section-note">
+                    {% if lang == 'de' %}
+                        Die Schwelle wird automatisch aus der Summe der Kosten berechnet.
+                    {% elif lang == 'pl' %}
+                        Próg jest automatycznie obliczany na podstawie sumy kosztów.
+                    {% else %}
+                        The threshold is automatically calculated from the sum of costs.
+                    {% endif %}
+                </p>
+                
+                <div class="cost-inputs">
+                    <div class="form-group">
+                        <label for="facilitator_cost">{% if lang == 'de' %}Honorar (€){% elif lang == 'pl' %}Wynagrodzenie (€){% else %}Facilitator (€){% endif %}</label>
+                        <input type="number" id="facilitator_cost" name="facilitator_cost" value="{{ offering.facilitator_cost or 0 }}" min="0" step="0.01" class="cost-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="materials_cost">{% if lang == 'de' %}Materialien (€){% elif lang == 'pl' %}Materiały (€){% else %}Materials (€){% endif %}</label>
+                        <input type="number" id="materials_cost" name="materials_cost" value="{{ offering.materials_cost or 0 }}" min="0" step="0.01" class="cost-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="meals_cost">{% if lang == 'de' %}Mahlzeiten (€){% elif lang == 'pl' %}Posiłki (€){% else %}Meals (€){% endif %}</label>
+                        <input type="number" id="meals_cost" name="meals_cost" value="{{ offering.meals_cost or 0 }}" min="0" step="0.01" class="cost-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="space_cost">{% if lang == 'de' %}Raum (€){% elif lang == 'pl' %}Przestrzeń (€){% else %}Space (€){% endif %}</label>
+                        <input type="number" id="space_cost" name="space_cost" value="{{ offering.space_cost or 0 }}" min="0" step="0.01" class="cost-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sustainability_contribution">{% if lang == 'de' %}Nachhaltigkeitsbeitrag (€){% elif lang == 'pl' %}Wkład na rzecz zrównoważonego rozwoju (€){% else %}Sustainability Contribution (€){% endif %}</label>
+                        <input type="number" id="sustainability_contribution" name="sustainability_contribution" value="{{ offering.sustainability_contribution or 0 }}" min="0" step="0.01" class="cost-input">
+                    </div>
+                </div>
+                
+                <div class="threshold-display">
+                    <span class="threshold-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}:</span>
+                    <span class="threshold-value">€<span id="threshold-total">{{ "%.2f"|format(offering.threshold_amount) }}</span></span>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>{% if lang == 'de' %}Termine{% elif lang == 'pl' %}Daty{% else %}Dates{% endif %}</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="event_date">{% if lang == 'de' %}Veranstaltungsdatum{% elif lang == 'pl' %}Data wydarzenia{% else %}Event Date{% endif %}</label>
+                        <input type="date" id="event_date" name="event_date" value="{{ offering.event_date.strftime('%Y-%m-%d') if offering.event_date else '' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="max_participants">{% if lang == 'de' %}Max. Teilnehmer{% elif lang == 'pl' %}Maks. uczestników{% else %}Max Participants{% endif %}</label>
+                        <input type="number" id="max_participants" name="max_participants" min="1" value="{{ offering.max_participants or '' }}">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="registration_deadline">{% if lang == 'de' %}Registrierung bis{% elif lang == 'pl' %}Rejestracja do{% else %}Registration Deadline{% endif %} *</label>
+                        <input type="date" id="registration_deadline" name="registration_deadline" value="{{ offering.registration_deadline.strftime('%Y-%m-%d') if offering.registration_deadline else '' }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contribution_deadline_date">{% if lang == 'de' %}Beiträge bis{% elif lang == 'pl' %}Wpłaty do{% else %}Contribution Deadline{% endif %} *</label>
+                        <div class="datetime-inputs">
+                            <input type="date" id="contribution_deadline_date" name="contribution_deadline_date" value="{{ offering.contribution_deadline.strftime('%Y-%m-%d') if offering.contribution_deadline else '' }}" required>
+                            <input type="time" id="contribution_deadline_time" name="contribution_deadline_time" value="{{ offering.contribution_deadline.strftime('%H:%M') if offering.contribution_deadline else '23:59' }}" required>
+                        </div>
+                        <span class="form-hint">
+                            {% if lang == 'de' %}Datum und Uhrzeit{% elif lang == 'pl' %}Data i godzina{% else %}Date and time{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>{% if lang == 'de' %}Organisator / Kontakt{% elif lang == 'pl' %}Organizator / Kontakt{% else %}Organizer / Contact{% endif %}</h2>
+                
+                <div class="form-group">
+                    <label for="organizer_name">{% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię i nazwisko{% else %}Name{% endif %} *</label>
+                    <input type="text" id="organizer_name" name="organizer_name" value="{{ offering.organizer_name or '' }}" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="organizer_email">{% if lang == 'de' %}E-Mail{% elif lang == 'pl' %}E-mail{% else %}Email{% endif %} *</label>
+                        <input type="email" id="organizer_email" name="organizer_email" value="{{ offering.organizer_email or '' }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="organizer_phone">{% if lang == 'de' %}Telefon{% elif lang == 'pl' %}Telefon{% else %}Phone{% endif %}</label>
+                        <input type="tel" id="organizer_phone" name="organizer_phone" value="{{ offering.organizer_phone or '' }}" placeholder="+49 ...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="/dashboard/offering/{{ offering.id }}" class="btn btn-secondary">{% if lang == 'de' %}Abbrechen{% elif lang == 'pl' %}Anuluj{% else %}Cancel{% endif %}</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if lang == 'de' %}Änderungen speichern{% elif lang == 'pl' %}Zapisz zmiany{% else %}Save Changes{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+// Calculate threshold in real-time
+document.addEventListener('DOMContentLoaded', function() {
+    const costInputs = document.querySelectorAll('.cost-input');
+    const thresholdDisplay = document.getElementById('threshold-total');
+    
+    function updateThreshold() {
+        let total = 0;
+        costInputs.forEach(input => {
+            total += parseFloat(input.value) || 0;
+        });
+        thresholdDisplay.textContent = total.toFixed(2);
+    }
+    
+    costInputs.forEach(input => {
+        input.addEventListener('input', updateThreshold);
+    });
+});
+</script>
+{% endblock %}

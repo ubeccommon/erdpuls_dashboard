@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}{% if lang == 'de' %}Beitrag bestätigen{% elif lang == 'pl' %}Potwierdź wpłatę{% else %}Confirm Contribution{% endif %}{% endblock %}
+
+{% block content %}
+<section class="contribution-flow">
+    <div class="container container-narrow">
+        
+        <!-- Progress Steps -->
+        <div class="flow-steps">
+            <div class="step completed">
+                <span class="step-number">1</span>
+                <span class="step-label">{% if lang == 'de' %}Angaben{% elif lang == 'pl' %}Dane{% else %}Details{% endif %}</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step active">
+                <span class="step-number">2</span>
+                <span class="step-label">{% if lang == 'de' %}Bestätigen{% elif lang == 'pl' %}Potwierdź{% else %}Confirm{% endif %}</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <span class="step-label">{% if lang == 'de' %}Fertig{% elif lang == 'pl' %}Gotowe{% else %}Done{% endif %}</span>
+            </div>
+        </div>
+
+        <div class="flow-card">
+            <h1>{% if lang == 'de' %}Ihren Beitrag bestätigen{% elif lang == 'pl' %}Potwierdź swój wkład{% else %}Confirm Your Contribution{% endif %}</h1>
+            
+            <p class="flow-intro">
+                {% if lang == 'de' %}
+                    Bitte überprüfen Sie Ihre Angaben, bevor Sie Ihren Beitrag verbindlich zusagen.
+                {% elif lang == 'pl' %}
+                    Sprawdź swoje dane przed potwierdzeniem wpłaty.
+                {% else %}
+                    Please review your details before confirming your pledge.
+                {% endif %}
+            </p>
+
+            <!-- Offering Summary -->
+            <div class="summary-section">
+                <h3>{% if lang == 'de' %}Angebot{% elif lang == 'pl' %}Oferta{% else %}Offering{% endif %}</h3>
+                <div class="summary-box">
+                    <div class="summary-title">{{ offering.get_title(lang) }}</div>
+                    <div class="summary-meta">
+                        {% if offering.event_date %}
+                        📅 {{ offering.event_date.strftime('%d.%m.%Y') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contribution Summary -->
+            <div class="summary-section">
+                <h3>{% if lang == 'de' %}Ihr Beitrag{% elif lang == 'pl' %}Twój wkład{% else %}Your Contribution{% endif %}</h3>
+                <div class="contribution-summary">
+                    {% if contribution_data.euro and contribution_data.euro > 0 %}
+                    <div class="contribution-item">
+                        <span class="contribution-icon">💶</span>
+                        <div class="contribution-detail">
+                            <span class="contribution-type">{% if lang == 'de' %}Finanzieller Beitrag{% elif lang == 'pl' %}Wkład finansowy{% else %}Financial Contribution{% endif %}</span>
+                            <span class="contribution-amount">€{{ "%.2f"|format(contribution_data.euro) }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if contribution_data.tokens and contribution_data.tokens > 0 %}
+                    <div class="contribution-item">
+                        <span class="contribution-icon">🪙</span>
+                        <div class="contribution-detail">
+                            <span class="contribution-type">UBECrc Tokens</span>
+                            <span class="contribution-amount">{{ "%.0f"|format(contribution_data.tokens) }} UBECrc</span>
+                            <span class="contribution-equiv">(≈ €{{ "%.2f"|format(contribution_data.tokens_eur) }})</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if contribution_data.hours and contribution_data.hours > 0 %}
+                    <div class="contribution-item">
+                        <span class="contribution-icon">🕐</span>
+                        <div class="contribution-detail">
+                            <span class="contribution-type">
+                                {% if lang == 'de' %}Arbeitsstunden{% elif lang == 'pl' %}Godziny pracy{% else %}Work Hours{% endif %}
+                                ({{ contribution_data.hours_category.replace('_', ' ').title() }})
+                            </span>
+                            <span class="contribution-amount">{{ contribution_data.hours }} {% if lang == 'de' %}Stunden{% elif lang == 'pl' %}godzin{% else %}hours{% endif %}</span>
+                            <span class="contribution-equiv">(≈ €{{ "%.2f"|format(contribution_data.hours_eur) }})</span>
+                            {% if contribution_data.hours_description %}
+                            <span class="contribution-note">{{ contribution_data.hours_description }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="contribution-total">
+                        <span>{% if lang == 'de' %}Gesamtwert{% elif lang == 'pl' %}Łączna wartość{% else %}Total Value{% endif %}</span>
+                        <span class="total-amount">€{{ "%.2f"|format(contribution_data.total_eur) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact (optional) -->
+            {% if contribution_data.email %}
+            <div class="summary-section">
+                <h3>{% if lang == 'de' %}Kontakt{% elif lang == 'pl' %}Kontakt{% else %}Contact{% endif %}</h3>
+                <div class="summary-box">
+                    {% if contribution_data.name %}
+                    <div>{{ contribution_data.name }}</div>
+                    {% endif %}
+                    <div>{{ contribution_data.email }}</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Privacy Note -->
+            <div class="anonymity-notice">
+                <span class="notice-icon">🔒</span>
+                <div class="notice-text">
+                    {% if lang == 'de' %}
+                        <strong>Privatsphäre geschützt:</strong> Öffentlich werden nur Gesamtsumme und Anzahl der Beitragenden angezeigt.
+                        {% if contribution_data.email %}Ihre Kontaktdaten sind nur für Organisatoren sichtbar, für Koordination und Quittungen.{% endif %}
+                    {% elif lang == 'pl' %}
+                        <strong>Prywatność chroniona:</strong> Publicznie wyświetlana jest tylko suma i liczba osób wpłacających.
+                        {% if contribution_data.email %}Twoje dane kontaktowe są widoczne tylko dla organizatorów, do koordynacji i potwierdzeń.{% endif %}
+                    {% else %}
+                        <strong>Privacy protected:</strong> Only totals and contributor count are shown publicly.
+                        {% if contribution_data.email %}Your contact info is visible to organizers only, for coordination and receipts.{% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <form action="/offering/{{ offering.id }}/contribute/submit" method="post">
+                <!-- Hidden fields with contribution data -->
+                <input type="hidden" name="euro" value="{{ contribution_data.euro or 0 }}">
+                <input type="hidden" name="tokens" value="{{ contribution_data.tokens or 0 }}">
+                <input type="hidden" name="hours" value="{{ contribution_data.hours or 0 }}">
+                <input type="hidden" name="hours_category" value="{{ contribution_data.hours_category or '' }}">
+                <input type="hidden" name="hours_description" value="{{ contribution_data.hours_description or '' }}">
+                <input type="hidden" name="name" value="{{ contribution_data.name or '' }}">
+                <input type="hidden" name="email" value="{{ contribution_data.email or '' }}">
+
+                <div class="flow-actions">
+                    <a href="/offering/{{ offering.id }}" class="btn btn-secondary">
+                        {% if lang == 'de' %}← Zurück{% elif lang == 'pl' %}← Wróć{% else %}← Back{% endif %}
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        {% if lang == 'de' %}Beitrag bestätigen{% elif lang == 'pl' %}Potwierdź wpłatę{% else %}Confirm Contribution{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Guiding reminder -->
+        <div class="flow-reminder">
+            <p>
+                {% if lang == 'de' %}
+                    „Die Gemeinschaft hält jedes Angebot gemeinsam ins Dasein."
+                {% elif lang == 'pl' %}
+                    „Społeczność wspólnie tworzy każdą ofertę."
+                {% else %}
+                    "The community holds each offering into being together."
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

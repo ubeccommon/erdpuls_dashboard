@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Erdpuls{% endblock %} | Collective Threshold Model</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=4">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🌱</span>
+                <span class="logo-text">Erdpuls Müllrose</span>
+            </a>
+            <nav class="main-nav">
+                <a href="/about">
+                    {% if lang == 'de' %}Über uns{% elif lang == 'pl' %}O nas{% else %}About{% endif %}
+                </a>
+                <a href="/">
+                    {% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}
+                </a>
+                <a href="/fund">
+                    {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz{% else %}Fund{% endif %}
+                </a>
+            </nav>
+            <div class="header-right">
+                <div class="lang-switcher">
+                    <a href="?lang=en" class="{% if lang == 'en' %}active{% endif %}">EN</a>
+                    <a href="?lang=de" class="{% if lang == 'de' %}active{% endif %}">DE</a>
+                    <a href="?lang=pl" class="{% if lang == 'pl' %}active{% endif %}">PL</a>
+                </div>
+                <div class="auth-nav">
+                    {% if user %}
+                        <a href="/dashboard" class="btn btn-small">
+                            {% if user.is_admin %}👑{% else %}👤{% endif %}
+                            {{ user.name or user.email.split('@')[0] }}
+                        </a>
+                        <a href="/logout" class="btn btn-small btn-outline">
+                            {% if lang == 'de' %}Abmelden{% elif lang == 'pl' %}Wyloguj{% else %}Logout{% endif %}
+                        </a>
+                    {% else %}
+                        <a href="/login" class="btn btn-small btn-primary">
+                            {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj{% else %}Login{% endif %}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🌱</span>
+                    <span>Erdpuls Müllrose</span>
+                </div>
+                <p class="footer-tagline">
+                    {% if lang == 'de' %}
+                        Gemeinsam Wachsen, Gemeinsam Lernen, Gemeinsam Regenerieren
+                    {% elif lang == 'pl' %}
+                        Rosnąc Razem, Ucząc się Razem, Regenerując Razem
+                    {% else %}
+                        Growing Together, Learning Together, Regenerating Together
+                    {% endif %}
+                </p>
+                <p class="footer-location">Müllrose, Brandenburg · Naturpark Schlaubetal</p>
+                <p class="footer-license">
+                    © Farmer | 
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

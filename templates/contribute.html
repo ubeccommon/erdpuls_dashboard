@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}{% if lang == 'de' %}Beitragen{% elif lang == 'pl' %}Wpłać{% else %}Contribute{% endif %} - {{ offering.get_title(lang) }}{% endblock %}
+
+{% block content %}
+<section class="contribution-flow">
+    <div class="container container-narrow">
+        
+        <!-- Progress Steps -->
+        <div class="flow-steps">
+            <div class="step active">
+                <span class="step-number">1</span>
+                <span class="step-label">{% if lang == 'de' %}Angaben{% elif lang == 'pl' %}Dane{% else %}Details{% endif %}</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <span class="step-label">{% if lang == 'de' %}Bestätigen{% elif lang == 'pl' %}Potwierdź{% else %}Confirm{% endif %}</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <span class="step-label">{% if lang == 'de' %}Fertig{% elif lang == 'pl' %}Gotowe{% else %}Done{% endif %}</span>
+            </div>
+        </div>
+
+        <div class="flow-card">
+            <h1>{% if lang == 'de' %}Zum kollektiven Topf beitragen{% elif lang == 'pl' %}Wpłać do wspólnego funduszu{% else %}Contribute to the Collective Pot{% endif %}</h1>
+            
+            <p class="flow-intro">
+                {% if lang == 'de' %}
+                    Geben Sie, was sich richtig anfühlt aus Ihrer aktuellen Lebenssituation. 
+                    Sie können eine oder mehrere Beitragsarten kombinieren.
+                {% elif lang == 'pl' %}
+                    Daj to, co czujesz, że jest słuszne z twojego obecnego miejsca w życiu.
+                    Możesz połączyć jeden lub więcej rodzajów wkładu.
+                {% else %}
+                    Give what feels right from your current place in life. 
+                    You can combine one or more contribution types.
+                {% endif %}
+            </p>
+
+            <!-- Offering Info -->
+            <div class="offering-mini">
+                <span class="offering-mini-title">{{ offering.get_title(lang) }}</span>
+                <div class="offering-mini-progress">
+                    <div class="mini-progress-bar">
+                        <div class="mini-progress-fill" style="width: {{ [offering._percent, 100]|min }}%"></div>
+                    </div>
+                    <span class="mini-progress-text">€{{ "%.2f"|format(offering._total) }} / €{{ "%.2f"|format(offering.threshold_amount) }} ({{ "%.0f"|format(offering._percent) }}%)</span>
+                </div>
+            </div>
+
+            {% if request.query_params.get('error') %}
+            <div class="alert alert-error">
+                {% if request.query_params.get('error') == 'empty' %}
+                    {% if lang == 'de' %}Bitte geben Sie mindestens einen Beitrag ein{% elif lang == 'pl' %}Proszę podać co najmniej jeden wkład{% else %}Please enter at least one contribution{% endif %}
+                {% else %}
+                    {% if lang == 'de' %}Es ist ein Fehler aufgetreten{% elif lang == 'pl' %}Wystąpił błąd{% else %}An error occurred{% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <form action="/offering/{{ offering.id }}/contribute/confirm" method="post" id="contribution-form">
+                
+                <!-- Financial Contribution -->
+                <div class="contribution-type-section">
+                    <label class="contribution-type-toggle">
+                        <input type="checkbox" name="include_euro" id="toggle_euro" onchange="toggleSection('euro')">
+                        <span class="toggle-icon">💶</span>
+                        <span class="toggle-label">{% if lang == 'de' %}Finanzieller Beitrag (Euro){% elif lang == 'pl' %}Wkład finansowy (Euro){% else %}Financial Contribution (Euro){% endif %}</span>
+                    </label>
+                    <div class="contribution-type-fields" id="section_euro" style="display: none;">
+                        <div class="form-group">
+                            <label for="euro_amount">{% if lang == 'de' %}Betrag{% elif lang == 'pl' %}Kwota{% else %}Amount{% endif %} (€)</label>
+                            <input type="number" id="euro_amount" name="euro_amount" min="1" step="0.01" placeholder="50.00">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Token Contribution -->
+                <div class="contribution-type-section">
+                    <label class="contribution-type-toggle">
+                        <input type="checkbox" name="include_tokens" id="toggle_tokens" onchange="toggleSection('tokens')">
+                        <span class="toggle-icon">🪙</span>
+                        <span class="toggle-label">UBECrc Tokens</span>
+                    </label>
+                    <div class="contribution-type-fields" id="section_tokens" style="display: none;">
+                        <div class="form-group">
+                            <label for="token_amount">{% if lang == 'de' %}Token-Anzahl{% elif lang == 'pl' %}Ilość tokenów{% else %}Token Amount{% endif %}</label>
+                            <input type="number" id="token_amount" name="token_amount" min="1" step="1" placeholder="350">
+                            <span class="form-hint">{{ "%.0f"|format(token_rate) }} UBECrc = €1.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hours Contribution -->
+                <div class="contribution-type-section">
+                    <label class="contribution-type-toggle">
+                        <input type="checkbox" name="include_hours" id="toggle_hours" onchange="toggleSection('hours')">
+                        <span class="toggle-icon">🕐</span>
+                        <span class="toggle-label">{% if lang == 'de' %}Arbeitsstunden{% elif lang == 'pl' %}Godziny pracy{% else %}Work Hours{% endif %}</span>
+                    </label>
+                    <div class="contribution-type-fields" id="section_hours" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="hours_amount">{% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% else %}Hours{% endif %}</label>
+                                <input type="number" id="hours_amount" name="hours_amount" min="0.5" step="0.5" placeholder="2">
+                            </div>
+                            <div class="form-group">
+                                <label for="hours_category">{% if lang == 'de' %}Kategorie{% elif lang == 'pl' %}Kategoria{% else %}Category{% endif %}</label>
+                                <select id="hours_category" name="hours_category">
+                                    <option value="">-- {% if lang == 'de' %}Auswählen{% elif lang == 'pl' %}Wybierz{% else %}Select{% endif %} --</option>
+                                    {% for rate in hours_rates %}
+                                    <option value="{{ rate.category }}">
+                                        {{ rate.category.replace('_', ' ').title() }} (€{{ "%.2f"|format(rate.eur_per_hour) }}/{% if lang == 'de' %}Std{% elif lang == 'pl' %}godz{% else %}hr{% endif %})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="hours_description">{% if lang == 'de' %}Beschreibung (optional){% elif lang == 'pl' %}Opis (opcjonalnie){% else %}Description (optional){% endif %}</label>
+                            <input type="text" id="hours_description" name="hours_description" placeholder="{% if lang == 'de' %}Was werden Sie beitragen?{% elif lang == 'pl' %}Co wniesiesz?{% else %}What will you contribute?{% endif %}">
+                        </div>
+                        
+                        <div class="hours-categories-help">
+                            <details>
+                                <summary>{% if lang == 'de' %}Kategorien erklärt{% elif lang == 'pl' %}Wyjaśnienie kategorii{% else %}Categories explained{% endif %}</summary>
+                                <ul>
+                                    {% for rate in hours_rates %}
+                                    <li>
+                                        <strong>{{ rate.category.replace('_', ' ').title() }}</strong> — €{{ "%.2f"|format(rate.eur_per_hour) }}/{% if lang == 'de' %}Std{% elif lang == 'pl' %}godz{% else %}hr{% endif %}
+                                        {% if rate.description %}<br><small>{{ rate.description }}</small>{% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="section-divider">
+
+                <!-- Optional Contact -->
+                <div class="optional-section">
+                    <h3>{% if lang == 'de' %}Kontakt (optional){% elif lang == 'pl' %}Kontakt (opcjonalnie){% else %}Contact (optional){% endif %}</h3>
+                    <p class="optional-note">
+                        {% if lang == 'de' %}
+                            Kontaktdaten ermöglichen: Koordination bei Stundenbeiträgen, Spendenquittungen, Benachrichtigung wenn das Angebot bestätigt wird.
+                            <strong>Nur für Organisatoren sichtbar</strong> — öffentlich wird nur die Gesamtsumme angezeigt, nie individuelle Beiträge.
+                        {% elif lang == 'pl' %}
+                            Dane kontaktowe umożliwiają: koordynację wkładów godzinowych, potwierdzenia darowizn, powiadomienie o potwierdzeniu oferty.
+                            <strong>Widoczne tylko dla organizatorów</strong> — publicznie wyświetlana jest tylko suma, nigdy indywidualne wkłady.
+                        {% else %}
+                            Contact info enables: hours coordination, donation receipts, notification when offering is confirmed.
+                            <strong>Visible to organizers only</strong> — publicly only totals are shown, never individual contributions.
+                        {% endif %}
+                    </p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contact_name">{% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię{% else %}Name{% endif %}</label>
+                            <input type="text" id="contact_name" name="contact_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_email">Email</label>
+                            <input type="email" id="contact_email" name="contact_email">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guiding Questions -->
+                <div class="guiding-box">
+                    <h4>{% if lang == 'de' %}Leitfragen{% elif lang == 'pl' %}Pytania przewodnie{% else %}Guiding Questions{% endif %}</h4>
+                    <ul>
+                        <li>{% if lang == 'de' %}„Was bedeutet dieses Angebot für mich?"{% elif lang == 'pl' %}„Co ta oferta dla mnie znaczy?"{% else %}"What does this offering mean to me?"{% endif %}</li>
+                        <li>{% if lang == 'de' %}„Was ist meine aktuelle Kapazität zu geben?"{% elif lang == 'pl' %}„Jaka jest moja obecna zdolność dawania?"{% else %}"What is my current capacity to give?"{% endif %}</li>
+                        <li>{% if lang == 'de' %}„Was würde ich mir wünschen, dass andere beitragen, wenn sie in meiner Situation wären?"{% elif lang == 'pl' %}„Co chciałbym, żeby inni wnieśli, gdyby byli w mojej sytuacji?"{% else %}"What would I want others to contribute if they were in my situation?"{% endif %}</li>
+                    </ul>
+                </div>
+
+                <!-- Actions -->
+                <div class="flow-actions">
+                    <a href="/offering/{{ offering.id }}" class="btn btn-secondary">
+                        {% if lang == 'de' %}← Abbrechen{% elif lang == 'pl' %}← Anuluj{% else %}← Cancel{% endif %}
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        {% if lang == 'de' %}Weiter zur Bestätigung{% elif lang == 'pl' %}Dalej do potwierdzenia{% else %}Continue to Confirmation{% endif %} →
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Anonymity reminder -->
+        <div class="flow-reminder anonymity">
+            <span class="reminder-icon">🔒</span>
+            <p>
+                {% if lang == 'de' %}
+                    Ihr Beitrag wird vollständig anonym erfasst. Niemand — auch nicht die Organisatoren — erfährt, wer welchen Betrag beigetragen hat.
+                {% elif lang == 'pl' %}
+                    Twój wkład zostanie zapisany całkowicie anonimowo. Nikt — nawet organizatorzy — nie dowie się, kto wpłacił jaką kwotę.
+                {% else %}
+                    Your contribution will be recorded completely anonymously. No one — not even the organizers — will know who contributed what amount.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+function toggleSection(type) {
+    const checkbox = document.getElementById('toggle_' + type);
+    const section = document.getElementById('section_' + type);
+    section.style.display = checkbox.checked ? 'block' : 'none';
+    
+    // Clear fields when unchecked
+    if (!checkbox.checked) {
+        section.querySelectorAll('input, select').forEach(el => {
+            if (el.type === 'number' || el.type === 'text') {
+                el.value = '';
+            } else if (el.tagName === 'SELECT') {
+                el.selectedIndex = 0;
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

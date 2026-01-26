@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Über das Modell{% elif lang == 'pl' %}O modelu{% else %}About the Model{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="about-page">
+    <div class="container">
+        <header class="page-header">
+            <h1>
+                {% if lang == 'de' %}Das Kollektive Threshold-Modell{% elif lang == 'pl' %}Model Zbiorowego Progu{% else %}The Collective Threshold Model{% endif %}
+            </h1>
+            <p class="page-subtitle">
+                {% if lang == 'de' %}
+                    Ein gemeinschaftsgetragener Ansatz für reziproke Ökonomie
+                {% elif lang == 'pl' %}
+                    Podejście wspólnotowe do ekonomii wzajemności
+                {% else %}
+                    A community-held approach to reciprocal economics
+                {% endif %}
+            </p>
+        </header>
+
+        <div class="about-content">
+            <section class="about-section">
+                <h2>{% if lang == 'de' %}Die Einsicht{% elif lang == 'pl' %}Wgląd{% else %}The Insight{% endif %}</h2>
+                <p>
+                    {% if lang == 'de' %}
+                        Die meisten Preismodelle — selbst progressive wie Staffelpreise — funktionieren immer noch auf individueller Transaktionsbasis. Jede Person berechnet, was sie zahlen kann oder sollte. Dies schafft subtile Hierarchien: diejenigen, die den vollen Preis zahlen, diejenigen, die „Unterstützung" erhalten, diejenigen, die „Stipendien" brauchen.
+                    {% elif lang == 'pl' %}
+                        Większość modeli cenowych — nawet progresywnych, takich jak skale ruchome — nadal działa na zasadzie indywidualnej transakcji. Każda osoba oblicza, ile może lub powinna zapłacić. Tworzy to subtelne hierarchie: ci, którzy płacą pełną cenę, ci, którzy otrzymują „wsparcie", ci, którzy potrzebują „stypendiów".
+                    {% else %}
+                        Most pricing models — even progressive ones like sliding scales — still operate on an individual transaction basis. Each person calculates what they can or should pay. This creates subtle hierarchies: those who pay full price, those who receive "support," those who need "scholarships."
+                    {% endif %}
+                </p>
+                <p>
+                    {% if lang == 'de' %}
+                        <strong>Was wäre, wenn wir das anders angehen würden?</strong> Was wäre, wenn die Gemeinschaft <em>kollektiv</em> jedes Angebot ins Sein hielte?
+                    {% elif lang == 'pl' %}
+                        <strong>A gdyby podejść do tego inaczej?</strong> Co jeśli społeczność <em>kolektywnie</em> utrzymywałaby każdą ofertę w bycie?
+                    {% else %}
+                        <strong>What if we approached this differently?</strong> What if the community <em>collectively</em> held each offering into being?
+                    {% endif %}
+                </p>
+            </section>
+
+            <section class="about-section">
+                <h2>{% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% else %}How It Works{% endif %}</h2>
+                <div class="steps-list">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Transparente Schwelle{% elif lang == 'pl' %}Przejrzysty próg{% else %}Transparent Threshold{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    Jedes Angebot hat einen transparenten <strong>Bedarf</strong> — die Ressourcen, die erforderlich sind, damit es stattfinden kann
+                                {% elif lang == 'pl' %}
+                                    Każda oferta ma przejrzystą <strong>potrzebę</strong> — zasoby wymagane do jej realizacji
+                                {% else %}
+                                    Each offering has a transparent <strong>need</strong> — the resources required for it to happen
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Absicht registrieren{% elif lang == 'pl' %}Rejestracja zamiaru{% else %}Register Intention{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    Menschen registrieren ihre <strong>Absicht teilzunehmen</strong>
+                                {% elif lang == 'pl' %}
+                                    Ludzie rejestrują swój <strong>zamiar uczestnictwa</strong>
+                                {% else %}
+                                    People register their <strong>intention to participate</strong>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Anonym beitragen{% elif lang == 'pl' %}Anonimowy wkład{% else %}Contribute Anonymously{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    Jeder trägt <strong>anonym</strong> zum kollektiven Topf bei — was sich für sie richtig anfühlt
+                                {% elif lang == 'pl' %}
+                                    Każdy wnosi <strong>anonimowo</strong> do wspólnego funduszu — to, co wydaje mu się odpowiednie
+                                {% else %}
+                                    Everyone contributes <strong>anonymously</strong> to a collective pot — whatever feels right to them
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    Wenn die Schwelle erreicht ist, <strong>findet das Angebot statt</strong>
+                                {% elif lang == 'pl' %}
+                                    Gdy próg zostanie osiągnięty, <strong>oferta się realizuje</strong>
+                                {% else %}
+                                    When the threshold is met, the <strong>offering takes place</strong>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Niemand weiß{% elif lang == 'pl' %}Nikt nie wie{% else %}No One Knows{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    <strong>Niemand weiß, wer was beigetragen hat</strong> — nicht einmal die Organisatoren
+                                {% elif lang == 'pl' %}
+                                    <strong>Nikt nie wie, kto ile wpłacił</strong> — nawet organizatorzy
+                                {% else %}
+                                    <strong>No one knows who contributed what</strong> — not even organizers
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <h2>{% if lang == 'de' %}Philosophische Grundlage{% elif lang == 'pl' %}Podstawy filozoficzne{% else %}Philosophical Foundation{% endif %}</h2>
+                
+                <div class="philosophy-cards">
+                    <div class="philosophy-card">
+                        <h3>Ubuntu</h3>
+                        <blockquote>
+                            {% if lang == 'de' %}„Ich bin, weil wir sind."{% elif lang == 'pl' %}„Jestem, ponieważ jesteśmy."{% else %}"I am because we are."{% endif %}
+                        </blockquote>
+                        <p>
+                            {% if lang == 'de' %}
+                                Die afrikanische Philosophie Ubuntu lehrt, dass individuelle Identität aus der Gemeinschaftsbeziehung entsteht. Das Kollektive Threshold-Modell verkörpert dieses Prinzip ökonomisch: <em>das Angebot existiert, weil wir es gemeinsam ermöglichen.</em>
+                            {% elif lang == 'pl' %}
+                                Afrykańska filozofia Ubuntu uczy, że tożsamość jednostki wyłania się z relacji wspólnotowych. Model Zbiorowego Progu ucieleśnia tę zasadę ekonomicznie: <em>oferta istnieje, ponieważ wspólnie ją umożliwiamy.</em>
+                            {% else %}
+                                The African philosophy of Ubuntu teaches that individual identity emerges from community relationship. The Collective Threshold Model embodies this principle economically: <em>the offering exists because we collectively make it so.</em>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="philosophy-card">
+                        <h3>{% if lang == 'de' %}Pflanzenweisheit{% elif lang == 'pl' %}Mądrość roślin{% else %}Plant Wisdom{% endif %}</h3>
+                        <p>
+                            {% if lang == 'de' %}
+                                In einem Wald fließen Nährstoffe durch Mykorrhiza-Netzwerke von Bäumen mit Überfluss zu Bäumen mit Bedarf. Kein Baum wird stigmatisiert, weil er empfängt. Kein Baum wird gelobt, weil er gibt. Der Wald <em>ist</em> dieses Fließen.
+                            {% elif lang == 'pl' %}
+                                W lesie składniki odżywcze przepływają przez sieci mikoryzowe od drzew z obfitością do drzew w potrzebie. Żadne drzewo nie jest piętnowane za przyjmowanie. Żadne drzewo nie jest chwalone za dawanie. Las <em>jest</em> tym przepływem.
+                            {% else %}
+                                In a forest, nutrients flow through mycorrhizal networks from trees with abundance to trees with need. No tree is stigmatized for receiving. No tree is praised for giving. The forest <em>is</em> this flowing.
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="philosophy-card">
+                        <h3>{% if lang == 'de' %}Vertrauen als Grundlage{% elif lang == 'pl' %}Zaufanie jako fundament{% else %}Trust as Foundation{% endif %}</h3>
+                        <p>
+                            {% if lang == 'de' %}
+                                Dieses Modell erfordert — und kultiviert — Vertrauen. Wir vertrauen darauf, dass Menschen entsprechend ihrer echten Kapazität und ihrem Gewissen beitragen. Wir vertrauen darauf, dass Überfluss von denen fließt, die ihn haben. Wir vertrauen darauf, dass die Gemeinschaft das Angebot trägt.
+                            {% elif lang == 'pl' %}
+                                Ten model wymaga — i kultywuje — zaufanie. Ufamy, że ludzie wniosą wkład zgodnie ze swoimi prawdziwymi możliwościami i sumieniem. Ufamy, że obfitość popłynie od tych, którzy ją mają. Ufamy, że społeczność utrzyma ofertę.
+                            {% else %}
+                                This model requires — and cultivates — trust. We trust that people will contribute according to their genuine capacity and conscience. We trust that abundance will flow from those who have it. We trust that the community will hold the offering.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <h2>{% if lang == 'de' %}Drei Beitragswege{% elif lang == 'pl' %}Trzy sposoby wpłat{% else %}Three Ways to Contribute{% endif %}</h2>
+                <div class="contribution-types">
+                    <div class="contribution-type">
+                        <div class="type-icon">💶</div>
+                        <h3>Euro</h3>
+                        <p>
+                            {% if lang == 'de' %}
+                                Direkter finanzieller Beitrag in beliebiger Höhe
+                            {% elif lang == 'pl' %}
+                                Bezpośredni wkład finansowy w dowolnej kwocie
+                            {% else %}
+                                Direct financial contribution of any amount
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="contribution-type">
+                        <div class="type-icon">🪙</div>
+                        <h3>UBECrc Tokens</h3>
+                        <p>
+                            {% if lang == 'de' %}
+                                Token, die durch Umweltüberwachung und Bürgerwissenschaft verdient wurden
+                            {% elif lang == 'pl' %}
+                                Tokeny zdobyte przez monitoring środowiskowy i naukę obywatelską
+                            {% else %}
+                                Tokens earned through environmental monitoring and citizen science
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="contribution-type">
+                        <div class="type-icon">⏱️</div>
+                        <h3>{% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% else %}Hours{% endif %}</h3>
+                        <p>
+                            {% if lang == 'de' %}
+                                Arbeitsstunden in verschiedenen Kategorien (Garten, Technik, Wissen, etc.)
+                            {% elif lang == 'pl' %}
+                                Godziny pracy w różnych kategoriach (ogród, technika, wiedza, itp.)
+                            {% else %}
+                                Work hours in various categories (garden, technical, knowledge, etc.)
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about-section quote-section">
+                <blockquote class="featured-quote">
+                    {% if lang == 'de' %}
+                        „Wir kultivieren die Bedingungen, damit Menschen wie eine Pflanze denken lernen."
+                    {% elif lang == 'pl' %}
+                        „Kultywujemy warunki, by ludzie uczyli się myśleć jak roślina."
+                    {% else %}
+                        "We cultivate the conditions for people to think like a plant."
+                    {% endif %}
+                </blockquote>
+                <p class="quote-context">
+                    {% if lang == 'de' %}
+                        Dieses Wirtschaftsmodell kultiviert diese Bedingungen. Es ermöglicht nicht nur den Zugang zu unseren Programmen — es <em>praktiziert</em> die Prinzipien, die diese Programme lehren.
+                    {% elif lang == 'pl' %}
+                        Ten model ekonomiczny kultywuje te warunki. Nie tylko umożliwia dostęp do naszych programów — <em>praktykuje</em> zasady, których te programy uczą.
+                    {% else %}
+                        This economic model cultivates those conditions. It does not merely enable access to our programs — it <em>enacts</em> the very principles those programs teach.
+                    {% endif %}
+                </p>
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock %}

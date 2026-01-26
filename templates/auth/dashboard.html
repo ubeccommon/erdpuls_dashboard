@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Dashboard{% elif lang == 'pl' %}Panel{% else %}Dashboard{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="dashboard-page">
+    <div class="container">
+        <header class="page-header">
+            <h1>
+                {% if lang == 'de' %}Willkommen, {{ user.name or user.email.split('@')[0] }}{% elif lang == 'pl' %}Witaj, {{ user.name or user.email.split('@')[0] }}{% else %}Welcome, {{ user.name or user.email.split('@')[0] }}{% endif %}
+                {% if user.is_admin %}<span class="badge badge-admin">Admin</span>{% endif %}
+            </h1>
+        </header>
+
+        {% if welcome %}
+        <div class="alert alert-success">
+            {% if lang == 'de' %}
+                Willkommen! Ihr Konto wurde erstellt. Sie können nun Angebote erstellen.
+            {% elif lang == 'pl' %}
+                Witamy! Twoje konto zostało utworzone. Możesz teraz tworzyć oferty.
+            {% else %}
+                Welcome! Your account has been created. You can now create offerings.
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if request.query_params.get('created') %}
+        <div class="alert alert-success">
+            {% if lang == 'de' %}
+                Angebot erfolgreich erstellt!
+            {% elif lang == 'pl' %}
+                Oferta została pomyślnie utworzona!
+            {% else %}
+                Offering created successfully!
+            {% endif %}
+            {% if not user.is_admin %}
+            <br>
+            <small>
+                {% if lang == 'de' %}
+                    Ein Administrator wird es überprüfen und freigeben.
+                {% elif lang == 'pl' %}
+                    Administrator sprawdzi i zatwierdzi.
+                {% else %}
+                    An administrator will review and approve it.
+                {% endif %}
+            </small>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="dashboard-actions">
+            <a href="/dashboard/create" class="btn btn-primary">
+                {% if lang == 'de' %}+ Neues Angebot erstellen{% elif lang == 'pl' %}+ Utwórz nową ofertę{% else %}+ Create New Offering{% endif %}
+            </a>
+        </div>
+
+        <section class="dashboard-section">
+            <h2>{% if lang == 'de' %}Meine Angebote{% elif lang == 'pl' %}Moje oferty{% else %}My Offerings{% endif %}</h2>
+            
+            {% if my_offerings %}
+            <div class="offerings-table-wrapper">
+                <table class="offerings-table">
+                    <thead>
+                        <tr>
+                            <th>{% if lang == 'de' %}Titel{% elif lang == 'pl' %}Tytuł{% else %}Title{% endif %}</th>
+                            <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                            <th>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% else %}Progress{% endif %}</th>
+                            <th>{% if lang == 'de' %}Registrierungen{% elif lang == 'pl' %}Rejestracje{% else %}Registrations{% endif %}</th>
+                            <th>{% if lang == 'de' %}Aktionen{% elif lang == 'pl' %}Akcje{% else %}Actions{% endif %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for offering in my_offerings %}
+                        <tr>
+                            <td>
+                                <a href="/offering/{{ offering.id }}">{{ offering.get_title(lang) }}</a>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ offering.status }}">
+                                    {% if offering.status == 'draft' %}
+                                        {% if lang == 'de' %}Entwurf{% elif lang == 'pl' %}Szkic{% else %}Draft{% endif %}
+                                    {% elif offering.status == 'open' %}
+                                        {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% else %}Open{% endif %}
+                                    {% elif offering.status == 'threshold_met' %}
+                                        {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}
+                                    {% elif offering.status == 'confirmed' %}
+                                        {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}
+                                    {% elif offering.status == 'completed' %}
+                                        {% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Zakończone{% else %}Completed{% endif %}
+                                    {% elif offering.status == 'cancelled' %}
+                                        {% if lang == 'de' %}Abgesagt{% elif lang == 'pl' %}Anulowane{% else %}Cancelled{% endif %}
+                                    {% else %}
+                                        {{ offering.status }}
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="progress-mini">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: {{ [offering._percent, 100]|min }}%"></div>
+                                    </div>
+                                    <span>€{{ "%.0f"|format(offering._total) }} / €{{ "%.0f"|format(offering.threshold_amount) }}</span>
+                                </div>
+                            </td>
+                            <td>{{ offering._reg_count }}{% if offering.max_participants %} / {{ offering.max_participants }}{% endif %}</td>
+                            <td>
+                                <a href="/dashboard/offering/{{ offering.id }}" class="btn btn-small">
+                                    {% if lang == 'de' %}Verwalten{% elif lang == 'pl' %}Zarządzaj{% else %}Manage{% endif %}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>
+                    {% if lang == 'de' %}
+                        Sie haben noch keine Angebote erstellt.
+                    {% elif lang == 'pl' %}
+                        Nie utworzyłeś jeszcze żadnych ofert.
+                    {% else %}
+                        You haven't created any offerings yet.
+                    {% endif %}
+                </p>
+                <a href="/dashboard/create" class="btn btn-primary">
+                    {% if lang == 'de' %}Erstes Angebot erstellen{% elif lang == 'pl' %}Utwórz pierwszą ofertę{% else %}Create Your First Offering{% endif %}
+                </a>
+            </div>
+            {% endif %}
+        </section>
+
+        {% if user.is_admin and all_offerings %}
+        <section class="dashboard-section">
+            <h2>{% if lang == 'de' %}Alle Angebote (Admin){% elif lang == 'pl' %}Wszystkie oferty (Admin){% else %}All Offerings (Admin){% endif %}</h2>
+            
+            <div class="offerings-table-wrapper">
+                <table class="offerings-table">
+                    <thead>
+                        <tr>
+                            <th>{% if lang == 'de' %}Titel{% elif lang == 'pl' %}Tytuł{% else %}Title{% endif %}</th>
+                            <th>{% if lang == 'de' %}Ersteller{% elif lang == 'pl' %}Twórca{% else %}Creator{% endif %}</th>
+                            <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                            <th>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% else %}Progress{% endif %}</th>
+                            <th>{% if lang == 'de' %}Aktionen{% elif lang == 'pl' %}Akcje{% else %}Actions{% endif %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for offering in all_offerings %}
+                        <tr class="{% if offering.status == 'draft' %}row-draft{% endif %}">
+                            <td>
+                                <a href="/offering/{{ offering.id }}">{{ offering.get_title(lang) }}</a>
+                            </td>
+                            <td>{{ offering.created_by or 'Unknown' }}</td>
+                            <td>
+                                <span class="status-badge status-{{ offering.status }}">
+                                    {% if offering.status == 'draft' %}
+                                        {% if lang == 'de' %}Entwurf{% elif lang == 'pl' %}Szkic{% else %}Draft{% endif %}
+                                    {% elif offering.status == 'open' %}
+                                        {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% else %}Open{% endif %}
+                                    {% elif offering.status == 'threshold_met' %}
+                                        {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}
+                                    {% elif offering.status == 'confirmed' %}
+                                        {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}
+                                    {% elif offering.status == 'completed' %}
+                                        {% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Zakończone{% else %}Completed{% endif %}
+                                    {% elif offering.status == 'cancelled' %}
+                                        {% if lang == 'de' %}Abgesagt{% elif lang == 'pl' %}Anulowane{% else %}Cancelled{% endif %}
+                                    {% else %}
+                                        {{ offering.status }}
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="progress-mini">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: {{ [offering._percent, 100]|min }}%"></div>
+                                    </div>
+                                    <span>{{ "%.0f"|format(offering._percent) }}%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="/dashboard/offering/{{ offering.id }}" class="btn btn-small">
+                                    {% if lang == 'de' %}Verwalten{% elif lang == 'pl' %}Zarządzaj{% else %}Manage{% endif %}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

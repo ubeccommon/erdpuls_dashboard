@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj{% else %}Login{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>{% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj się{% else %}Login{% endif %}</h1>
+                <p>
+                    {% if lang == 'de' %}
+                        Melden Sie sich an, um Ihre Angebote zu verwalten
+                    {% elif lang == 'pl' %}
+                        Zaloguj się, aby zarządzać swoimi ofertami
+                    {% else %}
+                        Sign in to manage your offerings
+                    {% endif %}
+                </p>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-error">
+                {% if error == 'invalid' %}
+                    {% if lang == 'de' %}Ungültige E-Mail oder Passwort{% elif lang == 'pl' %}Nieprawidłowy email lub hasło{% else %}Invalid email or password{% endif %}
+                {% else %}
+                    {% if lang == 'de' %}Ein Fehler ist aufgetreten{% elif lang == 'pl' %}Wystąpił błąd{% else %}An error occurred{% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <form action="/login" method="post" class="auth-form">
+                {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+                
+                <div class="form-group">
+                    <label for="email">{% if lang == 'de' %}E-Mail{% elif lang == 'pl' %}Email{% else %}Email{% endif %}</label>
+                    <input type="email" id="email" name="email" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">{% if lang == 'de' %}Passwort{% elif lang == 'pl' %}Hasło{% else %}Password{% endif %}</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj{% else %}Login{% endif %}
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>
+                    {% if lang == 'de' %}
+                        Noch kein Konto? <a href="/register">Registrieren</a>
+                    {% elif lang == 'pl' %}
+                        Nie masz konta? <a href="/register">Zarejestruj się</a>
+                    {% else %}
+                        Don't have an account? <a href="/register">Register</a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

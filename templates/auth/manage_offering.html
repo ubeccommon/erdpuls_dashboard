@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Verwalten{% elif lang == 'pl' %}Zarządzaj{% else %}Manage{% endif %}: {{ offering.get_title(lang) }}
+{% endblock %}
+
+{% block content %}
+<section class="manage-offering-page">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="/dashboard">{% if lang == 'de' %}Dashboard{% elif lang == 'pl' %}Panel{% else %}Dashboard{% endif %}</a>
+            <span>›</span>
+            <span>{{ offering.get_title(lang) }}</span>
+        </nav>
+
+        {% if request.query_params.get('updated') %}
+        <div class="alert alert-success">
+            {% if lang == 'de' %}Status aktualisiert!{% elif lang == 'pl' %}Status zaktualizowany!{% else %}Status updated!{% endif %}
+        </div>
+        {% endif %}
+
+        {% if request.query_params.get('saved') %}
+        <div class="alert alert-success">
+            {% if lang == 'de' %}Änderungen gespeichert!{% elif lang == 'pl' %}Zmiany zapisane!{% else %}Changes saved!{% endif %}
+        </div>
+        {% endif %}
+
+        {% if request.query_params.get('error') %}
+        <div class="alert alert-error">
+            {% set error = request.query_params.get('error') %}
+            {% if error == 'not_editable' %}
+                {% if lang == 'de' %}Bestätigte oder abgeschlossene Angebote können nicht bearbeitet werden.{% elif lang == 'pl' %}Potwierdzone lub zakończone oferty nie mogą być edytowane.{% else %}Confirmed or completed offerings cannot be edited.{% endif %}
+            {% elif error == 'cannot_delete' %}
+                {% if lang == 'de' %}Nur Entwürfe können gelöscht werden.{% elif lang == 'pl' %}Tylko szkice mogą być usunięte.{% else %}Only draft offerings can be deleted.{% endif %}
+            {% else %}
+                {% if lang == 'de' %}Ein Fehler ist aufgetreten.{% elif lang == 'pl' %}Wystąpił błąd.{% else %}An error occurred.{% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <header class="page-header">
+            <h1>{{ offering.get_title(lang) }}</h1>
+            <div class="header-meta">
+                <span class="status-badge status-{{ offering.status }}">
+                    {% if offering.status == 'draft' %}
+                        {% if lang == 'de' %}Entwurf{% elif lang == 'pl' %}Szkic{% else %}Draft{% endif %}
+                    {% elif offering.status == 'open' %}
+                        {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% else %}Open{% endif %}
+                    {% elif offering.status == 'threshold_met' %}
+                        {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}
+                    {% elif offering.status == 'confirmed' %}
+                        {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}
+                    {% elif offering.status == 'completed' %}
+                        {% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Zakończone{% else %}Completed{% endif %}
+                    {% elif offering.status == 'cancelled' %}
+                        {% if lang == 'de' %}Abgesagt{% elif lang == 'pl' %}Anulowane{% else %}Cancelled{% endif %}
+                    {% else %}
+                        {{ offering.status }}
+                    {% endif %}
+                </span>
+                <a href="/offering/{{ offering.id }}" class="btn btn-small" target="_blank">
+                    {% if lang == 'de' %}Öffentliche Seite{% elif lang == 'pl' %}Strona publiczna{% else %}Public Page{% endif %} ↗
+                </a>
+            </div>
+        </header>
+
+        <div class="manage-layout">
+            <div class="manage-main">
+                <!-- Progress -->
+                <div class="manage-card">
+                    <h2>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% else %}Progress{% endif %}</h2>
+                    <div class="progress-large">
+                        <div class="progress-bar">
+                            <div class="progress-fill {% if offering._threshold_reached %}threshold-reached{% endif %}" style="width: {{ [offering._percent, 100]|min }}%"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <div class="stat">
+                                <span class="stat-value">€{{ "%.2f"|format(offering._total) }}</span>
+                                <span class="stat-label">{% if lang == 'de' %}Gesammelt{% elif lang == 'pl' %}Zebrano{% else %}Collected{% endif %}</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">€{{ "%.2f"|format(offering.threshold_amount) }}</span>
+                                <span class="stat-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">{{ "%.1f"|format(offering._percent) }}%</span>
+                                <span class="stat-label">{% if lang == 'de' %}Finanziert{% elif lang == 'pl' %}Sfinansowano{% else %}Funded{% endif %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% if offering._threshold_reached %}
+                    <div class="threshold-reached-message">
+                        🎉 {% if lang == 'de' %}Schwelle erreicht!{% elif lang == 'pl' %}Próg osiągnięty!{% else %}Threshold reached!{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Registrations -->
+                <div class="manage-card">
+                    <h2>
+                        {% if lang == 'de' %}Registrierungen{% elif lang == 'pl' %}Rejestracje{% else %}Registrations{% endif %}
+                        ({{ registrations|length }}{% if offering.max_participants %} / {{ offering.max_participants }}{% endif %})
+                    </h2>
+                    
+                    {% if registrations %}
+                    <table class="registrations-table">
+                        <thead>
+                            <tr>
+                                <th>{% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię{% else %}Name{% endif %}</th>
+                                <th>{% if lang == 'de' %}E-Mail{% elif lang == 'pl' %}Email{% else %}Email{% endif %}</th>
+                                <th>{% if lang == 'de' %}Datum{% elif lang == 'pl' %}Data{% else %}Date{% endif %}</th>
+                                <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reg in registrations %}
+                            <tr>
+                                <td>{{ reg.name or '—' }}</td>
+                                <td>{{ reg.email }}</td>
+                                <td>{{ reg.registered_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ reg.status }}">{{ reg.status }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="empty-message">
+                        {% if lang == 'de' %}Noch keine Registrierungen{% elif lang == 'pl' %}Brak rejestracji{% else %}No registrations yet{% endif %}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <!-- Contributions (for organizer operational use) -->
+                <div class="manage-card">
+                    <h2>
+                        {% if lang == 'de' %}Beiträge{% elif lang == 'pl' %}Wkłady{% else %}Contributions{% endif %}
+                        ({{ contributions|length if contributions else 0 }})
+                    </h2>
+                    <p class="card-note privacy-note">
+                        🔒 {% if lang == 'de' %}Nur für organisatorische Zwecke sichtbar — öffentlich werden nur Gesamtwerte angezeigt.{% elif lang == 'pl' %}Widoczne tylko do celów organizacyjnych — publicznie wyświetlane są tylko sumy.{% else %}Visible for operational purposes only — only totals are displayed publicly.{% endif %}
+                    </p>
+                    
+                    {% if contributions %}
+                    <table class="contributions-table">
+                        <thead>
+                            <tr>
+                                <th>{% if lang == 'de' %}Typ{% elif lang == 'pl' %}Typ{% else %}Type{% endif %}</th>
+                                <th>{% if lang == 'de' %}Betrag{% elif lang == 'pl' %}Kwota{% else %}Amount{% endif %}</th>
+                                <th>{% if lang == 'de' %}Kontakt{% elif lang == 'pl' %}Kontakt{% else %}Contact{% endif %}</th>
+                                <th>{% if lang == 'de' %}Datum{% elif lang == 'pl' %}Data{% else %}Date{% endif %}</th>
+                                <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contrib in contributions %}
+                            <tr>
+                                <td>
+                                    {% if contrib.contribution_type == 'euro' %}
+                                        💶 Euro
+                                    {% elif contrib.contribution_type == 'token' %}
+                                        🪙 Token ({{ "%.0f"|format(contrib.token_amount) if contrib.token_amount else '—' }})
+                                    {% elif contrib.contribution_type == 'hours' %}
+                                        🕐 {{ contrib.hours_category.replace('_', ' ').title() if contrib.hours_category else 'Hours' }}
+                                        {% if contrib.hours_amount %}({{ contrib.hours_amount }}h){% endif %}
+                                    {% else %}
+                                        {{ contrib.contribution_type }}
+                                    {% endif %}
+                                </td>
+                                <td class="amount">€{{ "%.2f"|format(contrib.amount_eur) }}</td>
+                                <td>
+                                    {% if contrib.contact %}
+                                        <div class="contact-info">
+                                            {% if contrib.contact.name %}{{ contrib.contact.name }}{% endif %}
+                                            {% if contrib.contact.email %}
+                                                <a href="mailto:{{ contrib.contact.email }}">{{ contrib.contact.email }}</a>
+                                            {% endif %}
+                                            {% if contrib.contact.notes %}
+                                                <small class="contact-notes">{{ contrib.contact.notes }}</small>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span class="no-contact">{% if lang == 'de' %}Kein Kontakt{% elif lang == 'pl' %}Brak kontaktu{% else %}No contact{% endif %}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ contrib.contributed_at.strftime('%d.%m.%Y') }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ contrib.status or 'pending' }}">
+                                        {% if contrib.status == 'pending' %}
+                                            {% if lang == 'de' %}Ausstehend{% elif lang == 'pl' %}Oczekujący{% else %}Pending{% endif %}
+                                        {% elif contrib.status == 'confirmed' %}
+                                            {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzony{% else %}Confirmed{% endif %}
+                                        {% elif contrib.status == 'scheduled' %}
+                                            {% if lang == 'de' %}Geplant{% elif lang == 'pl' %}Zaplanowany{% else %}Scheduled{% endif %}
+                                        {% elif contrib.status == 'completed' %}
+                                            {% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Ukończony{% else %}Completed{% endif %}
+                                        {% else %}
+                                            {{ contrib.status or 'pending' }}
+                                        {% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="empty-message">
+                        {% if lang == 'de' %}Noch keine Beiträge{% elif lang == 'pl' %}Brak wkładów{% else %}No contributions yet{% endif %}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <!-- Cost Breakdown -->
+                <div class="manage-card">
+                    <h2>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% else %}Cost Breakdown{% endif %}</h2>
+                    <div class="cost-breakdown-list">
+                        {% if offering.facilitator_cost and offering.facilitator_cost > 0 %}
+                        <div class="cost-item">
+                            <span>{% if lang == 'de' %}Honorar{% elif lang == 'pl' %}Wynagrodzenie{% else %}Facilitator{% endif %}</span>
+                            <span>€{{ "%.2f"|format(offering.facilitator_cost) }}</span>
+                        </div>
+                        {% endif %}
+                        {% if offering.materials_cost and offering.materials_cost > 0 %}
+                        <div class="cost-item">
+                            <span>{% if lang == 'de' %}Materialien{% elif lang == 'pl' %}Materiały{% else %}Materials{% endif %}</span>
+                            <span>€{{ "%.2f"|format(offering.materials_cost) }}</span>
+                        </div>
+                        {% endif %}
+                        {% if offering.meals_cost and offering.meals_cost > 0 %}
+                        <div class="cost-item">
+                            <span>{% if lang == 'de' %}Mahlzeiten{% elif lang == 'pl' %}Posiłki{% else %}Meals{% endif %}</span>
+                            <span>€{{ "%.2f"|format(offering.meals_cost) }}</span>
+                        </div>
+                        {% endif %}
+                        {% if offering.space_cost and offering.space_cost > 0 %}
+                        <div class="cost-item">
+                            <span>{% if lang == 'de' %}Raum{% elif lang == 'pl' %}Przestrzeń{% else %}Space{% endif %}</span>
+                            <span>€{{ "%.2f"|format(offering.space_cost) }}</span>
+                        </div>
+                        {% endif %}
+                        {% if offering.sustainability_contribution and offering.sustainability_contribution > 0 %}
+                        <div class="cost-item">
+                            <span>{% if lang == 'de' %}Nachhaltigkeit{% elif lang == 'pl' %}Zrównoważoność{% else %}Sustainability{% endif %}</span>
+                            <span>€{{ "%.2f"|format(offering.sustainability_contribution) }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="cost-item cost-total">
+                            <span>{% if lang == 'de' %}Gesamt{% elif lang == 'pl' %}Razem{% else %}Total{% endif %}</span>
+                            <span>€{{ "%.2f"|format(offering.threshold_amount) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="manage-sidebar">
+                <!-- Dates -->
+                <div class="manage-card">
+                    <h3>{% if lang == 'de' %}Termine{% elif lang == 'pl' %}Daty{% else %}Dates{% endif %}</h3>
+                    {% if offering.event_date %}
+                    <div class="date-item">
+                        <span class="date-label">{% if lang == 'de' %}Veranstaltung{% elif lang == 'pl' %}Wydarzenie{% else %}Event{% endif %}</span>
+                        <span class="date-value">{{ offering.event_date.strftime('%d.%m.%Y %H:%M') }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="date-item">
+                        <span class="date-label">{% if lang == 'de' %}Registrierung bis{% elif lang == 'pl' %}Rejestracja do{% else %}Registration{% endif %}</span>
+                        <span class="date-value">{{ offering.registration_deadline.strftime('%d.%m.%Y %H:%M') }}</span>
+                    </div>
+                    <div class="date-item">
+                        <span class="date-label">{% if lang == 'de' %}Beiträge bis{% elif lang == 'pl' %}Wpłaty do{% else %}Contributions{% endif %}</span>
+                        <span class="date-value">{{ offering.contribution_deadline.strftime('%d.%m.%Y %H:%M') }}</span>
+                    </div>
+                </div>
+
+                {% if user.is_admin %}
+                <!-- Admin: Change Status -->
+                <div class="manage-card">
+                    <h3>{% if lang == 'de' %}Status ändern{% elif lang == 'pl' %}Zmień status{% else %}Change Status{% endif %}</h3>
+                    <form action="/dashboard/offering/{{ offering.id }}/status" method="post">
+                        <div class="form-group">
+                            <select name="status" id="status">
+                                <option value="draft" {% if offering.status == 'draft' %}selected{% endif %}>
+                                    {% if lang == 'de' %}Entwurf{% elif lang == 'pl' %}Szkic{% else %}Draft{% endif %}
+                                </option>
+                                <option value="open" {% if offering.status == 'open' %}selected{% endif %}>
+                                    {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% else %}Open{% endif %}
+                                </option>
+                                <option value="threshold_met" {% if offering.status == 'threshold_met' %}selected{% endif %}>
+                                    {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}
+                                </option>
+                                <option value="confirmed" {% if offering.status == 'confirmed' %}selected{% endif %}>
+                                    {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}
+                                </option>
+                                <option value="completed" {% if offering.status == 'completed' %}selected{% endif %}>
+                                    {% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Zakończone{% else %}Completed{% endif %}
+                                </option>
+                                <option value="cancelled" {% if offering.status == 'cancelled' %}selected{% endif %}>
+                                    {% if lang == 'de' %}Abgesagt{% elif lang == 'pl' %}Anulowane{% else %}Cancelled{% endif %}
+                                </option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            {% if lang == 'de' %}Status aktualisieren{% elif lang == 'pl' %}Aktualizuj status{% else %}Update Status{% endif %}
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+
+                <!-- Actions -->
+                <div class="manage-card">
+                    <h3>{% if lang == 'de' %}Aktionen{% elif lang == 'pl' %}Akcje{% else %}Actions{% endif %}</h3>
+                    <div class="action-buttons">
+                        {% if offering.status in ['draft', 'open', 'threshold_met'] %}
+                        <a href="/dashboard/offering/{{ offering.id }}/edit" class="btn btn-primary btn-full">
+                            {% if lang == 'de' %}Bearbeiten{% elif lang == 'pl' %}Edytuj{% else %}Edit Offering{% endif %}
+                        </a>
+                        {% else %}
+                        <div class="info-note">
+                            {% if lang == 'de' %}Bearbeitung nicht möglich ({{ offering.status }}){% elif lang == 'pl' %}Edycja niemożliwa ({{ offering.status }}){% else %}Editing disabled ({{ offering.status }}){% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <a href="/offering/{{ offering.id }}" class="btn btn-secondary btn-full" target="_blank">
+                            {% if lang == 'de' %}Öffentliche Seite{% elif lang == 'pl' %}Strona publiczna{% else %}View Public Page{% endif %}
+                        </a>
+                        
+                        {% if offering.status == 'draft' or user.is_admin %}
+                        <form action="/dashboard/offering/{{ offering.id }}/delete" method="post" 
+                              onsubmit="return confirm('{% if lang == 'de' %}Dieses Angebot wirklich löschen?{% elif lang == 'pl' %}Czy na pewno usunąć tę ofertę?{% else %}Are you sure you want to delete this offering?{% endif %}');">
+                            <button type="submit" class="btn btn-danger btn-full">
+                                {% if lang == 'de' %}Löschen{% elif lang == 'pl' %}Usuń{% else %}Delete{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}

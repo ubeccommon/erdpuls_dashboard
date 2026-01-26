@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="fund-page">
+    <div class="container">
+        <header class="page-header">
+            <h1>
+                {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}
+            </h1>
+            <p class="page-subtitle">
+                {% if lang == 'de' %}
+                    Die Gemeinschaftsreserve aus überschüssigen Beiträgen — wie Boden, der empfängt, kompostiert und Nährstoffe verfügbar macht, wo Wachstum entstehen will
+                {% elif lang == 'pl' %}
+                    Rezerwa wspólnotowa z nadwyżek wpłat — jak gleba, która przyjmuje, kompostuje i udostępnia składniki odżywcze tam, gdzie chce pojawić się wzrost
+                {% else %}
+                    The community reserve from surplus contributions — like soil that receives, composts, and makes nutrients available where growth wants to happen
+                {% endif %}
+            </p>
+        </header>
+
+        <div class="fund-balance-card">
+            <div class="balance-icon">🌱</div>
+            <div class="balance-amount">€{{ "%.2f"|format(balance) }}</div>
+            <div class="balance-label">
+                {% if lang == 'de' %}Aktueller Saldo{% elif lang == 'pl' %}Aktualny bilans{% else %}Current Balance{% endif %}
+            </div>
+        </div>
+
+        <div class="fund-explanation">
+            <h2>{% if lang == 'de' %}Wie der Fonds funktioniert{% elif lang == 'pl' %}Jak działa fundusz{% else %}How the Fund Works{% endif %}</h2>
+            <div class="explanation-grid">
+                <div class="explanation-card">
+                    <div class="card-icon">📥</div>
+                    <h3>{% if lang == 'de' %}Überschuss einfließt{% elif lang == 'pl' %}Nadwyżka wpływa{% else %}Surplus Flows In{% endif %}</h3>
+                    <p>
+                        {% if lang == 'de' %}
+                            Wenn ein Angebot mehr als seine Schwelle erhält, fließt der Überschuss in den Regenerationsfonds
+                        {% elif lang == 'pl' %}
+                            Gdy oferta otrzymuje więcej niż jej próg, nadwyżka wpływa do Funduszu Regeneracji
+                        {% else %}
+                            When an offering receives more than its threshold, the surplus flows into the Regeneration Fund
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="explanation-card">
+                    <div class="card-icon">📤</div>
+                    <h3>{% if lang == 'de' %}Fehlbeträge abdecken{% elif lang == 'pl' %}Pokrywanie niedoborów{% else %}Covers Shortfalls{% endif %}</h3>
+                    <p>
+                        {% if lang == 'de' %}
+                            Wenn ein Angebot seine Schwelle nicht erreicht, kann der Fonds die Differenz abdecken
+                        {% elif lang == 'pl' %}
+                            Gdy oferta nie osiąga progu, fundusz może pokryć różnicę
+                        {% else %}
+                            When an offering doesn't reach its threshold, the fund can cover the difference
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="explanation-card">
+                    <div class="card-icon">🌱</div>
+                    <h3>{% if lang == 'de' %}Neue Angebote anstoßen{% elif lang == 'pl' %}Zapoczątkowanie nowych ofert{% else %}Seeds New Offerings{% endif %}</h3>
+                    <p>
+                        {% if lang == 'de' %}
+                            Der Fonds kann neue Angebote anstoßen, die sonst nicht entstehen könnten
+                        {% elif lang == 'pl' %}
+                            Fundusz może zapoczątkować nowe oferty, które inaczej by nie powstały
+                        {% else %}
+                            The fund can seed new offerings that might not otherwise happen
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {% if transactions %}
+        <div class="fund-transactions">
+            <h2>{% if lang == 'de' %}Letzte Transaktionen{% elif lang == 'pl' %}Ostatnie transakcje{% else %}Recent Transactions{% endif %}</h2>
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>{% if lang == 'de' %}Datum{% elif lang == 'pl' %}Data{% else %}Date{% endif %}</th>
+                        <th>{% if lang == 'de' %}Typ{% elif lang == 'pl' %}Typ{% else %}Type{% endif %}</th>
+                        <th>{% if lang == 'de' %}Betrag{% elif lang == 'pl' %}Kwota{% else %}Amount{% endif %}</th>
+                        <th>{% if lang == 'de' %}Beschreibung{% elif lang == 'pl' %}Opis{% else %}Description{% endif %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in transactions %}
+                    <tr>
+                        <td>{{ tx.created_at.strftime('%d.%m.%Y') }}</td>
+                        <td>
+                            {% if tx.transaction_type == 'surplus_in' %}
+                                <span class="tx-type tx-in">{% if lang == 'de' %}Überschuss{% elif lang == 'pl' %}Nadwyżka{% else %}Surplus{% endif %}</span>
+                            {% elif tx.transaction_type == 'shortfall_cover' %}
+                                <span class="tx-type tx-out">{% if lang == 'de' %}Fehlbetrag{% elif lang == 'pl' %}Niedobór{% else %}Shortfall{% endif %}</span>
+                            {% elif tx.transaction_type == 'seed_offering' %}
+                                <span class="tx-type tx-out">{% if lang == 'de' %}Anstoß{% elif lang == 'pl' %}Zapoczątkowanie{% else %}Seed{% endif %}</span>
+                            {% else %}
+                                <span class="tx-type">{{ tx.transaction_type }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="{% if tx.transaction_type == 'surplus_in' %}amount-positive{% else %}amount-negative{% endif %}">
+                            {% if tx.transaction_type == 'surplus_in' %}+{% else %}-{% endif %}€{{ "%.2f"|format(tx.amount) }}
+                        </td>
+                        <td>{{ tx.description or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>
+                {% if lang == 'de' %}
+                    Noch keine Transaktionen. Der Fonds wird wachsen, wenn Angebote ihre Schwellen überschreiten.
+                {% elif lang == 'pl' %}
+                    Brak transakcji. Fundusz będzie rósł, gdy oferty przekroczą swoje progi.
+                {% else %}
+                    No transactions yet. The fund will grow as offerings exceed their thresholds.
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
