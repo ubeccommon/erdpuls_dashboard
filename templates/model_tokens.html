@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Token-Ökonomie (UBECrc){% elif lang == 'pl' %}Ekonomia Tokenów (UBECrc){% else %}Token Economy (UBECrc){% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="page-hero compact">
+    <div class="container">
+        <span class="hero-eyebrow">
+            {% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% else %}How It Works{% endif %}
+        </span>
+        <h1 class="page-title">
+            {% if lang == 'de' %}
+                Token-Ökonomie: UBECrc
+            {% elif lang == 'pl' %}
+                Ekonomia Tokenów: UBECrc
+            {% else %}
+                Token Economy: UBECrc
+            {% endif %}
+        </h1>
+        <p class="page-intro">
+            {% if lang == 'de' %}
+                UBECrc (UBEC Reciprocity Credits) schaffen einen geschlossenen Kreislauf reziproken Werts: Umweltpflege erzeugt Tokens, die Teilnahme ermöglichen. Teilnahme vertieft das Verständnis, das zu weiterer Fürsorge motiviert.
+            {% elif lang == 'pl' %}
+                UBECrc (UBEC Reciprocity Credits) tworzą zamkniętą pętlę wzajemnej wartości: opieka nad środowiskiem generuje tokeny umożliwiające uczestnictwo. Uczestnictwo pogłębia zrozumienie, które motywuje do dalszej opieki.
+            {% else %}
+                UBECrc (UBEC Reciprocity Credits) create a closed loop of reciprocal value: environmental stewardship generates tokens that enable participation. Participation deepens understanding that motivates further stewardship.
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- The Loop Diagram -->
+<section class="section">
+    <div class="container">
+        <div class="loop-diagram">
+            <div class="loop-step">
+                <span class="loop-icon">🌱</span>
+                <span class="loop-label">{% if lang == 'de' %}Umweltpflege{% elif lang == 'pl' %}Opieka nad środowiskiem{% else %}Environmental Stewardship{% endif %}</span>
+            </div>
+            <div class="loop-arrow">→</div>
+            <div class="loop-step">
+                <span class="loop-icon">🪙</span>
+                <span class="loop-label">{% if lang == 'de' %}Token verdienen{% elif lang == 'pl' %}Zdobywanie tokenów{% else %}Token Earning{% endif %}</span>
+            </div>
+            <div class="loop-arrow">→</div>
+            <div class="loop-step">
+                <span class="loop-icon">🎓</span>
+                <span class="loop-label">{% if lang == 'de' %}Gemeinschafts-Teilnahme{% elif lang == 'pl' %}Uczestnictwo w społeczności{% else %}Community Participation{% endif %}</span>
+            </div>
+            <div class="loop-arrow">→</div>
+            <div class="loop-step">
+                <span class="loop-icon">💡</span>
+                <span class="loop-label">{% if lang == 'de' %}Tieferes Lernen{% elif lang == 'pl' %}Głębsze uczenie{% else %}Deeper Learning{% endif %}</span>
+            </div>
+            <div class="loop-arrow loop-return">↩</div>
+        </div>
+        <p class="loop-caption">
+            {% if lang == 'de' %}
+                Die Wirtschaft wird wirklich ökologisch: Das Land gibt, wir beobachten und pflegen, die Beobachtung erzeugt Tokens, Tokens ermöglichen Lernen, Lernen vertieft die Beziehung, Beziehung motiviert zu mehr Fürsorge.
+            {% elif lang == 'pl' %}
+                Ekonomia staje się prawdziwie ekologiczna: ziemia daje, obserwujemy i dbamy, obserwacja generuje tokeny, tokeny umożliwiają naukę, nauka pogłębia relację, relacja motywuje do większej opieki.
+            {% else %}
+                The economy becomes truly ecological: The land gives, we observe and care, observation generates tokens, tokens enable learning, learning deepens relationship, relationship motivates more care.
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- How to Earn -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">
+                {% if lang == 'de' %}Token verdienen{% elif lang == 'pl' %}Zdobywanie tokenów{% else %}Earning Tokens{% endif %}
+            </span>
+            <h2 class="section-title">
+                {% if lang == 'de' %}Wie man UBECrc verdient{% elif lang == 'pl' %}Jak zdobywać UBECrc{% else %}How to Earn UBECrc{% endif %}
+            </h2>
+        </div>
+        <div class="earn-grid">
+            <article class="earn-card">
+                <div class="earn-icon">📡</div>
+                <h3>{% if lang == 'de' %}Sensor-Beobachtungen{% elif lang == 'pl' %}Obserwacje sensorów{% else %}Sensor Observations{% endif %}</h3>
+                <p class="earn-amount">7.14 UBECrc</p>
+                <p class="earn-frequency">
+                    {% if lang == 'de' %}Bis zu 96x täglich{% elif lang == 'pl' %}Do 96x dziennie{% else %}Up to 96x daily{% endif %}
+                </p>
+                <p class="earn-text">
+                    {% if lang == 'de' %}
+                        Jede Sensor-Beobachtung, die über das Überwachungssystem eingereicht wird, verdient Tokens.
+                    {% elif lang == 'pl' %}
+                        Każda obserwacja sensora przesłana przez system monitoringu zdobywa tokeny.
+                    {% else %}
+                        Each sensor observation submitted through the monitoring system earns tokens.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="earn-card">
+                <div class="earn-icon">👁️</div>
+                <h3>{% if lang == 'de' %}Phänomenologische Beobachtung{% elif lang == 'pl' %}Obserwacja fenomenologiczna{% else %}Phenomenological Observation{% endif %}</h3>
+                <p class="earn-amount">15–50 UBECrc</p>
+                <p class="earn-frequency">
+                    {% if lang == 'de' %}Pro Einreichung{% elif lang == 'pl' %}Za zgłoszenie{% else %}Per submission{% endif %}
+                </p>
+                <p class="earn-text">
+                    {% if lang == 'de' %}
+                        Qualitative Umweltdokumentation — was Sie sehen, hören, riechen, fühlen in der Landschaft.
+                    {% elif lang == 'pl' %}
+                        Jakościowa dokumentacja środowiskowa — co widzisz, słyszysz, wąchasz, czujesz w krajobrazie.
+                    {% else %}
+                        Qualitative environmental documentation — what you see, hear, smell, feel in the landscape.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="earn-card">
+                <div class="earn-icon">🔍</div>
+                <h3>{% if lang == 'de' %}Mustererkennung{% elif lang == 'pl' %}Rozpoznawanie wzorców{% else %}Pattern Recognition{% endif %}</h3>
+                <p class="earn-amount">50–200 UBECrc</p>
+                <p class="earn-frequency">
+                    {% if lang == 'de' %}Bonus{% elif lang == 'pl' %}Bonus{% else %}Bonus{% endif %}
+                </p>
+                <p class="earn-text">
+                    {% if lang == 'de' %}
+                        Bonus für das Erkennen bedeutsamer Umweltveränderungen oder -muster.
+                    {% elif lang == 'pl' %}
+                        Bonus za identyfikację znaczących zmian środowiskowych lub wzorców.
+                    {% else %}
+                        Bonus for identifying significant environmental changes or patterns.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="earn-card highlight">
+                <div class="earn-icon">🏠</div>
+                <h3>{% if lang == 'de' %}Sensor-Hosting{% elif lang == 'pl' %}Hosting sensorów{% else %}Sensor Hosting{% endif %}</h3>
+                <p class="earn-amount">~21,400 UBECrc</p>
+                <p class="earn-frequency">
+                    {% if lang == 'de' %}Monatlich{% elif lang == 'pl' %}Miesięcznie{% else %}Monthly{% endif %}
+                </p>
+                <p class="earn-text">
+                    {% if lang == 'de' %}
+                        Bereitstellung von Infrastruktur für Überwachungsgeräte auf Ihrem Grundstück.
+                    {% elif lang == 'pl' %}
+                        Udostępnienie infrastruktury dla sprzętu monitorującego na Twojej posesji.
+                    {% else %}
+                        Providing infrastructure for monitoring equipment on your property.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="earn-card">
+                <div class="earn-icon">🌿</div>
+                <h3>{% if lang == 'de' %}Gartenarbeit{% elif lang == 'pl' %}Praca w ogrodzie{% else %}Garden Work{% endif %}</h3>
+                <p class="earn-amount">50–75 UBECrc</p>
+                <p class="earn-frequency">
+                    {% if lang == 'de' %}Pro Stunde{% elif lang == 'pl' %}Za godzinę{% else %}Per hour{% endif %}
+                </p>
+                <p class="earn-text">
+                    {% if lang == 'de' %}
+                        Beitrag zur Pflege und Erhaltung des Lebenden Labors.
+                    {% elif lang == 'pl' %}
+                        Wkład w opiekę i utrzymanie Żywego Laboratorium.
+                    {% else %}
+                        Contributing to the care and maintenance of the Living Laboratory.
+                    {% endif %}
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- Exchange Rates -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">
+                {% if lang == 'de' %}Token-Wert{% elif lang == 'pl' %}Wartość tokenów{% else %}Token Value{% endif %}
+            </span>
+            <h2 class="section-title">
+                {% if lang == 'de' %}Umrechnungskurse{% elif lang == 'pl' %}Kursy wymiany{% else %}Exchange Rates{% endif %}
+            </h2>
+        </div>
+        <div class="content-grid">
+            <div class="content-main">
+                <div class="rate-highlight">
+                    <span class="rate-number">7 UBECrc = €0.10</span>
+                    <span class="rate-note">{% if lang == 'de' %}(70 UBECrc = €1){% elif lang == 'pl' %}(70 UBECrc = €1){% else %}(70 UBECrc = €1){% endif %}</span>
+                </div>
+                <p>
+                    {% if lang == 'de' %}
+                        Tokens werden zum gleichen Kurs umgetauscht, zu dem sie verdient werden. Das bedeutet:
+                    {% elif lang == 'pl' %}
+                        Tokeny są wymieniane po tym samym kursie, po którym są zdobywane. To oznacza:
+                    {% else %}
+                        Tokens convert at the same rate as their earning rate. This means:
+                    {% endif %}
+                </p>
+                <ul class="feature-list">
+                    <li>
+                        {% if lang == 'de' %}
+                            Ein Halbtages-Workshop (€35 voller Preis) = 2.450 UBECrc
+                        {% elif lang == 'pl' %}
+                            Warsztaty półdniowe (€35 pełna cena) = 2450 UBECrc
+                        {% else %}
+                            A half-day workshop (€35 full rate) = 2,450 UBECrc
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if lang == 'de' %}
+                            Ein Monat Sensor-Hosting (~21.400 UBECrc) deckt mehrere Workshop-Teilnahmen
+                        {% elif lang == 'pl' %}
+                            Miesiąc hostingu sensora (~21 400 UBECrc) pokrywa kilka warsztatów
+                        {% else %}
+                            One month of sensor hosting (~21,400 UBECrc) covers multiple workshop participations
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if lang == 'de' %}
+                            Regelmäßige phänomenologische Beobachter können erhebliche Teilnahme-Guthaben ansammeln
+                        {% elif lang == 'pl' %}
+                            Regularni obserwatorzy fenomenologiczni mogą zgromadzić znaczny kredyt uczestnictwa
+                        {% else %}
+                            Regular phenomenological observers can accumulate significant participation credit
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blockchain -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="content-grid">
+            <div class="content-main">
+                <h2>
+                    {% if lang == 'de' %}Warum Blockchain?{% elif lang == 'pl' %}Dlaczego blockchain?{% else %}Why Blockchain?{% endif %}
+                </h2>
+                <p>
+                    {% if lang == 'de' %}
+                        Blockchain zeichnet jede Beobachtung auf und schafft permanente, vertrauenswürdige Umweltdaten. Dies ist keine Technologie um der Technologie willen — es geht darum, dass systematische Aufmerksamkeit für Umweltbedingungen, sorgfältige Dokumentation von Beobachtungen und nachhaltige Pflege der Ökosystemgesundheit Wert schaffen, der anerkannt werden sollte.
+                    {% elif lang == 'pl' %}
+                        Blockchain rejestruje każdą obserwację, tworząc trwałe, godne zaufania dane środowiskowe. To nie jest technologia dla technologii — chodzi o uznanie, że systematyczna uwaga na warunki środowiskowe, staranna dokumentacja obserwacji i trwała opieka nad zdrowiem ekosystemu tworzą wartość, która powinna być uznana.
+                    {% else %}
+                        Blockchain records every observation, creating permanent, trustworthy environmental data. This is not technology for technology's sake — it's about recognizing that systematic attention to environmental conditions, careful documentation of observations, and sustained care for ecosystem health create value that should be recognized.
+                    {% endif %}
+                </p>
+                <p>
+                    {% if lang == 'de' %}
+                        Im konventionellen ökonomischen Denken ist jemand, der Zeit mit Vogelbeobachtung, Bodenfeuchtemessung oder Habitatpflege verbringt, nicht produktiv, es sei denn, er kann seine Beobachtungen in Geld umwandeln. Ihre Arbeit ist buchstäblich wertlos in ökonomischen Begriffen. Das Token-System behauptet, dass diese Arbeit <em>echten Wert schafft</em>.
+                    {% elif lang == 'pl' %}
+                        W konwencjonalnym myśleniu ekonomicznym ktoś spędzający czas na obserwowaniu ptaków, mierzeniu wilgotności gleby lub utrzymywaniu siedlisk nie jest produktywny, chyba że może zamienić swoje obserwacje na pieniądze. Ich praca jest dosłownie bezwartościowa w kategoriach ekonomicznych. System tokenów twierdzi, że ta praca <em>tworzy prawdziwą wartość</em>.
+                    {% else %}
+                        In conventional economic thinking, someone spending time monitoring birds, measuring soil moisture, or maintaining habitat is not productive unless they can convert their observations into money. Their work is literally worthless in economic terms. The token system asserts that this work <em>creates genuine value</em>.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta-section">
+    <div class="cta-container">
+        <h2 class="cta-title">
+            {% if lang == 'de' %}Beginnen Sie zu verdienen{% elif lang == 'pl' %}Zacznij zdobywać{% else %}Start Earning{% endif %}
+        </h2>
+        <p class="cta-text">
+            {% if lang == 'de' %}
+                Schließen Sie sich der Gemeinschaft der Bürgerwissenschaftler an und beginnen Sie, durch Umweltfürsorge Tokens zu verdienen.
+            {% elif lang == 'pl' %}
+                Dołącz do społeczności naukowców obywatelskich i zacznij zdobywać tokeny poprzez opiekę nad środowiskiem.
+            {% else %}
+                Join the community of citizen scientists and start earning tokens through environmental stewardship.
+            {% endif %}
+        </p>
+        <div class="cta-buttons">
+            <a href="/#offerings" class="btn btn-primary">
+                {% if lang == 'de' %}Angebote erkunden{% elif lang == 'pl' %}Poznaj oferty{% else %}Explore Offerings{% endif %} →
+            </a>
+            <a href="/model/pathways" class="btn btn-secondary">
+                {% if lang == 'de' %}Vier Wege{% elif lang == 'pl' %}Cztery Ścieżki{% else %}Four Pathways{% endif %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

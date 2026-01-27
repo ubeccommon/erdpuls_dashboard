@@ -154,6 +154,151 @@ def about(request: Request, db: Session = Depends(get_db)):
     )
 
 
+@router.get("/offerings", response_class=HTMLResponse)
+def offerings_page(request: Request, db: Session = Depends(get_db)):
+    """Offerings page - list all open offerings"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    
+    offerings = db.query(Offering).filter(
+        Offering.status.in_(['open', 'threshold_met'])
+    ).order_by(Offering.event_date).all()
+    
+    # Add computed properties
+    for o in offerings:
+        o._total = o.get_total_contributed(db)
+        o._reg_count = o.get_registration_count(db)
+        o._percent = round((float(o._total) / float(o.threshold_amount)) * 100, 1) if o.threshold_amount else 0
+        o._threshold_reached = float(o._total) >= float(o.threshold_amount)
+    
+    response = templates.TemplateResponse(
+        "offerings.html",
+        {
+            "request": request,
+            "offerings": offerings,
+            "lang": lang,
+            "user": user
+        }
+    )
+    response.set_cookie("lang", lang, max_age=31536000)
+    return response
+
+
+@router.get("/model", response_class=HTMLResponse)
+def model_redirect(request: Request):
+    """Redirect /model to /model/reciprocity"""
+    return RedirectResponse(url="/model/reciprocity", status_code=302)
+
+
+@router.get("/model/threshold", response_class=HTMLResponse)
+def model_threshold(request: Request, db: Session = Depends(get_db)):
+    """Collective Threshold Model page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "model_threshold.html", 
+        {
+            "request": request, 
+            "lang": lang,
+            "user": user
+        }
+    )
+
+
+@router.get("/model/pathways", response_class=HTMLResponse)
+def model_pathways(request: Request, db: Session = Depends(get_db)):
+    """Four Pathways page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "model_pathways.html", 
+        {
+            "request": request, 
+            "lang": lang,
+            "user": user
+        }
+    )
+
+
+@router.get("/model/tokens", response_class=HTMLResponse)
+def model_tokens(request: Request, db: Session = Depends(get_db)):
+    """Token Economy page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "model_tokens.html", 
+        {
+            "request": request, 
+            "lang": lang,
+            "user": user
+        }
+    )
+
+
+@router.get("/model/reciprocity", response_class=HTMLResponse)
+def model_reciprocity(request: Request, db: Session = Depends(get_db)):
+    """Reciprocal Economics philosophy page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "model_reciprocity.html", 
+        {
+            "request": request, 
+            "lang": lang,
+            "user": user
+        }
+    )
+
+
+# ============================================
+# Legal Pages
+# ============================================
+
+@router.get("/legal/imprint", response_class=HTMLResponse)
+def legal_imprint(request: Request, db: Session = Depends(get_db)):
+    """Imprint / Impressum page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "legal_imprint.html", 
+        {
+            "request": request, 
+            "lang": lang,
+            "user": user
+        }
+    )
+
+
+@router.get("/legal/privacy", response_class=HTMLResponse)
+def legal_privacy(request: Request, db: Session = Depends(get_db)):
+    """Privacy Policy / Datenschutzerklärung page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "legal_privacy.html", 
+        {
+            "request": request, 
+            "lang": lang,
+            "user": user
+        }
+    )
+
+
+@router.get("/legal/terms", response_class=HTMLResponse)
+def legal_terms(request: Request, db: Session = Depends(get_db)):
+    """Terms of Service / Nutzungsbedingungen page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "legal_terms.html", 
+        {
+            "request": request, 
+            "lang": lang,
+            "user": user
+        }
+    )
+
+
 # ============================================
 # Form Handlers
 # ============================================

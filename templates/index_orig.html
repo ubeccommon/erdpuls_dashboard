@@ -8,73 +8,33 @@
 <!-- Hero Section -->
 <section class="hero">
     <div class="hero-bg"></div>
-    
-    <!-- Opening Quote -->
-    <div class="container">
-        <blockquote class="hero-quote">
-            <p>
-                {% if lang == 'de' %}
-                    „Wir sind aufgerufen, Architekten der Zukunft zu sein, nicht ihre Opfer."
-                {% elif lang == 'pl' %}
-                    „Jesteśmy powołani, by być architektami przyszłości, nie jej ofiarami."
-                {% else %}
-                    "We are called to be architects of the future, not its victims."
-                {% endif %}
-            </p>
-            <cite>— Buckminster Fuller</cite>
-        </blockquote>
-    </div>
-    
     <div class="container hero-content">
-        <span class="hero-eyebrow">
-            {% if lang == 'de' %}Ein Lebendes Labor{% elif lang == 'pl' %}Żywe Laboratorium{% else %}A Living Laboratory{% endif %}
-        </span>
+        <span class="hero-eyebrow">Schlaube Valley · Brandenburg</span>
         <h1 class="hero-title">
-            Erdpuls Müllrose
-        </h1>
-        <p class="hero-tagline">
             {% if lang == 'de' %}
-                Wo Technologie und Natur zusammenwirken, um unser Verständnis lebender Systeme zu vertiefen
+                Die Gemeinschaft hält jedes Angebot gemeinsam <em>ins Dasein</em>
             {% elif lang == 'pl' %}
-                Gdzie technologia i natura współpracują, pogłębiając nasze rozumienie żywych systemów
+                Społeczność wspólnie <em>tworzy</em> każdą ofertę
             {% else %}
-                Where technology and nature collaborate to deepen our understanding of living systems
+                The community holds each offering <em>into being</em>
             {% endif %}
-        </p>
+        </h1>
         <p class="hero-subtitle">
             {% if lang == 'de' %}
-                Verwurzelt in Ort und Geschichte im Herzen Europas — wo einst Gletscher kristallklare Bäche durch Mischwälder schnitten, wo die Artenvielfalt noch gedeiht in einer der wertvollsten Landschaften Brandenburgs.
+                Ein Lebendes Labor, in dem Technologie und Natur zusammenwirken, um unser Verständnis lebender Systeme — und uns selbst — zu vertiefen.
             {% elif lang == 'pl' %}
-                Zakorzenieni w miejscu i historii w sercu Europy — gdzie niegdyś lodowce wyżłobiły krystaliczne strumienie przez lasy mieszane, gdzie bioróżnorodność wciąż kwitnie w jednym z najcenniejszych krajobrazów Brandenburgii.
+                Żywe Laboratorium, w którym technologia i natura współpracują, pogłębiając nasze rozumienie żywych systemów — i nas samych.
             {% else %}
-                Rooted in place and history at the heart of Europe — where ancient glaciers carved pristine streams through mixed forests, where biodiversity still thrives in one of Brandenburg's most treasured landscapes.
+                A Living Laboratory where technology and nature collaborate to deepen our understanding of living systems — and ourselves.
             {% endif %}
         </p>
-        <div class="hero-features">
-            <div class="hero-feature">
-                <span class="feature-icon">🌲</span>
-                <span class="feature-text">
-                    {% if lang == 'de' %}Geschützter Naturpark mit außergewöhnlicher Biodiversität{% elif lang == 'pl' %}Chroniony Park Przyrodniczy z wyjątkową bioróżnorodnością{% else %}Protected Nature Park with exceptional biodiversity{% endif %}
-                </span>
-            </div>
-            <div class="hero-feature">
-                <span class="feature-icon">🚂</span>
-                <span class="feature-text">
-                    {% if lang == 'de' %}60km östlich von Berlin, mit Regionalzug erreichbar{% elif lang == 'pl' %}60km na wschód od Berlina, dostępne pociągiem regionalnym{% else %}60km east of Berlin, accessible by regional train{% endif %}
-                </span>
-            </div>
-            <div class="hero-feature">
-                <span class="feature-icon">🇵🇱</span>
-                <span class="feature-text">
-                    {% if lang == 'de' %}Nahe der polnischen Grenze, fördert grenzüberschreitenden Austausch{% elif lang == 'pl' %}Blisko granicy polskiej, wspierając wymianę transgraniczną{% else %}Near Polish border, fostering cross-cultural exchange{% endif %}
-                </span>
-            </div>
-            <div class="hero-feature">
-                <span class="feature-icon">🏛️</span>
-                <span class="feature-text">
-                    {% if lang == 'de' %}Reiche Geschichte der Wassermühlen und Landschaftspflege{% elif lang == 'pl' %}Bogata historia młynów wodnych i zarządzania krajobrazem{% else %}Rich history of water mills and land stewardship{% endif %}
-                </span>
-            </div>
+        <div class="hero-cta">
+            <a href="#offerings" class="btn btn-primary">
+                {% if lang == 'de' %}Angebote erkunden →{% elif lang == 'pl' %}Poznaj oferty →{% else %}Explore Offerings →{% endif %}
+            </a>
+            <a href="/about" class="btn btn-secondary">
+                {% if lang == 'de' %}Unsere Philosophie{% elif lang == 'pl' %}Nasza filozofia{% else %}Our Philosophy{% endif %}
+            </a>
         </div>
     </div>
     <div class="hero-decoration">
@@ -197,7 +157,7 @@
                     {% if lang == 'de' %}Der Kopf{% elif lang == 'pl' %}Głowa{% else %}The Head{% endif %}
                 </span>
                 <h3 class="stream-title">
-                    {% if lang == 'de' %}Nachhaltigkeitskompetenz{% elif lang == 'pl' %}Kompetencje zrównoważonego rozwoju{% else %}Sustainability Literacy{% endif %}
+                    {% if lang == 'de' %}Nachhaltigkeitswissenschaft{% elif lang == 'pl' %}Nauka o zrównoważonym rozwoju{% else %}Sustainability Science{% endif %}
                 </h3>
                 <p class="stream-text">
                     {% if lang == 'de' %}
@@ -274,9 +234,7 @@
     <div class="container">
         <div class="offerings-header">
             <div class="section-header">
-                <span class="section-eyebrow">
-                    {% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% else %}Collective Threshold Model{% endif %}
-                </span>
+                <span class="section-eyebrow">Collective Threshold Model</span>
                 <h2 class="section-title">
                     {% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne oferty{% else %}Current Offerings{% endif %}
                 </h2>
@@ -318,13 +276,10 @@
                         </div>
                         
                         <div class="offering-footer">
-                            <a href="/offering/{{ offering.id }}" class="btn btn-primary">
-                                {% if lang == 'de' %}Teilnehmen{% elif lang == 'pl' %}Weź udział{% else %}Participate{% endif %}
-                            </a>
-                            <a href="/offering/{{ offering.id }}/contribute" class="btn btn-secondary">
+                            <a href="/offering/{{ offering.id }}/contribute" class="btn btn-primary">
                                 {% if lang == 'de' %}Beitragen{% elif lang == 'pl' %}Wspieraj{% else %}Contribute{% endif %}
                             </a>
-                            <a href="/offering/{{ offering.id }}" class="btn btn-outline">
+                            <a href="/offering/{{ offering.id }}" class="btn btn-secondary">
                                 {% if lang == 'de' %}Mehr erfahren{% elif lang == 'pl' %}Dowiedz się więcej{% else %}Learn More{% endif %}
                             </a>
                         </div>
@@ -352,6 +307,61 @@
     </div>
 </section>
 
+<!-- Location -->
+<section class="location-section" id="location">
+    <div class="location-container container">
+        <div class="location-content">
+            <span class="location-eyebrow">
+                {% if lang == 'de' %}Unser Standort{% elif lang == 'pl' %}Nasza lokalizacja{% else %}Our Home{% endif %}
+            </span>
+            <h2 class="location-title">
+                {% if lang == 'de' %}Verwurzelt im Schlaubetal{% elif lang == 'pl' %}Zakorzenieni w Dolinie Szlauby{% else %}Rooted in the Schlaube Valley{% endif %}
+            </h2>
+            <p class="location-text">
+                {% if lang == 'de' %}
+                    Wo einst Gletscher kristallklare Bäche durch Mischwälder schnitten, wo Mühlen im Rhythmus des fließenden Wassers arbeiteten, wo die Artenvielfalt noch gedeiht in einer der wertvollsten Landschaften Brandenburgs.
+                {% elif lang == 'pl' %}
+                    Gdzie niegdyś lodowce wyżłobiły krystaliczne strumienie przez lasy mieszane, gdzie młyny obracały się w rytm płynącej wody, gdzie bioróżnorodność wciąż kwitnie w jednym z najcenniejszych krajobrazów Brandenburgii.
+                {% else %}
+                    Where ancient glaciers carved pristine streams through mixed forests, where mills once turned with the rhythm of flowing water, where biodiversity still thrives in one of Brandenburg's most treasured landscapes.
+                {% endif %}
+            </p>
+            <div class="location-features">
+                <div class="location-feature">
+                    <span class="feature-icon">🌲</span>
+                    <span class="feature-text">
+                        {% if lang == 'de' %}Geschützter Naturpark mit außergewöhnlicher Biodiversität{% elif lang == 'pl' %}Chroniony Park Przyrodniczy z wyjątkową bioróżnorodnością{% else %}Protected Nature Park with exceptional biodiversity{% endif %}
+                    </span>
+                </div>
+                <div class="location-feature">
+                    <span class="feature-icon">🚂</span>
+                    <span class="feature-text">
+                        {% if lang == 'de' %}60km östlich von Berlin, mit Regionalzug erreichbar{% elif lang == 'pl' %}60km na wschód od Berlina, dostępne pociągiem regionalnym{% else %}60km east of Berlin, accessible by regional train{% endif %}
+                    </span>
+                </div>
+                <div class="location-feature">
+                    <span class="feature-icon">🇵🇱</span>
+                    <span class="feature-text">
+                        {% if lang == 'de' %}Nahe der polnischen Grenze, fördert grenzüberschreitenden Austausch{% elif lang == 'pl' %}Blisko granicy polskiej, wspierając wymianę transgraniczną{% else %}Near Polish border, fostering cross-cultural exchange{% endif %}
+                    </span>
+                </div>
+                <div class="location-feature">
+                    <span class="feature-icon">🏛️</span>
+                    <span class="feature-text">
+                        {% if lang == 'de' %}Reiche Geschichte der Wassermühlen und Landschaftspflege{% elif lang == 'pl' %}Bogata historia młynów wodnych i zarządzania krajobrazem{% else %}Rich history of water mills and land stewardship{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="location-visual">
+            <div class="map-placeholder">
+                <div class="map-icon">📍</div>
+                <p>Müllrose, Brandenburg<br><small>Naturpark Schlaubetal</small></p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CTA -->
 <section class="cta-section">
     <div class="cta-container">
@@ -368,10 +378,10 @@
             {% endif %}
         </p>
         <div class="cta-buttons">
-            <a href="/offerings" class="btn btn-primary">
+            <a href="#offerings" class="btn btn-primary">
                 {% if lang == 'de' %}Angebote erkunden →{% elif lang == 'pl' %}Poznaj oferty →{% else %}Explore Offerings →{% endif %}
             </a>
-            <a href="/model" class="btn btn-secondary">
+            <a href="/about" class="btn btn-secondary">
                 {% if lang == 'de' %}Mehr über unser Modell{% elif lang == 'pl' %}O naszym modelu{% else %}Learn About Our Model{% endif %}
             </a>
         </div>

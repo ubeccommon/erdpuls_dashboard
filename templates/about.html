@@ -1,244 +1,336 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if lang == 'de' %}Über das Modell{% elif lang == 'pl' %}O modelu{% else %}About the Model{% endif %}
+{% if lang == 'de' %}Über uns{% elif lang == 'pl' %}O nas{% else %}About{% endif %}
 {% endblock %}
 
 {% block content %}
-<section class="about-page">
+<!-- Hero Section -->
+<section class="page-hero compact">
     <div class="container">
-        <header class="page-header">
-            <h1>
-                {% if lang == 'de' %}Das Kollektive Threshold-Modell{% elif lang == 'pl' %}Model Zbiorowego Progu{% else %}The Collective Threshold Model{% endif %}
-            </h1>
-            <p class="page-subtitle">
-                {% if lang == 'de' %}
-                    Ein gemeinschaftsgetragener Ansatz für reziproke Ökonomie
-                {% elif lang == 'pl' %}
-                    Podejście wspólnotowe do ekonomii wzajemności
-                {% else %}
-                    A community-held approach to reciprocal economics
-                {% endif %}
-            </p>
-        </header>
+        <span class="hero-eyebrow">
+            {% if lang == 'de' %}Über Erdpuls Müllrose{% elif lang == 'pl' %}O Erdpuls Müllrose{% else %}About Erdpuls Müllrose{% endif %}
+        </span>
+        <h1 class="page-title">
+            {% if lang == 'de' %}
+                Ein Lebendes Labor, in dem Technologie und Natur zusammenwirken
+            {% elif lang == 'pl' %}
+                Żywe Laboratorium, gdzie technologia i natura współpracują
+            {% else %}
+                A Living Laboratory where technology and nature collaborate
+            {% endif %}
+        </h1>
+        <p class="page-intro">
+            {% if lang == 'de' %}
+                Erdpuls Müllrose ist keine Schulgarten. Es ist eine gemeinschaftliche, generationenübergreifende Initiative — ein 3.000 Quadratmeter großes Lebendes Labor und Zentrum für Nachhaltigkeitskompetenz, Bürgerwissenschaft und Reziproke Ökonomie.
+            {% elif lang == 'pl' %}
+                Erdpuls Müllrose to nie jest ogród szkolny. To wspólnotowa, międzypokoleniowa inicjatywa — 3000 metrów kwadratowych Żywego Laboratorium i Centrum Kompetencji Zrównoważonego Rozwoju, Nauki Obywatelskiej i Ekonomii Wzajemności.
+            {% else %}
+                Erdpuls Müllrose is not a school garden. It is an interdependent, intergenerational community initiative — a 3,000 square meter Living Laboratory and Center for Sustainability Literacy, Citizen Science and Reciprocal Economics.
+            {% endif %}
+        </p>
+    </div>
+</section>
 
-        <div class="about-content">
-            <section class="about-section">
-                <h2>{% if lang == 'de' %}Die Einsicht{% elif lang == 'pl' %}Wgląd{% else %}The Insight{% endif %}</h2>
-                <p>
+<!-- Vision Section -->
+<section class="section">
+    <div class="container">
+        <div class="content-grid">
+            <div class="content-main">
+                <h2>
+                    {% if lang == 'de' %}Die Vision{% elif lang == 'pl' %}Wizja{% else %}The Vision{% endif %}
+                </h2>
+                <blockquote class="pull-quote">
                     {% if lang == 'de' %}
-                        Die meisten Preismodelle — selbst progressive wie Staffelpreise — funktionieren immer noch auf individueller Transaktionsbasis. Jede Person berechnet, was sie zahlen kann oder sollte. Dies schafft subtile Hierarchien: diejenigen, die den vollen Preis zahlen, diejenigen, die „Unterstützung" erhalten, diejenigen, die „Stipendien" brauchen.
+                        „Während wir lernen, wie eine Pflanze zu denken, entdecken wir, dass Technologie und Natur keine Gegensätze sind, sondern komplementäre Ausdrücke derselben schöpferischen Kräfte, die unsere Welt formen."
                     {% elif lang == 'pl' %}
-                        Większość modeli cenowych — nawet progresywnych, takich jak skale ruchome — nadal działa na zasadzie indywidualnej transakcji. Każda osoba oblicza, ile może lub powinna zapłacić. Tworzy to subtelne hierarchie: ci, którzy płacą pełną cenę, ci, którzy otrzymują „wsparcie", ci, którzy potrzebują „stypendiów".
+                        „Ucząc się myśleć jak roślina, odkrywamy, że technologia i natura nie są przeciwieństwami, lecz komplementarnymi wyrazami tych samych twórczych sił, które kształtują nasz świat."
                     {% else %}
-                        Most pricing models — even progressive ones like sliding scales — still operate on an individual transaction basis. Each person calculates what they can or should pay. This creates subtle hierarchies: those who pay full price, those who receive "support," those who need "scholarships."
-                    {% endif %}
-                </p>
-                <p>
-                    {% if lang == 'de' %}
-                        <strong>Was wäre, wenn wir das anders angehen würden?</strong> Was wäre, wenn die Gemeinschaft <em>kollektiv</em> jedes Angebot ins Sein hielte?
-                    {% elif lang == 'pl' %}
-                        <strong>A gdyby podejść do tego inaczej?</strong> Co jeśli społeczność <em>kolektywnie</em> utrzymywałaby każdą ofertę w bycie?
-                    {% else %}
-                        <strong>What if we approached this differently?</strong> What if the community <em>collectively</em> held each offering into being?
-                    {% endif %}
-                </p>
-            </section>
-
-            <section class="about-section">
-                <h2>{% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% else %}How It Works{% endif %}</h2>
-                <div class="steps-list">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h3>{% if lang == 'de' %}Transparente Schwelle{% elif lang == 'pl' %}Przejrzysty próg{% else %}Transparent Threshold{% endif %}</h3>
-                            <p>
-                                {% if lang == 'de' %}
-                                    Jedes Angebot hat einen transparenten <strong>Bedarf</strong> — die Ressourcen, die erforderlich sind, damit es stattfinden kann
-                                {% elif lang == 'pl' %}
-                                    Każda oferta ma przejrzystą <strong>potrzebę</strong> — zasoby wymagane do jej realizacji
-                                {% else %}
-                                    Each offering has a transparent <strong>need</strong> — the resources required for it to happen
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h3>{% if lang == 'de' %}Absicht registrieren{% elif lang == 'pl' %}Rejestracja zamiaru{% else %}Register Intention{% endif %}</h3>
-                            <p>
-                                {% if lang == 'de' %}
-                                    Menschen registrieren ihre <strong>Absicht teilzunehmen</strong>
-                                {% elif lang == 'pl' %}
-                                    Ludzie rejestrują swój <strong>zamiar uczestnictwa</strong>
-                                {% else %}
-                                    People register their <strong>intention to participate</strong>
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h3>{% if lang == 'de' %}Anonym beitragen{% elif lang == 'pl' %}Anonimowy wkład{% else %}Contribute Anonymously{% endif %}</h3>
-                            <p>
-                                {% if lang == 'de' %}
-                                    Jeder trägt <strong>anonym</strong> zum kollektiven Topf bei — was sich für sie richtig anfühlt
-                                {% elif lang == 'pl' %}
-                                    Każdy wnosi <strong>anonimowo</strong> do wspólnego funduszu — to, co wydaje mu się odpowiednie
-                                {% else %}
-                                    Everyone contributes <strong>anonymously</strong> to a collective pot — whatever feels right to them
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h3>{% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}</h3>
-                            <p>
-                                {% if lang == 'de' %}
-                                    Wenn die Schwelle erreicht ist, <strong>findet das Angebot statt</strong>
-                                {% elif lang == 'pl' %}
-                                    Gdy próg zostanie osiągnięty, <strong>oferta się realizuje</strong>
-                                {% else %}
-                                    When the threshold is met, the <strong>offering takes place</strong>
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h3>{% if lang == 'de' %}Niemand weiß{% elif lang == 'pl' %}Nikt nie wie{% else %}No One Knows{% endif %}</h3>
-                            <p>
-                                {% if lang == 'de' %}
-                                    <strong>Niemand weiß, wer was beigetragen hat</strong> — nicht einmal die Organisatoren
-                                {% elif lang == 'pl' %}
-                                    <strong>Nikt nie wie, kto ile wpłacił</strong> — nawet organizatorzy
-                                {% else %}
-                                    <strong>No one knows who contributed what</strong> — not even organizers
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="about-section">
-                <h2>{% if lang == 'de' %}Philosophische Grundlage{% elif lang == 'pl' %}Podstawy filozoficzne{% else %}Philosophical Foundation{% endif %}</h2>
-                
-                <div class="philosophy-cards">
-                    <div class="philosophy-card">
-                        <h3>Ubuntu</h3>
-                        <blockquote>
-                            {% if lang == 'de' %}„Ich bin, weil wir sind."{% elif lang == 'pl' %}„Jestem, ponieważ jesteśmy."{% else %}"I am because we are."{% endif %}
-                        </blockquote>
-                        <p>
-                            {% if lang == 'de' %}
-                                Die afrikanische Philosophie Ubuntu lehrt, dass individuelle Identität aus der Gemeinschaftsbeziehung entsteht. Das Kollektive Threshold-Modell verkörpert dieses Prinzip ökonomisch: <em>das Angebot existiert, weil wir es gemeinsam ermöglichen.</em>
-                            {% elif lang == 'pl' %}
-                                Afrykańska filozofia Ubuntu uczy, że tożsamość jednostki wyłania się z relacji wspólnotowych. Model Zbiorowego Progu ucieleśnia tę zasadę ekonomicznie: <em>oferta istnieje, ponieważ wspólnie ją umożliwiamy.</em>
-                            {% else %}
-                                The African philosophy of Ubuntu teaches that individual identity emerges from community relationship. The Collective Threshold Model embodies this principle economically: <em>the offering exists because we collectively make it so.</em>
-                            {% endif %}
-                        </p>
-                    </div>
-
-                    <div class="philosophy-card">
-                        <h3>{% if lang == 'de' %}Pflanzenweisheit{% elif lang == 'pl' %}Mądrość roślin{% else %}Plant Wisdom{% endif %}</h3>
-                        <p>
-                            {% if lang == 'de' %}
-                                In einem Wald fließen Nährstoffe durch Mykorrhiza-Netzwerke von Bäumen mit Überfluss zu Bäumen mit Bedarf. Kein Baum wird stigmatisiert, weil er empfängt. Kein Baum wird gelobt, weil er gibt. Der Wald <em>ist</em> dieses Fließen.
-                            {% elif lang == 'pl' %}
-                                W lesie składniki odżywcze przepływają przez sieci mikoryzowe od drzew z obfitością do drzew w potrzebie. Żadne drzewo nie jest piętnowane za przyjmowanie. Żadne drzewo nie jest chwalone za dawanie. Las <em>jest</em> tym przepływem.
-                            {% else %}
-                                In a forest, nutrients flow through mycorrhizal networks from trees with abundance to trees with need. No tree is stigmatized for receiving. No tree is praised for giving. The forest <em>is</em> this flowing.
-                            {% endif %}
-                        </p>
-                    </div>
-
-                    <div class="philosophy-card">
-                        <h3>{% if lang == 'de' %}Vertrauen als Grundlage{% elif lang == 'pl' %}Zaufanie jako fundament{% else %}Trust as Foundation{% endif %}</h3>
-                        <p>
-                            {% if lang == 'de' %}
-                                Dieses Modell erfordert — und kultiviert — Vertrauen. Wir vertrauen darauf, dass Menschen entsprechend ihrer echten Kapazität und ihrem Gewissen beitragen. Wir vertrauen darauf, dass Überfluss von denen fließt, die ihn haben. Wir vertrauen darauf, dass die Gemeinschaft das Angebot trägt.
-                            {% elif lang == 'pl' %}
-                                Ten model wymaga — i kultywuje — zaufanie. Ufamy, że ludzie wniosą wkład zgodnie ze swoimi prawdziwymi możliwościami i sumieniem. Ufamy, że obfitość popłynie od tych, którzy ją mają. Ufamy, że społeczność utrzyma ofertę.
-                            {% else %}
-                                This model requires — and cultivates — trust. We trust that people will contribute according to their genuine capacity and conscience. We trust that abundance will flow from those who have it. We trust that the community will hold the offering.
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="about-section">
-                <h2>{% if lang == 'de' %}Drei Beitragswege{% elif lang == 'pl' %}Trzy sposoby wpłat{% else %}Three Ways to Contribute{% endif %}</h2>
-                <div class="contribution-types">
-                    <div class="contribution-type">
-                        <div class="type-icon">💶</div>
-                        <h3>Euro</h3>
-                        <p>
-                            {% if lang == 'de' %}
-                                Direkter finanzieller Beitrag in beliebiger Höhe
-                            {% elif lang == 'pl' %}
-                                Bezpośredni wkład finansowy w dowolnej kwocie
-                            {% else %}
-                                Direct financial contribution of any amount
-                            {% endif %}
-                        </p>
-                    </div>
-                    <div class="contribution-type">
-                        <div class="type-icon">🪙</div>
-                        <h3>UBECrc Tokens</h3>
-                        <p>
-                            {% if lang == 'de' %}
-                                Token, die durch Umweltüberwachung und Bürgerwissenschaft verdient wurden
-                            {% elif lang == 'pl' %}
-                                Tokeny zdobyte przez monitoring środowiskowy i naukę obywatelską
-                            {% else %}
-                                Tokens earned through environmental monitoring and citizen science
-                            {% endif %}
-                        </p>
-                    </div>
-                    <div class="contribution-type">
-                        <div class="type-icon">⏱️</div>
-                        <h3>{% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% else %}Hours{% endif %}</h3>
-                        <p>
-                            {% if lang == 'de' %}
-                                Arbeitsstunden in verschiedenen Kategorien (Garten, Technik, Wissen, etc.)
-                            {% elif lang == 'pl' %}
-                                Godziny pracy w różnych kategoriach (ogród, technika, wiedza, itp.)
-                            {% else %}
-                                Work hours in various categories (garden, technical, knowledge, etc.)
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="about-section quote-section">
-                <blockquote class="featured-quote">
-                    {% if lang == 'de' %}
-                        „Wir kultivieren die Bedingungen, damit Menschen wie eine Pflanze denken lernen."
-                    {% elif lang == 'pl' %}
-                        „Kultywujemy warunki, by ludzie uczyli się myśleć jak roślina."
-                    {% else %}
-                        "We cultivate the conditions for people to think like a plant."
+                        "As we learn to think like a plant, we discover that technology and nature are not opposites but complementary expressions of the same creative forces that shape our world."
                     {% endif %}
                 </blockquote>
-                <p class="quote-context">
+                <p>
                     {% if lang == 'de' %}
-                        Dieses Wirtschaftsmodell kultiviert diese Bedingungen. Es ermöglicht nicht nur den Zugang zu unseren Programmen — es <em>praktiziert</em> die Prinzipien, die diese Programme lehren.
+                        Wir leben in einer Zeit tiefgreifender Entfremdung und ebenso tiefgreifender Notwendigkeit zur Wiederverbindung. Kinder verbringen weniger Zeit im Freien als jede vorherige Generation der Menschheitsgeschichte, gerade wenn ökologische Herausforderungen ein tieferes Verständnis erfordern. Erwachsene haben die Rhythmen des jahreszeitlichen Bewusstseins verloren. Technologie vermittelt zunehmend unsere Erfahrung der Realität, obwohl wir unvermittelte sinnliche Verbindung zur lebenden Welt brauchen.
                     {% elif lang == 'pl' %}
-                        Ten model ekonomiczny kultywuje te warunki. Nie tylko umożliwia dostęp do naszych programów — <em>praktykuje</em> zasady, których te programy uczą.
+                        Żyjemy w czasach głębokiego odłączenia i równie głębokiej potrzeby ponownego połączenia. Dzieci spędzają mniej czasu na zewnątrz niż jakakolwiek poprzednia generacja w historii ludzkości, właśnie gdy wyzwania ekologiczne wymagają głębszego zrozumienia. Dorośli utracili rytmy sezonowej świadomości. Technologia coraz bardziej pośredniczy w naszym doświadczaniu rzeczywistości, choć potrzebujemy bezpośredniego zmysłowego połączenia z żywym światem.
                     {% else %}
-                        This economic model cultivates those conditions. It does not merely enable access to our programs — it <em>enacts</em> the very principles those programs teach.
+                        We live in a time of profound disconnection and equally profound need for reconnection. Children spend less time outdoors than any previous generation in human history, even as environmental challenges demand deeper ecological understanding. Adults have lost the rhythms of seasonal awareness. Technology increasingly mediates our experience of reality, even as we need unmediated sensory connection to the living world.
                     {% endif %}
                 </p>
-            </section>
+                <p>
+                    {% if lang == 'de' %}
+                        Erdpuls Müllrose ist eine lebendige Antwort auf eine entscheidende Frage unserer Zeit: Wie können wir die mächtigen Werkzeuge moderner Technologie nutzen, um unsere Verbindung zur natürlichen Welt zu vertiefen statt zu vermindern? Wie können wir Wirtschaftssysteme schaffen, die ökologische Fürsorge als wirklich wertvoll anerkennen?
+                    {% elif lang == 'pl' %}
+                        Erdpuls Müllrose jest żywą odpowiedzią na kluczowe pytanie naszych czasów: Jak możemy wykorzystać potężne narzędzia nowoczesnej technologii, aby pogłębić, a nie zmniejszyć naszą więź ze światem przyrody? Jak możemy tworzyć systemy ekonomiczne, które uznają opiekę nad środowiskiem za naprawdę wartościową?
+                    {% else %}
+                        Erdpuls Müllrose represents a living answer to a critical question facing humanity: How can we use the powerful tools of modern technology to deepen rather than diminish our connection with the natural world? How can we create economic systems that recognize environmental stewardship as genuinely valuable?
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- What We Are Section -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">
+                {% if lang == 'de' %}Was wir sind{% elif lang == 'pl' %}Czym jesteśmy{% else %}What We Are{% endif %}
+            </span>
+            <h2 class="section-title">
+                {% if lang == 'de' %}Ein Ort vieler Funktionen{% elif lang == 'pl' %}Miejsce wielu funkcji{% else %}A Place of Many Functions{% endif %}
+            </h2>
+        </div>
+        <div class="features-grid">
+            <article class="feature-card">
+                <div class="feature-icon">🔬</div>
+                <h3>{% if lang == 'de' %}Lebendes Labor{% elif lang == 'pl' %}Żywe Laboratorium{% else %}Living Lab{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Echte Umweltforschung durch generationenübergreifende Zusammenarbeit, die traditionelles ökologisches Wissen mit modernster Überwachungstechnologie verbindet.
+                    {% elif lang == 'pl' %}
+                        Prawdziwe badania środowiskowe poprzez międzypokoleniową współpracę, łączącą tradycyjną wiedzę ekologiczną z najnowocześniejszą technologią monitoringu.
+                    {% else %}
+                        Real-world environmental research through intergenerational collaboration, combining traditional ecological knowledge with cutting-edge monitoring technology.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>{% if lang == 'de' %}Nachhaltigkeitskompetenz-HUB{% elif lang == 'pl' %}Centrum Kompetencji Zrównoważonego Rozwoju{% else %}Sustainability Literacy HUB{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Gemeinschaftsmitglieder aller Altersgruppen entwickeln Wissen und Fähigkeiten, um Umweltveränderungen durch direkte Beobachtung und technologisches Monitoring zu verstehen.
+                    {% elif lang == 'pl' %}
+                        Członkowie społeczności w każdym wieku rozwijają wiedzę i umiejętności rozumienia zmian środowiskowych poprzez bezpośrednią obserwację i monitoring technologiczny.
+                    {% else %}
+                        Community members of all ages develop knowledge and skills to understand environmental change through direct observation and technological monitoring.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">🔭</div>
+                <h3>{% if lang == 'de' %}Bürgerwissenschafts-HUB{% elif lang == 'pl' %}Centrum Nauki Obywatelskiej{% else %}Citizen Science HUB{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Großeltern, Eltern, Schüler und Nachbarn arbeiten als echte Forschungspartner zusammen und tragen zum globalen Umweltverständnis bei, während sie die Verbindung zum lokalen Ort vertiefen.
+                    {% elif lang == 'pl' %}
+                        Dziadkowie, rodzice, uczniowie i sąsiedzi współpracują jako prawdziwi partnerzy badawczy, przyczyniając się do globalnego zrozumienia środowiska przy jednoczesnym pogłębianiu więzi z lokalnym miejscem.
+                    {% else %}
+                        Grandparents, parents, students, and neighbors collaborate as genuine research partners, contributing to global environmental understanding while deepening connection to local place.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">🤝</div>
+                <h3>{% if lang == 'de' %}Reziproke Ökonomie-HUB{% elif lang == 'pl' %}Centrum Ekonomii Wzajemności{% else %}Reciprocal Economics HUB{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Ein Wirtschaftsmodell, das erkennt, dass Wert in vielen Richtungen fließt — basierend auf Ubuntu: „Ich bin, weil wir sind."
+                    {% elif lang == 'pl' %}
+                        Model ekonomiczny, który uznaje, że wartość płynie w wielu kierunkach — czerpiący z filozofii Ubuntu: „Jestem, ponieważ jesteśmy."
+                    {% else %}
+                        An economic model that recognizes value flows in multiple directions — drawing from Ubuntu: "I am because we are."
+                    {% endif %}
+                </p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">🌳</div>
+                <h3>{% if lang == 'de' %}Generationenübergreifende Lerngemeinschaft{% elif lang == 'pl' %}Międzypokoleniowa Społeczność Ucząca się{% else %}Intergenerational Learning Community{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Weisheit fließt in mehrere Richtungen — Ältere teilen traditionelles ökologisches Wissen, Jugendliche bringen digitale Kompetenz, Erwachsene steuern berufliche Expertise bei.
+                    {% elif lang == 'pl' %}
+                        Mądrość przepływa w wielu kierunkach — starsi dzielą się tradycyjną wiedzą ekologiczną, młodzi wnoszą biegłość cyfrową, dorośli dodają ekspertyzę zawodową.
+                    {% else %}
+                        Wisdom flows in multiple directions — elders share traditional ecological knowledge, students bring digital fluency, adults contribute professional expertise.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="feature-card">
+                <div class="feature-icon">🏡</div>
+                <h3>{% if lang == 'de' %}Gemeinschaftsallmende{% elif lang == 'pl' %}Wspólnota Lokalna{% else %}Community Commons{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Offener Raum für Begegnung, Lernen, Feiern und die langsame Arbeit des Aufbaus echter Beziehungen zu Ort und zueinander.
+                    {% elif lang == 'pl' %}
+                        Otwarta przestrzeń do spotkań, nauki, świętowania i powolnej pracy nad budowaniem prawdziwych relacji z miejscem i między sobą.
+                    {% else %}
+                        Open space for gathering, learning, celebration, and the slow work of building genuine relationship with place and with each other.
+                    {% endif %}
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- What We've Achieved Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">
+                {% if lang == 'de' %}Unsere Errungenschaften{% elif lang == 'pl' %}Nasze osiągnięcia{% else %}What We've Achieved{% endif %}
+            </span>
+            <h2 class="section-title">
+                {% if lang == 'de' %}Pionierarbeit an der Schnittstelle{% elif lang == 'pl' %}Pionierska praca na styku{% else %}Pioneering Work at the Intersection{% endif %}
+            </h2>
+        </div>
+        <div class="achievements-list">
+            <div class="achievement-item">
+                <span class="achievement-icon">🌍</span>
+                <p>
+                    {% if lang == 'de' %}
+                        Die weltweit ersten Bildungsangebote mit Blockchain-Umweltmonitoring
+                    {% elif lang == 'pl' %}
+                        Pierwsza na świecie oferta edukacyjna z monitoringiem środowiska opartym na blockchain
+                    {% else %}
+                        The world's first educational offerings with blockchain environmental monitoring
+                    {% endif %}
+                </p>
+            </div>
+            <div class="achievement-item">
+                <span class="achievement-icon">🌍</span>
+                <p>
+                    {% if lang == 'de' %}
+                        Die erste pädagogische reziproke Token-Ökonomie für Bürgerwissenschaft
+                    {% elif lang == 'pl' %}
+                        Pierwsza pedagogiczna wzajemna ekonomia tokenowa dla nauki obywatelskiej
+                    {% else %}
+                        The first pedagogical reciprocal token economy for citizen science
+                    {% endif %}
+                </p>
+            </div>
+            <div class="achievement-item">
+                <span class="achievement-icon">🌍</span>
+                <p>
+                    {% if lang == 'de' %}
+                        Das erste phänomenologische Beobachtungssystem mit IoT-Unterstützung
+                    {% elif lang == 'pl' %}
+                        Pierwszy fenomenologiczny system obserwacji z wsparciem IoT
+                    {% else %}
+                        The first phenomenological observation system with IoT support
+                    {% endif %}
+                </p>
+            </div>
+            <div class="achievement-item">
+                <span class="achievement-icon">🌍</span>
+                <p>
+                    {% if lang == 'de' %}
+                        Die erste Symbiose von anthroposophischer Pädagogik mit Web3-Technologie
+                    {% elif lang == 'pl' %}
+                        Pierwsza symbioza pedagogiki antropozoficznej z technologią Web3
+                    {% else %}
+                        The first symbiosis of anthroposophical pedagogy with Web3 technology
+                    {% endif %}
+                </p>
+            </div>
+            <div class="achievement-item highlight">
+                <span class="achievement-icon">✅</span>
+                <p>
+                    {% if lang == 'de' %}
+                        99,2% Verfügbarkeit. 2.880 tägliche Beobachtungen. Ein System, das funktioniert.
+                    {% elif lang == 'pl' %}
+                        99,2% dostępności. 2880 codziennych obserwacji. System, który działa.
+                    {% else %}
+                        99.2% uptime. 2,880 daily observations. A system that works.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- The Call Section -->
+<section class="section cta-section">
+    <div class="cta-container">
+        <blockquote class="cta-quote">
+            {% if lang == 'de' %}
+                „Man verändert Dinge nie, indem man die bestehende Realität bekämpft. Um etwas zu verändern, baue ein neues Modell, das das bestehende Modell obsolet macht."
+            {% elif lang == 'pl' %}
+                „Nigdy niczego nie zmienisz, walcząc z istniejącą rzeczywistością. Aby coś zmienić, zbuduj nowy model, który sprawi, że istniejący model stanie się przestarzały."
+            {% else %}
+                "You never change things by fighting the existing reality. To change something, build a new model that makes the existing model obsolete."
+            {% endif %}
+            <cite>— Buckminster Fuller</cite>
+        </blockquote>
+        <p class="cta-text">
+            {% if lang == 'de' %}
+                Wir bekämpfen nicht die alte Welt. Wir lassen die neue wachsen. Und wir laden Sie ein, mit uns zu wachsen.
+            {% elif lang == 'pl' %}
+                Nie walczymy ze starym światem. Uprawiamy nowy. I zapraszamy Cię do wspólnego wzrastania.
+            {% else %}
+                We are not fighting the old world. We are growing the new one. And we invite you to grow with us.
+            {% endif %}
+        </p>
+        <div class="cta-roles">
+            <p>
+                {% if lang == 'de' %}
+                    <strong>Wenn Sie Lehrer sind,</strong> der seine Schüler in lebendige Beziehung zur Erde bringen möchte — schließen Sie sich uns an.
+                {% elif lang == 'pl' %}
+                    <strong>Jeśli jesteś nauczycielem,</strong> który pragnie wprowadzić swoich uczniów w żywą relację z ziemią — dołącz do nas.
+                {% else %}
+                    <strong>If you are a teacher</strong> seeking to bring your students into living relationship with the earth — join us.
+                {% endif %}
+            </p>
+            <p>
+                {% if lang == 'de' %}
+                    <strong>Wenn Sie eine Schule sind,</strong> die bereit ist, ein neues Modell der Umweltbildung zu pionieren — werden Sie unser Partner.
+                {% elif lang == 'pl' %}
+                    <strong>Jeśli jesteś szkołą,</strong> gotową pionierować nowy model edukacji środowiskowej — zostań naszym partnerem.
+                {% else %}
+                    <strong>If you are a school</strong> ready to pioneer a new model of environmental education — partner with us.
+                {% endif %}
+            </p>
+            <p>
+                {% if lang == 'de' %}
+                    <strong>Wenn Sie Förderer sind,</strong> der glaubt, dass die Zukunft gewachsen wird, nicht gebaut — unterstützen Sie uns.
+                {% elif lang == 'pl' %}
+                    <strong>Jeśli jesteś fundatorem,</strong> który wierzy, że przyszłość jest uprawiana, nie budowana — wesprzyj nas.
+                {% else %}
+                    <strong>If you are a funder</strong> who believes that the future is grown, not built — support us.
+                {% endif %}
+            </p>
+            <p>
+                {% if lang == 'de' %}
+                    <strong>Wenn Sie Bürger sind,</strong> der weiß, dass die Erde lebendig ist und zuhört — stehen Sie zu uns.
+                {% elif lang == 'pl' %}
+                    <strong>Jeśli jesteś obywatelem,</strong> który wie, że ziemia jest żywa i nasłuchuje — stań przy nas.
+                {% else %}
+                    <strong>If you are a citizen</strong> who knows that the earth is alive and listening — stand with us.
+                {% endif %}
+            </p>
+        </div>
+        <div class="cta-closing">
+            <p class="cta-pulse">
+                {% if lang == 'de' %}Die Erde pulsiert.{% elif lang == 'pl' %}Ziemia pulsuje.{% else %}The earth is pulsing.{% endif %}
+            </p>
+            <p>
+                {% if lang == 'de' %}Spüren Sie es?{% elif lang == 'pl' %}Czy to czujesz?{% else %}Can you feel it?{% endif %}
+            </p>
+            <p>
+                {% if lang == 'de' %}Werden Sie Teil des Rhythmus?{% elif lang == 'pl' %}Czy dołączysz do rytmu?{% else %}Will you join the rhythm?{% endif %}
+            </p>
+        </div>
+        <p class="cta-tagline">
+            🌱 
+            {% if lang == 'de' %}
+                Gemeinsam Wachsen, Gemeinsam Lernen, Gemeinsam Regenerieren
+            {% elif lang == 'pl' %}
+                Rosnąc Razem, Ucząc się Razem, Regenerując Razem
+            {% else %}
+                Growing Together, Learning Together, Regenerating Together
+            {% endif %}
+            🌍
+        </p>
+        <div class="cta-buttons">
+            <a href="/#offerings" class="btn btn-primary">
+                {% if lang == 'de' %}Angebote erkunden{% elif lang == 'pl' %}Poznaj oferty{% else %}Explore Offerings{% endif %} →
+            </a>
+            <a href="/model" class="btn btn-secondary">
+                {% if lang == 'de' %}Unser Modell{% elif lang == 'pl' %}Nasz Model{% else %}Our Model{% endif %}
+            </a>
         </div>
     </div>
 </section>

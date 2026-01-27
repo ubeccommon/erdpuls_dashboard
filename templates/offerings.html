@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="page-hero compact">
+    <div class="container">
+        <span class="hero-eyebrow">
+            {% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% else %}Collective Threshold Model{% endif %}
+        </span>
+        <h1 class="page-title">
+            {% if lang == 'de' %}
+                Angebote
+            {% elif lang == 'pl' %}
+                Oferty
+            {% else %}
+                Offerings
+            {% endif %}
+        </h1>
+        <p class="page-intro">
+            {% if lang == 'de' %}
+                Jedes Angebot wird von der Gemeinschaft gemeinsam ins Sein gehalten. Erkunden Sie aktuelle Möglichkeiten und tragen Sie bei, was sich für Ihre Situation richtig anfühlt.
+            {% elif lang == 'pl' %}
+                Każda oferta jest wspólnie utrzymywana przez społeczność. Odkryj aktualne możliwości i wpłać tyle, ile czujesz, że jest odpowiednie dla Twojej sytuacji.
+            {% else %}
+                Each offering is held into being by the community together. Explore current opportunities and contribute what feels right for your situation.
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- How It Works Brief -->
+<section class="section section-compact">
+    <div class="container">
+        <div class="how-it-works-brief">
+            <div class="brief-step">
+                <span class="brief-number">1</span>
+                <span class="brief-text">
+                    {% if lang == 'de' %}Transparenter Bedarf{% elif lang == 'pl' %}Transparentna potrzeba{% else %}Transparent Need{% endif %}
+                </span>
+            </div>
+            <span class="brief-arrow">→</span>
+            <div class="brief-step">
+                <span class="brief-number">2</span>
+                <span class="brief-text">
+                    {% if lang == 'de' %}Absicht registrieren{% elif lang == 'pl' %}Rejestracja zamiaru{% else %}Register Intention{% endif %}
+                </span>
+            </div>
+            <span class="brief-arrow">→</span>
+            <div class="brief-step">
+                <span class="brief-number">3</span>
+                <span class="brief-text">
+                    {% if lang == 'de' %}Anonymer Beitrag{% elif lang == 'pl' %}Anonimowa wpłata{% else %}Anonymous Contribution{% endif %}
+                </span>
+            </div>
+            <span class="brief-arrow">→</span>
+            <div class="brief-step">
+                <span class="brief-number">4</span>
+                <span class="brief-text">
+                    {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}
+                </span>
+            </div>
+        </div>
+        <p class="how-it-works-link">
+            <a href="/model/threshold">
+                {% if lang == 'de' %}Erfahren Sie mehr über das Kollektive Schwellenmodell{% elif lang == 'pl' %}Dowiedz się więcej o Modelu Progu Zbiorowego{% else %}Learn more about the Collective Threshold Model{% endif %} →
+            </a>
+        </p>
+    </div>
+</section>
+
+<!-- Current Offerings -->
+<section class="section offerings-page-section">
+    <div class="container">
+        <div class="offerings-page-header">
+            <h2>
+                {% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne oferty{% else %}Current Offerings{% endif %}
+            </h2>
+            <a href="/fund" class="btn btn-secondary">
+                {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %} →
+            </a>
+        </div>
+        
+        <div class="offerings-grid offerings-page-grid">
+            {% if offerings %}
+                {% for offering in offerings %}
+                <article class="offering-card offering-card-full">
+                    <div class="offering-visual">
+                        <span class="offering-visual-icon">🌱</span>
+                    </div>
+                    <div class="offering-content">
+                        <div class="offering-header">
+                            <span class="offering-badge {% if offering.status == 'threshold_met' %}badge-success{% endif %}">
+                                {% if offering.status == 'open' %}
+                                    {% if lang == 'de' %}Offen für Beiträge{% elif lang == 'pl' %}Otwarte na wpłaty{% else %}Open for Contributions{% endif %}
+                                {% elif offering.status == 'threshold_met' %}
+                                    {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}
+                                {% else %}
+                                    {{ offering.status|capitalize }}
+                                {% endif %}
+                            </span>
+                            {% if offering.event_date %}
+                            <span class="offering-date">
+                                📅 {{ offering.event_date.strftime('%d.%m.%Y') }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <h3 class="offering-title">{{ offering.get_title(lang) }}</h3>
+                        <p class="offering-desc">{{ offering.get_description(lang)|truncate(250) }}</p>
+                        
+                        <div class="offering-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill {% if offering._threshold_reached %}threshold-reached{% endif %}" 
+                                     style="width: {{ [offering._percent, 100]|min }}%"></div>
+                            </div>
+                            <div class="progress-stats">
+                                <span><strong>€{{ "%.0f"|format(offering._total) }}</strong> {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} €{{ "%.0f"|format(offering.threshold_amount) }}</span>
+                                <span><strong>{{ "%.0f"|format(offering._percent) }}%</strong> {% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% else %}funded{% endif %}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="offering-meta">
+                            <span class="meta-item">
+                                👥 {{ offering._reg_count }} {% if lang == 'de' %}Interessenten{% elif lang == 'pl' %}zainteresowanych{% else %}interested{% endif %}
+                            </span>
+                            {% if offering.contribution_deadline %}
+                            <span class="meta-item">
+                                ⏰ {% if lang == 'de' %}Beitragsfrist{% elif lang == 'pl' %}Termin wpłat{% else %}Contribution deadline{% endif %}: {{ offering.contribution_deadline.strftime('%d.%m.%Y') }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="offering-footer">
+                            <a href="/offering/{{ offering.id }}" class="btn btn-primary">
+                                {% if lang == 'de' %}Teilnehmen{% elif lang == 'pl' %}Weź udział{% else %}Participate{% endif %}
+                            </a>
+                            <a href="/offering/{{ offering.id }}/contribute" class="btn btn-secondary">
+                                {% if lang == 'de' %}Beitragen{% elif lang == 'pl' %}Wspieraj{% else %}Contribute{% endif %}
+                            </a>
+                            <a href="/offering/{{ offering.id }}" class="btn btn-outline">
+                                {% if lang == 'de' %}Mehr erfahren{% elif lang == 'pl' %}Dowiedz się więcej{% else %}Learn More{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+                <div class="no-offerings">
+                    <div class="no-offerings-icon">🌱</div>
+                    <h3>
+                        {% if lang == 'de' %}Demnächst{% elif lang == 'pl' %}Wkrótce{% else %}Coming Soon{% endif %}
+                    </h3>
+                    <p>
+                        {% if lang == 'de' %}
+                            Neue Angebote werden vorbereitet. Schauen Sie bald wieder vorbei!
+                        {% elif lang == 'pl' %}
+                            Nowe oferty są przygotowywane. Wróć wkrótce!
+                        {% else %}
+                            New offerings are being prepared. Check back soon!
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Contribution Methods -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header centered">
+            <span class="section-eyebrow">
+                {% if lang == 'de' %}Drei Wege{% elif lang == 'pl' %}Trzy sposoby{% else %}Three Ways{% endif %}
+            </span>
+            <h2 class="section-title">
+                {% if lang == 'de' %}Wie Sie beitragen können{% elif lang == 'pl' %}Jak możesz wesprzeć{% else %}How You Can Contribute{% endif %}
+            </h2>
+        </div>
+        <div class="contribution-methods">
+            <div class="method-card">
+                <span class="method-icon">💶</span>
+                <h3>Euro</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Geben Sie, was sich für Ihre Umstände richtig anfühlt. Jeder Betrag zählt.
+                    {% elif lang == 'pl' %}
+                        Wpłać tyle, ile czujesz, że jest odpowiednie dla Twojej sytuacji. Każda kwota się liczy.
+                    {% else %}
+                        Give what feels right for your circumstances. Every amount counts.
+                    {% endif %}
+                </p>
+            </div>
+            <div class="method-card">
+                <span class="method-icon">🪙</span>
+                <h3>UBECrc Tokens</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Verdient durch Umweltüberwachung und Bürgerwissenschaft. 70 Tokens = €1.
+                    {% elif lang == 'pl' %}
+                        Zdobyte poprzez monitoring środowiska i naukę obywatelską. 70 tokenów = €1.
+                    {% else %}
+                        Earned through environmental monitoring and citizen science. 70 tokens = €1.
+                    {% endif %}
+                </p>
+            </div>
+            <div class="method-card">
+                <span class="method-icon">⏰</span>
+                <h3>{% if lang == 'de' %}Beitragsstunden{% elif lang == 'pl' %}Godziny wkładu{% else %}Contribution Hours{% endif %}</h3>
+                <p>
+                    {% if lang == 'de' %}
+                        Tauschen Sie Zeit und Fähigkeiten gegen Teilnahme. Vorab vereinbart.
+                    {% elif lang == 'pl' %}
+                        Wymień czas i umiejętności na uczestnictwo. Wcześniej uzgodnione.
+                    {% else %}
+                        Exchange time and skills for participation. Pre-arranged.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        <p class="methods-link">
+            <a href="/model/pathways">
+                {% if lang == 'de' %}Alle vier Wege zur Teilnahme erkunden{% elif lang == 'pl' %}Poznaj wszystkie cztery ścieżki uczestnictwa{% else %}Explore all four pathways to participation{% endif %} →
+            </a>
+        </p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta-section">
+    <div class="cta-container">
+        <h2 class="cta-title">
+            {% if lang == 'de' %}Keine Angebote finden, die passen?{% elif lang == 'pl' %}Nie możesz znaleźć odpowiedniej oferty?{% else %}Can't find an offering that fits?{% endif %}
+        </h2>
+        <p class="cta-text">
+            {% if lang == 'de' %}
+                Der Regenerationsfonds unterstützt die gesamte Gemeinschaft. Ihre Spende hilft, zukünftige Angebote zu ermöglichen und Lücken zu überbrücken.
+            {% elif lang == 'pl' %}
+                Fundusz Regeneracji wspiera całą społeczność. Twoja darowizna pomaga umożliwiać przyszłe oferty i wypełniać luki.
+            {% else %}
+                The Regeneration Fund supports the entire community. Your donation helps enable future offerings and bridge gaps.
+            {% endif %}
+        </p>
+        <div class="cta-buttons">
+            <a href="/fund" class="btn btn-primary">
+                {% if lang == 'de' %}Zum Regenerationsfonds{% elif lang == 'pl' %}Do Funduszu Regeneracji{% else %}Visit Regeneration Fund{% endif %} →
+            </a>
+            <a href="/about" class="btn btn-secondary">
+                {% if lang == 'de' %}Über Erdpuls{% elif lang == 'pl' %}O Erdpuls{% else %}About Erdpuls{% endif %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

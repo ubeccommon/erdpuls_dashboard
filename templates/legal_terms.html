@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Nutzungsbedingungen{% elif lang == 'pl' %}Regulamin{% else %}Terms of Service{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="page-hero compact legal-hero">
+    <div class="container">
+        <h1 class="page-title">
+            {% if lang == 'de' %}Nutzungsbedingungen{% elif lang == 'pl' %}Regulamin{% else %}Terms of Service{% endif %}
+        </h1>
+    </div>
+</section>
+
+<section class="section legal-content">
+    <div class="container legal-container">
+        {% if lang == 'de' %}
+        <p class="legal-updated">Stand: Januar 2026</p>
+        
+        <h2>1. Geltungsbereich</h2>
+        <p>
+            Diese Nutzungsbedingungen gelten für die Nutzung der Website erdpuls.org und aller damit verbundenen Dienste von Erdpuls Müllrose, betrieben von Michel Garand.
+        </p>
+        
+        <h2>2. Beschreibung des Dienstes</h2>
+        <p>
+            Erdpuls Müllrose ist ein Zentrum für Nachhaltigkeitsbildung, Bürgerwissenschaft und Reziproke Ökonomie. Die Website bietet:
+        </p>
+        <ul>
+            <li>Informationen über Bildungsangebote und Veranstaltungen</li>
+            <li>Das Kollektive Schwellenmodell für gemeinschaftliche Finanzierung von Angeboten</li>
+            <li>Registrierung und Teilnahme an Angeboten</li>
+            <li>Beitragsmöglichkeiten in Euro, UBECrc-Tokens oder Beitragsstunden</li>
+        </ul>
+        
+        <h2>3. Kollektives Schwellenmodell</h2>
+        <h3>3.1 Funktionsweise</h3>
+        <p>
+            Im Kollektiven Schwellenmodell wird eine Mindestsumme (Schwelle) für jedes Angebot festgelegt. Interessenten können anonym beitragen. Das Angebot findet statt, wenn die Schwelle erreicht wird.
+        </p>
+        
+        <h3>3.2 Anonymität</h3>
+        <p>
+            Beiträge werden <strong>anonym</strong> verarbeitet. Individuelle Beitragsbeträge werden nicht gespeichert oder angezeigt. Nur die Gesamtsumme ist sichtbar.
+        </p>
+        
+        <h3>3.3 Beitragsformen</h3>
+        <p>Beiträge können in folgenden Formen geleistet werden:</p>
+        <ul>
+            <li><strong>Euro:</strong> Direkte finanzielle Beiträge</li>
+            <li><strong>UBECrc-Tokens:</strong> Durch Umweltüberwachung und Bürgerwissenschaft verdient (70 UBECrc = €1)</li>
+            <li><strong>Beitragsstunden:</strong> Vorab vereinbarte Arbeitsleistungen</li>
+        </ul>
+        
+        <h3>3.4 Rückerstattungen</h3>
+        <p>
+            Wenn die Schwelle nicht erreicht wird, werden Euro-Beiträge vollständig zurückerstattet. Token-Beiträge werden dem Konto gutgeschrieben. Bei erreichten Schwellen und durchgeführten Angeboten erfolgen keine Rückerstattungen.
+        </p>
+        
+        <h2>4. Registrierung</h2>
+        <p>
+            Die Registrierung erfordert eine gültige E-Mail-Adresse. Sie sind verantwortlich für die Richtigkeit Ihrer Angaben und die Sicherheit Ihres Kontos.
+        </p>
+        
+        <h2>5. Verhaltensregeln</h2>
+        <p>Bei der Nutzung unserer Dienste verpflichten Sie sich:</p>
+        <ul>
+            <li>Keine falschen Angaben zu machen</li>
+            <li>Die Dienste nicht zu missbrauchen oder zu manipulieren</li>
+            <li>Andere Nutzer zu respektieren</li>
+            <li>Keine rechtswidrigen Inhalte zu verbreiten</li>
+        </ul>
+        
+        <h2>6. Geistiges Eigentum</h2>
+        <p>
+            Bildungsmaterialien stehen unter der <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank">CC BY-NC-SA 4.0</a> Lizenz. Die Marke „Erdpuls Müllrose" und das Logo sind geschützt.
+        </p>
+        
+        <h2>7. Haftungsbeschränkung</h2>
+        <p>
+            Wir haften nicht für Schäden, die durch die Nutzung unserer Dienste entstehen, soweit gesetzlich zulässig. Dies gilt nicht für vorsätzlich oder grob fahrlässig verursachte Schäden.
+        </p>
+        
+        <h2>8. Änderungen</h2>
+        <p>
+            Wir behalten uns vor, diese Nutzungsbedingungen jederzeit zu ändern. Wesentliche Änderungen werden auf der Website bekannt gegeben.
+        </p>
+        
+        <h2>9. Anwendbares Recht</h2>
+        <p>
+            Es gilt deutsches Recht. Gerichtsstand ist, soweit gesetzlich zulässig, Müllrose bzw. Frankfurt (Oder).
+        </p>
+        
+        <h2>10. Kontakt</h2>
+        <p>
+            Bei Fragen zu diesen Nutzungsbedingungen: <a href="mailto:erdpuls@ubec.network">erdpuls@ubec.network</a>
+        </p>
+
+        {% elif lang == 'pl' %}
+        <p class="legal-updated">Ostatnia aktualizacja: styczeń 2026</p>
+        
+        <h2>1. Zakres</h2>
+        <p>
+            Niniejszy regulamin dotyczy korzystania ze strony erdpuls.org i wszystkich powiązanych usług Erdpuls Müllrose, prowadzonego przez Michela Garanda.
+        </p>
+        
+        <h2>2. Opis usługi</h2>
+        <p>
+            Erdpuls Müllrose to centrum edukacji zrównoważonego rozwoju, nauki obywatelskiej i ekonomii wzajemności. Strona oferuje:
+        </p>
+        <ul>
+            <li>Informacje o ofertach edukacyjnych i wydarzeniach</li>
+            <li>Model Progu Zbiorowego do wspólnego finansowania ofert</li>
+            <li>Rejestrację i uczestnictwo w ofertach</li>
+            <li>Możliwości wpłat w euro, tokenach UBECrc lub godzinach pracy</li>
+        </ul>
+        
+        <h2>3. Model Progu Zbiorowego</h2>
+        <h3>3.1 Jak działa</h3>
+        <p>
+            W Modelu Progu Zbiorowego dla każdej oferty ustalana jest minimalna kwota (próg). Zainteresowani mogą wpłacać anonimowo. Oferta odbywa się, gdy próg zostanie osiągnięty.
+        </p>
+        
+        <h3>3.2 Anonimowość</h3>
+        <p>
+            Wpłaty są przetwarzane <strong>anonimowo</strong>. Indywidualne kwoty wpłat nie są przechowywane ani wyświetlane. Widoczna jest tylko suma całkowita.
+        </p>
+        
+        <h3>3.3 Formy wpłat</h3>
+        <ul>
+            <li><strong>Euro:</strong> Bezpośrednie wpłaty finansowe</li>
+            <li><strong>Tokeny UBECrc:</strong> Zdobyte poprzez monitoring środowiska (70 UBECrc = €1)</li>
+            <li><strong>Godziny wkładu:</strong> Wcześniej uzgodnione prace</li>
+        </ul>
+        
+        <h3>3.4 Zwroty</h3>
+        <p>
+            Jeśli próg nie zostanie osiągnięty, wpłaty w euro są w pełni zwracane. Wpłaty tokenów są zwracane na konto. Przy osiągniętych progach i zrealizowanych ofertach zwroty nie są dokonywane.
+        </p>
+        
+        <h2>4. Rejestracja</h2>
+        <p>
+            Rejestracja wymaga ważnego adresu e-mail. Jesteś odpowiedzialny za poprawność swoich danych i bezpieczeństwo konta.
+        </p>
+        
+        <h2>5. Zasady postępowania</h2>
+        <p>Korzystając z naszych usług, zobowiązujesz się:</p>
+        <ul>
+            <li>Nie podawać fałszywych informacji</li>
+            <li>Nie nadużywać ani nie manipulować usługami</li>
+            <li>Szanować innych użytkowników</li>
+            <li>Nie rozpowszechniać treści niezgodnych z prawem</li>
+        </ul>
+        
+        <h2>6. Własność intelektualna</h2>
+        <p>
+            Materiały edukacyjne są dostępne na licencji <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pl" target="_blank">CC BY-NC-SA 4.0</a>.
+        </p>
+        
+        <h2>7. Ograniczenie odpowiedzialności</h2>
+        <p>
+            Nie ponosimy odpowiedzialności za szkody wynikające z korzystania z naszych usług, w zakresie dozwolonym przez prawo.
+        </p>
+        
+        <h2>8. Zmiany</h2>
+        <p>
+            Zastrzegamy sobie prawo do zmiany niniejszego regulaminu w dowolnym momencie. Istotne zmiany będą ogłaszane na stronie.
+        </p>
+        
+        <h2>9. Prawo właściwe</h2>
+        <p>
+            Obowiązuje prawo niemieckie. Sądem właściwym jest Müllrose lub Frankfurt (Oder).
+        </p>
+        
+        <h2>10. Kontakt</h2>
+        <p>
+            W przypadku pytań: <a href="mailto:erdpuls@ubec.network">erdpuls@ubec.network</a>
+        </p>
+
+        {% else %}
+        <p class="legal-updated">Last updated: January 2026</p>
+        
+        <h2>1. Scope</h2>
+        <p>
+            These Terms of Service apply to the use of the website erdpuls.org and all related services of Erdpuls Müllrose, operated by Michel Garand.
+        </p>
+        
+        <h2>2. Description of Service</h2>
+        <p>
+            Erdpuls Müllrose is a center for sustainability literacy, citizen science, and reciprocal economics. The website offers:
+        </p>
+        <ul>
+            <li>Information about educational offerings and events</li>
+            <li>The Collective Threshold Model for community funding of offerings</li>
+            <li>Registration and participation in offerings</li>
+            <li>Contribution options in Euro, UBECrc tokens, or contribution hours</li>
+        </ul>
+        
+        <h2>3. Collective Threshold Model</h2>
+        <h3>3.1 How It Works</h3>
+        <p>
+            In the Collective Threshold Model, a minimum amount (threshold) is set for each offering. Interested participants can contribute anonymously. The offering takes place when the threshold is reached.
+        </p>
+        
+        <h3>3.2 Anonymity</h3>
+        <p>
+            Contributions are processed <strong>anonymously</strong>. Individual contribution amounts are not stored or displayed. Only the aggregate total is visible.
+        </p>
+        
+        <h3>3.3 Contribution Forms</h3>
+        <p>Contributions can be made in the following forms:</p>
+        <ul>
+            <li><strong>Euro:</strong> Direct financial contributions</li>
+            <li><strong>UBECrc Tokens:</strong> Earned through environmental monitoring and citizen science (70 UBECrc = €1)</li>
+            <li><strong>Contribution Hours:</strong> Pre-arranged work contributions</li>
+        </ul>
+        
+        <h3>3.4 Refunds</h3>
+        <p>
+            If the threshold is not reached, Euro contributions are fully refunded. Token contributions are credited back to the account. For reached thresholds and completed offerings, no refunds are issued.
+        </p>
+        
+        <h2>4. Registration</h2>
+        <p>
+            Registration requires a valid email address. You are responsible for the accuracy of your information and the security of your account.
+        </p>
+        
+        <h2>5. Code of Conduct</h2>
+        <p>When using our services, you agree to:</p>
+        <ul>
+            <li>Not provide false information</li>
+            <li>Not abuse or manipulate the services</li>
+            <li>Respect other users</li>
+            <li>Not distribute illegal content</li>
+        </ul>
+        
+        <h2>6. Intellectual Property</h2>
+        <p>
+            Educational materials are available under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> license. The "Erdpuls Müllrose" brand and logo are protected.
+        </p>
+        
+        <h2>7. Limitation of Liability</h2>
+        <p>
+            We are not liable for damages arising from the use of our services, to the extent permitted by law. This does not apply to damages caused intentionally or through gross negligence.
+        </p>
+        
+        <h2>8. Changes</h2>
+        <p>
+            We reserve the right to change these Terms of Service at any time. Material changes will be announced on the website.
+        </p>
+        
+        <h2>9. Applicable Law</h2>
+        <p>
+            German law applies. The place of jurisdiction is, to the extent legally permissible, Müllrose or Frankfurt (Oder).
+        </p>
+        
+        <h2>10. Contact</h2>
+        <p>
+            For questions about these Terms of Service: <a href="mailto:erdpuls@ubec.network">erdpuls@ubec.network</a>
+        </p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

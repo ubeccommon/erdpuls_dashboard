@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Datenschutzerklärung{% elif lang == 'pl' %}Polityka Prywatności{% else %}Privacy Policy{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="page-hero compact legal-hero">
+    <div class="container">
+        <h1 class="page-title">
+            {% if lang == 'de' %}Datenschutzerklärung{% elif lang == 'pl' %}Polityka Prywatności{% else %}Privacy Policy{% endif %}
+        </h1>
+    </div>
+</section>
+
+<section class="section legal-content">
+    <div class="container legal-container">
+        {% if lang == 'de' %}
+        <!-- German Version -->
+        <p class="legal-updated">Stand: Januar 2026</p>
+        
+        <h2>1. Datenschutz auf einen Blick</h2>
+        
+        <h3>Allgemeine Hinweise</h3>
+        <p>
+            Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.
+        </p>
+        
+        <h3>Datenerfassung auf dieser Website</h3>
+        <p><strong>Wer ist verantwortlich für die Datenerfassung auf dieser Website?</strong></p>
+        <p>
+            Die Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Dessen Kontaktdaten können Sie dem Impressum dieser Website entnehmen.
+        </p>
+        
+        <p><strong>Wie erfassen wir Ihre Daten?</strong></p>
+        <p>
+            Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen. Hierbei kann es sich z.B. um Daten handeln, die Sie bei der Registrierung für ein Angebot oder bei einem Beitrag eingeben.
+        </p>
+        <p>
+            Andere Daten werden automatisch oder nach Ihrer Einwilligung beim Besuch der Website durch unsere IT-Systeme erfasst. Das sind vor allem technische Daten (z.B. Internetbrowser, Betriebssystem oder Uhrzeit des Seitenaufrufs).
+        </p>
+        
+        <p><strong>Wofür nutzen wir Ihre Daten?</strong></p>
+        <p>
+            Ein Teil der Daten wird erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten. Andere Daten können zur Analyse Ihres Nutzerverhaltens verwendet werden.
+        </p>
+        
+        <p><strong>Welche Rechte haben Sie bezüglich Ihrer Daten?</strong></p>
+        <p>
+            Sie haben jederzeit das Recht, unentgeltlich Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten zu erhalten. Sie haben außerdem ein Recht, die Berichtigung oder Löschung dieser Daten zu verlangen. Wenn Sie eine Einwilligung zur Datenverarbeitung erteilt haben, können Sie diese Einwilligung jederzeit für die Zukunft widerrufen. Außerdem haben Sie das Recht, unter bestimmten Umständen die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu verlangen. Des Weiteren steht Ihnen ein Beschwerderecht bei der zuständigen Aufsichtsbehörde zu.
+        </p>
+        
+        <h2>2. Hosting</h2>
+        <p>
+            Wir hosten die Inhalte unserer Website bei folgendem Anbieter:
+        </p>
+        <p>
+            Die Website wird auf einem privaten Server in Deutschland gehostet. Beim Besuch der Website werden automatisch Informationen in sogenannten Server-Log-Dateien gespeichert, die Ihr Browser automatisch übermittelt.
+        </p>
+        
+        <h2>3. Allgemeine Hinweise und Pflichtinformationen</h2>
+        
+        <h3>Datenschutz</h3>
+        <p>
+            Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.
+        </p>
+        
+        <h3>Hinweis zur verantwortlichen Stelle</h3>
+        <p>
+            Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:
+        </p>
+        <p>
+            Michel Garand<br>
+            [Adresse]<br>
+            15299 Müllrose<br>
+            E-Mail: erdpuls@ubec.network
+        </p>
+        
+        <h3>Speicherdauer</h3>
+        <p>
+            Soweit innerhalb dieser Datenschutzerklärung keine speziellere Speicherdauer genannt wurde, verbleiben Ihre personenbezogenen Daten bei uns, bis der Zweck für die Datenverarbeitung entfällt. Wenn Sie ein berechtigtes Löschersuchen geltend machen oder eine Einwilligung zur Datenverarbeitung widerrufen, werden Ihre Daten gelöscht, sofern wir keine anderen rechtlich zulässigen Gründe für die Speicherung Ihrer personenbezogenen Daten haben.
+        </p>
+        
+        <h2>4. Datenerfassung auf dieser Website</h2>
+        
+        <h3>Cookies</h3>
+        <p>
+            Unsere Website verwendet Cookies. Dabei handelt es sich um kleine Textdateien, die auf Ihrem Endgerät gespeichert werden. Wir verwenden ausschließlich technisch notwendige Cookies, um die Funktionalität der Website zu gewährleisten (z.B. Spracheinstellung).
+        </p>
+        
+        <h3>Registrierung für Angebote</h3>
+        <p>
+            Wenn Sie sich für ein Angebot registrieren, erheben wir:
+        </p>
+        <ul>
+            <li>E-Mail-Adresse (zur Kommunikation)</li>
+            <li>Name (optional, zur persönlichen Ansprache)</li>
+        </ul>
+        <p>
+            Diese Daten werden für die Organisation des jeweiligen Angebots verwendet und nach Abschluss des Angebots gelöscht, sofern keine gesetzlichen Aufbewahrungsfristen bestehen.
+        </p>
+        
+        <h3>Beiträge (Collective Threshold Model)</h3>
+        <p>
+            Beiträge zu Angeboten werden <strong>anonym</strong> verarbeitet. Wir speichern keine personenbezogenen Daten in Verbindung mit Beitragsbeträgen. Nur aggregierte Gesamtsummen werden angezeigt. Wenn Sie optional Kontaktdaten angeben, werden diese getrennt vom Beitragsbetrag gespeichert und nur für organisatorische Zwecke (z.B. Quittungen) verwendet.
+        </p>
+        
+        <h2>5. Ihre Rechte</h2>
+        <p>Sie haben folgende Rechte bezüglich Ihrer personenbezogenen Daten:</p>
+        <ul>
+            <li><strong>Auskunftsrecht (Art. 15 DSGVO):</strong> Sie können Auskunft über Ihre gespeicherten Daten verlangen.</li>
+            <li><strong>Berichtigungsrecht (Art. 16 DSGVO):</strong> Sie können die Berichtigung unrichtiger Daten verlangen.</li>
+            <li><strong>Löschungsrecht (Art. 17 DSGVO):</strong> Sie können die Löschung Ihrer Daten verlangen.</li>
+            <li><strong>Einschränkungsrecht (Art. 18 DSGVO):</strong> Sie können die Einschränkung der Verarbeitung verlangen.</li>
+            <li><strong>Widerspruchsrecht (Art. 21 DSGVO):</strong> Sie können der Verarbeitung widersprechen.</li>
+            <li><strong>Datenübertragbarkeit (Art. 20 DSGVO):</strong> Sie können die Übertragung Ihrer Daten verlangen.</li>
+        </ul>
+        <p>
+            Um diese Rechte auszuüben, wenden Sie sich bitte an: erdpuls@ubec.network
+        </p>
+        
+        <h2>6. Beschwerderecht bei der Aufsichtsbehörde</h2>
+        <p>
+            Wenn Sie der Ansicht sind, dass die Verarbeitung Ihrer personenbezogenen Daten gegen die DSGVO verstößt, haben Sie das Recht, sich bei einer Aufsichtsbehörde zu beschweren. Die für uns zuständige Aufsichtsbehörde ist:
+        </p>
+        <p>
+            Die Landesbeauftragte für den Datenschutz und für das Recht auf Akteneinsicht Brandenburg<br>
+            Stahnsdorfer Damm 77<br>
+            14532 Kleinmachnow<br>
+            <a href="https://www.lda.brandenburg.de" target="_blank" rel="noopener">www.lda.brandenburg.de</a>
+        </p>
+
+        {% elif lang == 'pl' %}
+        <!-- Polish Version -->
+        <p class="legal-updated">Ostatnia aktualizacja: styczeń 2026</p>
+        
+        <h2>1. Ochrona danych w skrócie</h2>
+        
+        <h3>Informacje ogólne</h3>
+        <p>
+            Poniższe informacje zawierają prosty przegląd tego, co dzieje się z Twoimi danymi osobowymi podczas odwiedzania tej strony internetowej. Dane osobowe to wszystkie dane, za pomocą których można Cię osobiście zidentyfikować.
+        </p>
+        
+        <h3>Gromadzenie danych na tej stronie</h3>
+        <p><strong>Kto jest odpowiedzialny za gromadzenie danych na tej stronie?</strong></p>
+        <p>
+            Przetwarzanie danych na tej stronie odbywa się przez operatora strony. Jego dane kontaktowe można znaleźć w stopce redakcyjnej tej strony.
+        </p>
+        
+        <p><strong>Jak gromadzimy Twoje dane?</strong></p>
+        <p>
+            Twoje dane są zbierane po pierwsze, gdy nam je przekazujesz. Mogą to być na przykład dane, które wprowadzasz podczas rejestracji na ofertę lub przy wpłacie.
+        </p>
+        
+        <h2>2. Hosting</h2>
+        <p>
+            Strona jest hostowana na prywatnym serwerze w Niemczech.
+        </p>
+        
+        <h2>3. Ogólne informacje i obowiązkowe informacje</h2>
+        
+        <h3>Ochrona danych</h3>
+        <p>
+            Operatorzy tej strony bardzo poważnie traktują ochronę Twoich danych osobowych. Traktujemy Twoje dane osobowe poufnie i zgodnie z ustawowymi przepisami o ochronie danych oraz niniejszą polityką prywatności.
+        </p>
+        
+        <h3>Informacje o odpowiedzialnej stronie</h3>
+        <p>
+            Odpowiedzialną stroną za przetwarzanie danych na tej stronie jest:
+        </p>
+        <p>
+            Michel Garand<br>
+            [Adres]<br>
+            15299 Müllrose, Niemcy<br>
+            E-mail: erdpuls@ubec.network
+        </p>
+        
+        <h2>4. Gromadzenie danych na tej stronie</h2>
+        
+        <h3>Pliki cookie</h3>
+        <p>
+            Nasza strona wykorzystuje pliki cookie. Używamy wyłącznie technicznie niezbędnych plików cookie, aby zapewnić funkcjonalność strony (np. ustawienie języka).
+        </p>
+        
+        <h3>Wpłaty (Model Progu Zbiorowego)</h3>
+        <p>
+            Wpłaty na oferty są przetwarzane <strong>anonimowo</strong>. Nie przechowujemy żadnych danych osobowych w połączeniu z kwotami wpłat. Wyświetlane są tylko zagregowane sumy całkowite.
+        </p>
+        
+        <h2>5. Twoje prawa</h2>
+        <p>Masz następujące prawa dotyczące Twoich danych osobowych:</p>
+        <ul>
+            <li><strong>Prawo dostępu (art. 15 RODO)</strong></li>
+            <li><strong>Prawo do sprostowania (art. 16 RODO)</strong></li>
+            <li><strong>Prawo do usunięcia (art. 17 RODO)</strong></li>
+            <li><strong>Prawo do ograniczenia przetwarzania (art. 18 RODO)</strong></li>
+            <li><strong>Prawo do sprzeciwu (art. 21 RODO)</strong></li>
+            <li><strong>Prawo do przenoszenia danych (art. 20 RODO)</strong></li>
+        </ul>
+        <p>
+            Aby skorzystać z tych praw, skontaktuj się: erdpuls@ubec.network
+        </p>
+
+        {% else %}
+        <!-- English Version -->
+        <p class="legal-updated">Last updated: January 2026</p>
+        
+        <h2>1. Data Protection at a Glance</h2>
+        
+        <h3>General Information</h3>
+        <p>
+            The following information provides a simple overview of what happens to your personal data when you visit this website. Personal data is any data with which you can be personally identified.
+        </p>
+        
+        <h3>Data Collection on This Website</h3>
+        <p><strong>Who is responsible for data collection on this website?</strong></p>
+        <p>
+            Data processing on this website is carried out by the website operator. Their contact details can be found in the imprint of this website.
+        </p>
+        
+        <p><strong>How do we collect your data?</strong></p>
+        <p>
+            Your data is collected when you provide it to us. This could be, for example, data you enter when registering for an offering or making a contribution.
+        </p>
+        <p>
+            Other data is collected automatically or with your consent when you visit the website by our IT systems. This is primarily technical data (e.g., internet browser, operating system, or time of page access).
+        </p>
+        
+        <p><strong>What do we use your data for?</strong></p>
+        <p>
+            Some of the data is collected to ensure error-free provision of the website. Other data may be used to analyze your user behavior.
+        </p>
+        
+        <p><strong>What rights do you have regarding your data?</strong></p>
+        <p>
+            You have the right at any time to receive free information about the origin, recipients, and purpose of your stored personal data. You also have the right to request the correction or deletion of this data. If you have given consent to data processing, you can revoke this consent at any time for the future.
+        </p>
+        
+        <h2>2. Hosting</h2>
+        <p>
+            We host the contents of our website with the following provider:
+        </p>
+        <p>
+            The website is hosted on a private server in Germany. When you visit the website, information is automatically stored in server log files that your browser automatically transmits.
+        </p>
+        
+        <h2>3. General Information and Mandatory Information</h2>
+        
+        <h3>Data Protection</h3>
+        <p>
+            The operators of this site take the protection of your personal data very seriously. We treat your personal data confidentially and in accordance with the statutory data protection regulations and this privacy policy.
+        </p>
+        
+        <h3>Information about the Responsible Party</h3>
+        <p>
+            The responsible party for data processing on this website is:
+        </p>
+        <p>
+            Michel Garand<br>
+            [Address]<br>
+            15299 Müllrose, Germany<br>
+            Email: erdpuls@ubec.network
+        </p>
+        
+        <h3>Storage Duration</h3>
+        <p>
+            Unless a more specific storage period has been stated within this privacy policy, your personal data will remain with us until the purpose for data processing no longer applies. If you assert a legitimate request for deletion or revoke consent for data processing, your data will be deleted unless we have other legally permissible reasons for storing your personal data.
+        </p>
+        
+        <h2>4. Data Collection on This Website</h2>
+        
+        <h3>Cookies</h3>
+        <p>
+            Our website uses cookies. These are small text files stored on your device. We only use technically necessary cookies to ensure the functionality of the website (e.g., language setting).
+        </p>
+        
+        <h3>Registration for Offerings</h3>
+        <p>
+            When you register for an offering, we collect:
+        </p>
+        <ul>
+            <li>Email address (for communication)</li>
+            <li>Name (optional, for personal address)</li>
+        </ul>
+        <p>
+            This data is used for the organization of the respective offering and is deleted after the offering is completed, unless legal retention periods apply.
+        </p>
+        
+        <h3>Contributions (Collective Threshold Model)</h3>
+        <p>
+            Contributions to offerings are processed <strong>anonymously</strong>. We do not store any personal data in connection with contribution amounts. Only aggregated totals are displayed. If you optionally provide contact information, this is stored separately from the contribution amount and is only used for organizational purposes (e.g., receipts).
+        </p>
+        
+        <h2>5. Your Rights</h2>
+        <p>You have the following rights regarding your personal data:</p>
+        <ul>
+            <li><strong>Right of Access (Art. 15 GDPR):</strong> You can request information about your stored data.</li>
+            <li><strong>Right to Rectification (Art. 16 GDPR):</strong> You can request correction of inaccurate data.</li>
+            <li><strong>Right to Erasure (Art. 17 GDPR):</strong> You can request deletion of your data.</li>
+            <li><strong>Right to Restriction (Art. 18 GDPR):</strong> You can request restriction of processing.</li>
+            <li><strong>Right to Object (Art. 21 GDPR):</strong> You can object to processing.</li>
+            <li><strong>Right to Data Portability (Art. 20 GDPR):</strong> You can request transfer of your data.</li>
+        </ul>
+        <p>
+            To exercise these rights, please contact: erdpuls@ubec.network
+        </p>
+        
+        <h2>6. Right to Lodge a Complaint</h2>
+        <p>
+            If you believe that the processing of your personal data violates the GDPR, you have the right to lodge a complaint with a supervisory authority. The supervisory authority responsible for us is:
+        </p>
+        <p>
+            Die Landesbeauftragte für den Datenschutz und für das Recht auf Akteneinsicht Brandenburg<br>
+            Stahnsdorfer Damm 77<br>
+            14532 Kleinmachnow, Germany<br>
+            <a href="https://www.lda.brandenburg.de" target="_blank" rel="noopener">www.lda.brandenburg.de</a>
+        </p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

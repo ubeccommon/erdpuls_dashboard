@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Reziproke Ökonomie{% elif lang == 'pl' %}Ekonomia Wzajemności{% else %}Reciprocal Economics{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="page-hero compact">
+    <div class="container">
+        <span class="hero-eyebrow">
+            {% if lang == 'de' %}Philosophische Grundlage{% elif lang == 'pl' %}Podstawa filozoficzna{% else %}Philosophical Foundation{% endif %}
+        </span>
+        <h1 class="page-title">
+            {% if lang == 'de' %}
+                Reziproke Ökonomie
+            {% elif lang == 'pl' %}
+                Ekonomia Wzajemności
+            {% else %}
+                Reciprocal Economics
+            {% endif %}
+        </h1>
+        <p class="page-intro">
+            {% if lang == 'de' %}
+                Wie schaffen wir wirtschaftlichen Austausch, der mehr gibt als er nimmt? Wie eine Pflanze, die Sauerstoff, Nahrung, Schönheit und Schutz produziert, während sie einfach sie selbst ist, arbeitet Erdpuls Müllrose nach dem Prinzip generativer Fülle statt extraktiver Knappheit.
+            {% elif lang == 'pl' %}
+                Jak tworzymy wymianę ekonomiczną, która daje więcej niż bierze? Jak roślina, która produkuje tlen, żywność, piękno i schronienie po prostu będąc sobą, Erdpuls Müllrose działa na zasadzie generatywnej obfitości, a nie ekstrakcyjnego niedoboru.
+            {% else %}
+                How do we create economic exchange that gives more than it takes? Like a plant that produces oxygen, food, beauty, and shelter while simply being itself, Erdpuls Müllrose operates on a principle of generative abundance rather than extractive scarcity.
+            {% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- Opening Quote -->
+<section class="section quote-section-inline">
+    <div class="container">
+        <blockquote class="pull-quote centered">
+            {% if lang == 'de' %}
+                „Ich bin, weil wir sind."
+            {% elif lang == 'pl' %}
+                „Jestem, ponieważ jesteśmy."
+            {% else %}
+                "I am because we are."
+            {% endif %}
+            <cite>— Ubuntu Philosophy</cite>
+        </blockquote>
+    </div>
+</section>
+
+<!-- Three Pillars -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">
+                {% if lang == 'de' %}Grundprinzipien{% elif lang == 'pl' %}Podstawowe zasady{% else %}Core Principles{% endif %}
+            </span>
+            <h2 class="section-title">
+                {% if lang == 'de' %}Die drei Säulen{% elif lang == 'pl' %}Trzy filary{% else %}The Three Pillars{% endif %}
+            </h2>
+        </div>
+        <div class="philosophy-grid pillars">
+            <article class="card philosophy-card">
+                <div class="card-icon">🔄</div>
+                <h3 class="card-title">
+                    {% if lang == 'de' %}REZIPROZITÄT{% elif lang == 'pl' %}WZAJEMNOŚĆ{% else %}RECIPROCITY{% endif %}
+                </h3>
+                <p class="card-subtitle">
+                    {% if lang == 'de' %}(nicht Wohltätigkeit){% elif lang == 'pl' %}(nie dobroczynność){% else %}(not charity){% endif %}
+                </p>
+                <p class="card-text">
+                    {% if lang == 'de' %}
+                        Jeder Austausch schafft Wert, der in beide Richtungen fließt. Wir geben keine Geschenke — wir nehmen an echtem Austausch teil, bei dem alle Parteien beitragen und empfangen.
+                    {% elif lang == 'pl' %}
+                        Każda wymiana tworzy wartość płynącą w obu kierunkach. Nie dajemy prezentów — uczestniczymy w prawdziwej wymianie, gdzie wszystkie strony wnoszą wkład i otrzymują.
+                    {% else %}
+                        Every exchange creates value flowing in both directions. We do not give gifts — we participate in genuine exchange where all parties contribute and receive.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="card philosophy-card">
+                <div class="card-icon">🌐</div>
+                <h3 class="card-title">
+                    {% if lang == 'de' %}INTERDEPENDENZ{% elif lang == 'pl' %}WSPÓŁZALEŻNOŚĆ{% else %}INTERDEPENDENCE{% endif %}
+                </h3>
+                <p class="card-subtitle">
+                    {% if lang == 'de' %}(nicht Unabhängigkeit){% elif lang == 'pl' %}(nie niezależność){% else %}(not independence){% endif %}
+                </p>
+                <p class="card-text">
+                    {% if lang == 'de' %}
+                        Individuelles Gedeihen hängt vom Wohlergehen der Gemeinschaft ab. Unsere Preisgestaltung reflektiert, dass Menschen mit mehr Kapazität diejenigen mit weniger unterstützen — nicht aus Wohltätigkeit, sondern aus der Erkenntnis, dass wir alle profitieren, wenn alle teilnehmen können.
+                    {% elif lang == 'pl' %}
+                        Indywidualny rozkwit zależy od dobrostanu wspólnoty. Nasze ceny odzwierciedlają, że ci z większymi możliwościami wspierają tych z mniejszymi — nie z dobroczynności, ale z uznania, że wszyscy korzystamy, gdy wszyscy mogą uczestniczyć.
+                    {% else %}
+                        Individual flourishing depends on community wellbeing. Our pricing reflects that those with more capacity support those with less — not from charity but from recognition that we all benefit when everyone can participate.
+                    {% endif %}
+                </p>
+            </article>
+            <article class="card philosophy-card">
+                <div class="card-icon">🌳</div>
+                <h3 class="card-title">
+                    {% if lang == 'de' %}VERWURZELUNG{% elif lang == 'pl' %}ZAKORZENIENIE{% else %}ROOTEDNESS{% endif %}
+                </h3>
+                <p class="card-subtitle">
+                    {% if lang == 'de' %}(nicht Extraktion){% elif lang == 'pl' %}(nie ekstrakcja){% else %}(not extraction){% endif %}
+                </p>
+                <p class="card-text">
+                    {% if lang == 'de' %}
+                        Wie eine Pflanze, die sich ihrem Ort verpflichtet, investieren wir in langfristige Beziehungen statt in einmalige Transaktionen. Wert akkumuliert durch nachhaltiges Engagement, Vertrauen baut sich über Jahreszeiten und Jahre auf.
+                    {% elif lang == 'pl' %}
+                        Jak roślina oddana swojemu miejscu, inwestujemy w długoterminowe relacje zamiast jednorazowych transakcji. Wartość akumuluje się poprzez trwałe zaangażowanie, zaufanie buduje się przez sezony i lata.
+                    {% else %}
+                        Like a plant committed to place, we invest in long-term relationships rather than one-time transactions. Value accumulates through sustained engagement, trust builds over seasons and years.
+                    {% endif %}
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- Rejecting False Binaries -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="content-grid">
+            <div class="content-main">
+                <h2>
+                    {% if lang == 'de' %}Die Illusion der Wahl ablehnen{% elif lang == 'pl' %}Odrzucenie iluzji wyboru{% else %}Rejecting the Illusion of Choice{% endif %}
+                </h2>
+                <p>
+                    {% if lang == 'de' %}
+                        Konventionelle Preisgestaltung präsentiert ein falsches Binär: Entweder werden Dienstleistungen für diejenigen bepreist, die sie sich leisten können (was viele ausschließt), oder sie werden kostenlos angeboten (was Abhängigkeit und Unhaltbarkeit schafft).
+                    {% elif lang == 'pl' %}
+                        Konwencjonalne ustalanie cen przedstawia fałszywą binarność: albo usługi są wyceniane dla tych, którzy mogą sobie na nie pozwolić (wykluczając wielu), albo są dawane za darmo (tworząc zależność i niezrównoważoność).
+                    {% else %}
+                        Conventional pricing presents a false binary: either services are priced for those who can afford them (excluding many), or they are given free (creating dependency and unsustainability).
+                    {% endif %}
+                </p>
+                <p>
+                    {% if lang == 'de' %}
+                        Dieses binäre Denken — <strong>Bezahlbarkeit ODER Nachhaltigkeit</strong> — spiegelt die gleiche falsche Wahl wider, die Technologie von Natur, Fakten von Weisheit, Fortschritt von Bewahrung trennt.
+                    {% elif lang == 'pl' %}
+                        To binarne myślenie — <strong>Przystępność ALBO Zrównoważoność</strong> — odzwierciedla ten sam fałszywy wybór, który oddziela Technologię od Natury, Fakty od Mądrości, Postęp od Zachowania.
+                    {% else %}
+                        This binary thinking — <strong>Affordability OR Sustainability</strong> — mirrors the same false choice that separates Technology from Nature, Facts from Wisdom, Progress from Preservation.
+                    {% endif %}
+                </p>
+                <p class="highlight-text">
+                    {% if lang == 'de' %}
+                        Unser reziprokes Modell transzendiert dieses Binär. Teilnahme ist keine Transaktion, die abgeschlossen werden muss, sondern eine Beziehung, die gepflegt werden will. Wert wird nicht extrahiert, sondern ausgetauscht.
+                    {% elif lang == 'pl' %}
+                        Nasz model wzajemności transcenduje tę binarność. Uczestnictwo nie jest transakcją do zakończenia, ale relacją do pielęgnowania. Wartość nie jest ekstrahowana, ale wymieniana.
+                    {% else %}
+                        Our reciprocal model transcends this binary. Participation is not a transaction to be completed but a relationship to be cultivated. Value is not extracted but exchanged.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Plant Wisdom -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">
+                {% if lang == 'de' %}Natürliche Muster{% elif lang == 'pl' %}Naturalne wzorce{% else %}Natural Patterns{% endif %}
+            </span>
+            <h2 class="section-title">
+                {% if lang == 'de' %}Pflanzenweisheit{% elif lang == 'pl' %}Mądrość roślin{% else %}Plant Wisdom{% endif %}
+            </h2>
+        </div>
+        <div class="content-grid">
+            <div class="content-main">
+                <p>
+                    {% if lang == 'de' %}
+                        In einem Wald fließen Nährstoffe durch Mykorrhiza-Netzwerke von Bäumen mit Überfluss zu Bäumen mit Bedarf. Kein Baum wird stigmatisiert für das Empfangen. Kein Baum wird gelobt für das Geben. Der Wald <em>ist</em> dieses Fließen. Die kollektive Schwelle funktioniert genauso — Ressourcen fließen natürlich von dort, wo sie sind, dorthin, wo sie gebraucht werden, anonym, ohne Hierarchie.
+                    {% elif lang == 'pl' %}
+                        W lesie składniki odżywcze przepływają przez sieci mikoryzowe od drzew z nadmiarem do drzew w potrzebie. Żadne drzewo nie jest piętnowane za otrzymywanie. Żadne drzewo nie jest chwalone za dawanie. Las <em>jest</em> tym przepływem. Próg zbiorowy działa tak samo — zasoby przepływają naturalnie stamtąd, gdzie są, tam, gdzie są potrzebne, anonimowo, bez hierarchii.
+                    {% else %}
+                        In a forest, nutrients flow through mycorrhizal networks from trees with abundance to trees with need. No tree is stigmatized for receiving. No tree is praised for giving. The forest <em>is</em> this flowing. The collective threshold operates the same way — resources flow naturally from where they are to where they're needed, anonymously, without hierarchy.
+                    {% endif %}
+                </p>
+                <blockquote class="pull-quote">
+                    {% if lang == 'de' %}
+                        „Wir kultivieren die Bedingungen für Menschen, wie eine Pflanze zu denken."
+                    {% elif lang == 'pl' %}
+                        „Kultywujemy warunki, by ludzie myśleli jak roślina."
+                    {% else %}
+                        "We cultivate the conditions for people to think like a plant."
+                    {% endif %}
+                </blockquote>
+                <p>
+                    {% if lang == 'de' %}
+                        Und in diesem Wirtschaftsmodell praktizieren wir, was wir lehren: verteilte Intelligenz, Netzwerkdenken, großzügiges Geben, geduldiges Ansammeln und Vertrauen in die kollektive Kapazität der Gemeinschaft, das hervorzubringen, was entstehen will.
+                    {% elif lang == 'pl' %}
+                        I w tym modelu ekonomicznym praktykujemy to, czego uczymy: rozproszoną inteligencję, myślenie sieciowe, hojne dawanie, cierpliwe gromadzenie i zaufanie do zbiorowej zdolności społeczności do wyłaniania tego, co chce powstać.
+                    {% else %}
+                        And in this economic model, we practice what we teach: distributed intelligence, network thinking, generous giving, patient accumulation, and trust in the collective capacity of the community to bring forth what wants to emerge.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Economics as Ecology -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="content-grid">
+            <div class="content-main">
+                <h2>
+                    {% if lang == 'de' %}Ökonomie als Ökologie{% elif lang == 'pl' %}Ekonomia jako ekologia{% else %}Economics as Ecology{% endif %}
+                </h2>
+                <p>
+                    {% if lang == 'de' %}
+                        Dieses Wirtschaftsmodell ist nicht getrennt von unserer Bildungsmission — es <em>ist</em> unsere Bildungsmission, die sich im Austausch manifestiert. Jede Registrierungsentscheidung wird zu einer Gelegenheit für Teilnehmende, das gleiche reziproke Denken zu praktizieren, das wir in unseren Programmen kultivieren.
+                    {% elif lang == 'pl' %}
+                        Ten model ekonomiczny nie jest oddzielony od naszej misji edukacyjnej — on <em>jest</em> naszą misją edukacyjną manifestującą się w wymianie. Każda decyzja rejestracyjna staje się okazją dla uczestników do praktykowania tego samego wzajemnego myślenia, które kultywujemy w naszych programach.
+                    {% else %}
+                        This economic model is not separate from our educational mission — it <em>is</em> our educational mission made manifest in exchange. Every registration decision becomes an opportunity for participants to practice the same reciprocal thinking we cultivate in our programs.
+                    {% endif %}
+                </p>
+                <div class="practice-grid">
+                    <div class="practice-item">
+                        <strong>{% if lang == 'de' %}Voller Beitrag{% elif lang == 'pl' %}Pełna stawka{% else %}Full rate{% endif %}</strong>
+                        <p>
+                            {% if lang == 'de' %}
+                                Pflanzliche Großzügigkeit praktizieren — mehr geben als nehmen, zur Fülle beitragen, die die Gemeinschaft erhält.
+                            {% elif lang == 'pl' %}
+                                Praktykowanie roślinnej hojności — dawanie więcej niż branie, przyczynianie się do obfitości podtrzymującej społeczność.
+                            {% else %}
+                                Practice plant generosity — giving more than taking, contributing to abundance that sustains community.
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="practice-item">
+                        <strong>{% if lang == 'de' %}Unterstützter Beitrag{% elif lang == 'pl' %}Stawka wspierana{% else %}Supported rate{% endif %}</strong>
+                        <p>
+                            {% if lang == 'de' %}
+                                Interdependenz praktizieren — Gemeinschaftsunterstützung annehmen, während Anwesenheit und Teilnahme beigetragen werden.
+                            {% elif lang == 'pl' %}
+                                Praktykowanie współzależności — przyjmowanie wsparcia wspólnoty przy jednoczesnym wnoszeniu obecności i uczestnictwa.
+                            {% else %}
+                                Practice interdependence — accepting community support while contributing presence and participation.
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="practice-item">
+                        <strong>{% if lang == 'de' %}Fähigkeiten beitragen{% elif lang == 'pl' %}Wkład umiejętności{% else %}Contributing skills{% endif %}</strong>
+                        <p>
+                            {% if lang == 'de' %}
+                                Netzwerkdenken praktizieren — erkennen, dass Wert durch mehrere Kanäle fließt.
+                            {% elif lang == 'pl' %}
+                                Praktykowanie myślenia sieciowego — rozpoznanie, że wartość przepływa wieloma kanałami.
+                            {% else %}
+                                Practice network thinking — recognizing that value flows through multiple channels.
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="practice-item">
+                        <strong>{% if lang == 'de' %}Tokens verwenden{% elif lang == 'pl' %}Używanie tokenów{% else %}Using tokens{% endif %}</strong>
+                        <p>
+                            {% if lang == 'de' %}
+                                Den reziproken Kreislauf schließen — Umweltpflege wird Teilnahme wird tieferes Verständnis wird erneute Fürsorge.
+                            {% elif lang == 'pl' %}
+                                Zamykanie pętli wzajemności — opieka nad środowiskiem staje się uczestnictwem staje się głębszym zrozumieniem staje się odnowioną opieką.
+                            {% else %}
+                                Close the reciprocal loop — environmental stewardship becoming participation becoming deeper understanding becoming renewed stewardship.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta-section">
+    <div class="cta-container">
+        <h2 class="cta-title">
+            {% if lang == 'de' %}Treten Sie dem Kreislauf bei{% elif lang == 'pl' %}Dołącz do cyklu{% else %}Join the Cycle{% endif %}
+        </h2>
+        <p class="cta-text">
+            {% if lang == 'de' %}
+                Jeder kann teilnehmen. Wählen Sie den Weg, der zu Ihrer Situation passt.
+            {% elif lang == 'pl' %}
+                Każdy może uczestniczyć. Wybierz ścieżkę pasującą do Twojej sytuacji.
+            {% else %}
+                Everyone can participate. Choose the pathway that fits your situation.
+            {% endif %}
+        </p>
+        <div class="cta-buttons">
+            <a href="/model/pathways" class="btn btn-primary">
+                {% if lang == 'de' %}Vier Wege{% elif lang == 'pl' %}Cztery Ścieżki{% else %}Four Pathways{% endif %} →
+            </a>
+            <a href="/model/threshold" class="btn btn-secondary">
+                {% if lang == 'de' %}Schwellenmodell{% elif lang == 'pl' %}Model Progu{% else %}Threshold Model{% endif %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
