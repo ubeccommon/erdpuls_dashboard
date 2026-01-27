@@ -1,168 +1,454 @@
 {% extends "base.html" %}
 
-{% block title %}{% if lang == 'de' %}Beitrag bestätigen{% elif lang == 'pl' %}Potwierdź wpłatę{% else %}Confirm Contribution{% endif %}{% endblock %}
+{% block title %}
+{% if lang == 'de' %}Beitrag bestätigt{% elif lang == 'pl' %}Wkład potwierdzony{% else %}Contribution Confirmed{% endif %} | Erdpuls Müllrose
+{% endblock %}
 
 {% block content %}
-<section class="contribution-flow">
-    <div class="container container-narrow">
+<!-- Confirmation Section -->
+<section class="confirmation-hero">
+    <div class="container narrow">
         
-        <!-- Progress Steps -->
-        <div class="flow-steps">
-            <div class="step completed">
-                <span class="step-number">1</span>
-                <span class="step-label">{% if lang == 'de' %}Angaben{% elif lang == 'pl' %}Dane{% else %}Details{% endif %}</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step active">
-                <span class="step-number">2</span>
-                <span class="step-label">{% if lang == 'de' %}Bestätigen{% elif lang == 'pl' %}Potwierdź{% else %}Confirm{% endif %}</span>
-            </div>
-            <div class="step-line"></div>
-            <div class="step">
-                <span class="step-number">3</span>
-                <span class="step-label">{% if lang == 'de' %}Fertig{% elif lang == 'pl' %}Gotowe{% else %}Done{% endif %}</span>
-            </div>
+        <!-- Success Icon -->
+        <div class="success-icon">
+            <svg viewBox="0 0 100 100" class="checkmark">
+                <circle class="checkmark-circle" cx="50" cy="50" r="45"/>
+                <path class="checkmark-check" d="M30 50 L45 65 L70 35"/>
+            </svg>
         </div>
-
-        <div class="flow-card">
-            <h1>{% if lang == 'de' %}Ihren Beitrag bestätigen{% elif lang == 'pl' %}Potwierdź swój wkład{% else %}Confirm Your Contribution{% endif %}</h1>
-            
-            <p class="flow-intro">
-                {% if lang == 'de' %}
-                    Bitte überprüfen Sie Ihre Angaben, bevor Sie Ihren Beitrag verbindlich zusagen.
-                {% elif lang == 'pl' %}
-                    Sprawdź swoje dane przed potwierdzeniem wpłaty.
-                {% else %}
-                    Please review your details before confirming your pledge.
-                {% endif %}
-            </p>
-
-            <!-- Offering Summary -->
-            <div class="summary-section">
-                <h3>{% if lang == 'de' %}Angebot{% elif lang == 'pl' %}Oferta{% else %}Offering{% endif %}</h3>
-                <div class="summary-box">
-                    <div class="summary-title">{{ offering.get_title(lang) }}</div>
-                    <div class="summary-meta">
-                        {% if offering.event_date %}
-                        📅 {{ offering.event_date.strftime('%d.%m.%Y') }}
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contribution Summary -->
-            <div class="summary-section">
-                <h3>{% if lang == 'de' %}Ihr Beitrag{% elif lang == 'pl' %}Twój wkład{% else %}Your Contribution{% endif %}</h3>
-                <div class="contribution-summary">
-                    {% if contribution_data.euro and contribution_data.euro > 0 %}
-                    <div class="contribution-item">
-                        <span class="contribution-icon">💶</span>
-                        <div class="contribution-detail">
-                            <span class="contribution-type">{% if lang == 'de' %}Finanzieller Beitrag{% elif lang == 'pl' %}Wkład finansowy{% else %}Financial Contribution{% endif %}</span>
-                            <span class="contribution-amount">€{{ "%.2f"|format(contribution_data.euro) }}</span>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% if contribution_data.tokens and contribution_data.tokens > 0 %}
-                    <div class="contribution-item">
-                        <span class="contribution-icon">🪙</span>
-                        <div class="contribution-detail">
-                            <span class="contribution-type">UBECrc Tokens</span>
-                            <span class="contribution-amount">{{ "%.0f"|format(contribution_data.tokens) }} UBECrc</span>
-                            <span class="contribution-equiv">(≈ €{{ "%.2f"|format(contribution_data.tokens_eur) }})</span>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% if contribution_data.hours and contribution_data.hours > 0 %}
-                    <div class="contribution-item">
-                        <span class="contribution-icon">🕐</span>
-                        <div class="contribution-detail">
-                            <span class="contribution-type">
-                                {% if lang == 'de' %}Arbeitsstunden{% elif lang == 'pl' %}Godziny pracy{% else %}Work Hours{% endif %}
-                                ({{ contribution_data.hours_category.replace('_', ' ').title() }})
-                            </span>
-                            <span class="contribution-amount">{{ contribution_data.hours }} {% if lang == 'de' %}Stunden{% elif lang == 'pl' %}godzin{% else %}hours{% endif %}</span>
-                            <span class="contribution-equiv">(≈ €{{ "%.2f"|format(contribution_data.hours_eur) }})</span>
-                            {% if contribution_data.hours_description %}
-                            <span class="contribution-note">{{ contribution_data.hours_description }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <div class="contribution-total">
-                        <span>{% if lang == 'de' %}Gesamtwert{% elif lang == 'pl' %}Łączna wartość{% else %}Total Value{% endif %}</span>
-                        <span class="total-amount">€{{ "%.2f"|format(contribution_data.total_eur) }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contact (optional) -->
-            {% if contribution_data.email %}
-            <div class="summary-section">
-                <h3>{% if lang == 'de' %}Kontakt{% elif lang == 'pl' %}Kontakt{% else %}Contact{% endif %}</h3>
-                <div class="summary-box">
-                    {% if contribution_data.name %}
-                    <div>{{ contribution_data.name }}</div>
-                    {% endif %}
-                    <div>{{ contribution_data.email }}</div>
-                </div>
-            </div>
+        
+        <h1 class="confirmation-title">
+            {% if contribution and contribution.wants_to_participate %}
+                {% if lang == 'de' %}Beitrag & Teilnahme bestätigt!{% elif lang == 'pl' %}Wkład & Uczestnictwo potwierdzone!{% else %}Contribution & Participation Confirmed!{% endif %}
+            {% else %}
+                {% if lang == 'de' %}Beitrag bestätigt!{% elif lang == 'pl' %}Wkład potwierdzony!{% else %}Contribution Confirmed!{% endif %}
             {% endif %}
-
-            <!-- Privacy Note -->
-            <div class="anonymity-notice">
-                <span class="notice-icon">🔒</span>
-                <div class="notice-text">
-                    {% if lang == 'de' %}
-                        <strong>Privatsphäre geschützt:</strong> Öffentlich werden nur Gesamtsumme und Anzahl der Beitragenden angezeigt.
-                        {% if contribution_data.email %}Ihre Kontaktdaten sind nur für Organisatoren sichtbar, für Koordination und Quittungen.{% endif %}
-                    {% elif lang == 'pl' %}
-                        <strong>Prywatność chroniona:</strong> Publicznie wyświetlana jest tylko suma i liczba osób wpłacających.
-                        {% if contribution_data.email %}Twoje dane kontaktowe są widoczne tylko dla organizatorów, do koordynacji i potwierdzeń.{% endif %}
-                    {% else %}
-                        <strong>Privacy protected:</strong> Only totals and contributor count are shown publicly.
-                        {% if contribution_data.email %}Your contact info is visible to organizers only, for coordination and receipts.{% endif %}
+        </h1>
+        
+        <p class="confirmation-subtitle">
+            {% if lang == 'de' %}
+                Vielen Dank für Ihre Unterstützung von <strong>{{ offering.get_title(lang) }}</strong>
+            {% elif lang == 'pl' %}
+                Dziękujemy za wsparcie dla <strong>{{ offering.get_title(lang) }}</strong>
+            {% else %}
+                Thank you for supporting <strong>{{ offering.get_title(lang) }}</strong>
+            {% endif %}
+        </p>
+        
+        <!-- Contribution Details -->
+        {% if contribution %}
+        <div class="details-card">
+            <h3>{% if lang == 'de' %}Ihre Beitragsdetails{% elif lang == 'pl' %}Szczegóły Twojego wkładu{% else %}Your Contribution Details{% endif %}</h3>
+            
+            <div class="detail-row">
+                <span class="detail-label">{% if lang == 'de' %}Betrag{% elif lang == 'pl' %}Kwota{% else %}Amount{% endif %}</span>
+                <span class="detail-value">€{{ contribution.amount_eur|round(2) }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">{% if lang == 'de' %}Art{% elif lang == 'pl' %}Rodzaj{% else %}Type{% endif %}</span>
+                <span class="detail-value">
+                    {% if contribution.contribution_type == 'euro' %}
+                        💶 Euro
+                    {% elif contribution.contribution_type == 'token' %}
+                        🪙 UBECrc Tokens ({{ contribution.token_amount }})
+                    {% elif contribution.contribution_type == 'hours' %}
+                        ⏱️ {% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% else %}Hours{% endif %} ({{ contribution.hours_amount }} {% if lang == 'de' %}Std{% elif lang == 'pl' %}godz{% else %}hrs{% endif %})
                     {% endif %}
+                </span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">{% if lang == 'de' %}Engagement{% elif lang == 'pl' %}Zaangażowanie{% else %}Engagement{% endif %}</span>
+                <span class="detail-value">
+                    {% if contribution.wants_to_participate %}
+                        🌱 {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wsparcie & Uczestnictwo{% else %}Support & Participate{% endif %}
+                    {% else %}
+                        💚 {% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% else %}Support Only{% endif %}
+                    {% endif %}
+                </span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Status</span>
+                <span class="detail-value status-badge status-{{ contribution.status }}">
+                    {% if contribution.status == 'pending' %}
+                        {% if lang == 'de' %}Ausstehend{% elif lang == 'pl' %}Oczekujące{% else %}Pending{% endif %}
+                    {% elif contribution.status == 'confirmed' %}
+                        {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- What's Next -->
+        <div class="next-steps-card">
+            <h3>{% if lang == 'de' %}Nächste Schritte{% elif lang == 'pl' %}Następne kroki{% else %}What Happens Next{% endif %}</h3>
+            
+            <ol class="next-steps-list">
+                {% if contribution and contribution.contribution_type == 'euro' %}
+                <li>
+                    <span class="step-icon">📧</span>
+                    <div class="step-content">
+                        <strong>{% if lang == 'de' %}E-Mail Bestätigung{% elif lang == 'pl' %}Potwierdzenie e-mailem{% else %}Email Confirmation{% endif %}</strong>
+                        <p>{% if lang == 'de' %}Falls Sie eine E-Mail angegeben haben, erhalten Sie eine Bestätigung.{% elif lang == 'pl' %}Jeśli podałeś e-mail, otrzymasz potwierdzenie.{% else %}If you provided an email, you'll receive a confirmation.{% endif %}</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-icon">💳</span>
+                    <div class="step-content">
+                        <strong>{% if lang == 'de' %}Überweisung durchführen{% elif lang == 'pl' %}Dokonaj przelewu{% else %}Complete Bank Transfer{% endif %}</strong>
+                        <p>
+                            {% if lang == 'de' %}
+                                Bitte überweisen Sie €{{ contribution.amount_eur|round(2) }} an unser Konto. Verweis: {{ offering.id[:8] }}
+                            {% elif lang == 'pl' %}
+                                Proszę przelać €{{ contribution.amount_eur|round(2) }} na nasze konto. Referencja: {{ offering.id[:8] }}
+                            {% else %}
+                                Please transfer €{{ contribution.amount_eur|round(2) }} to our account. Reference: {{ offering.id[:8] }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </li>
+                {% elif contribution and contribution.contribution_type == 'token' %}
+                <li>
+                    <span class="step-icon">🪙</span>
+                    <div class="step-content">
+                        <strong>{% if lang == 'de' %}Token-Transfer{% elif lang == 'pl' %}Transfer tokenów{% else %}Token Transfer{% endif %}</strong>
+                        <p>{% if lang == 'de' %}Wir werden Sie kontaktieren, um den Token-Transfer zu arrangieren.{% elif lang == 'pl' %}Skontaktujemy się z Tobą, aby zorganizować transfer tokenów.{% else %}We'll contact you to arrange the token transfer.{% endif %}</p>
+                    </div>
+                </li>
+                {% elif contribution and contribution.contribution_type == 'hours' %}
+                <li>
+                    <span class="step-icon">📅</span>
+                    <div class="step-content">
+                        <strong>{% if lang == 'de' %}Terminvereinbarung{% elif lang == 'pl' %}Ustalenie terminu{% else %}Schedule Hours{% endif %}</strong>
+                        <p>{% if lang == 'de' %}Wir werden Sie kontaktieren, um Ihre Arbeitsstunden zu planen.{% elif lang == 'pl' %}Skontaktujemy się z Tobą, aby zaplanować Twoje godziny pracy.{% else %}We'll contact you to schedule your work hours.{% endif %}</p>
+                    </div>
+                </li>
+                {% endif %}
+                
+                <li>
+                    <span class="step-icon">🎯</span>
+                    <div class="step-content">
+                        <strong>{% if lang == 'de' %}Schwelle erreichen{% elif lang == 'pl' %}Osiągnięcie progu{% else %}Threshold Goal{% endif %}</strong>
+                        <p>
+                            {% if offering._percent >= 100 %}
+                                {% if lang == 'de' %}✓ Die Schwelle wurde bereits erreicht! Dieses Angebot findet statt.{% elif lang == 'pl' %}✓ Próg został już osiągnięty! Ta oferta się odbędzie.{% else %}✓ The threshold has been met! This offering will happen.{% endif %}
+                            {% else %}
+                                {% if lang == 'de' %}Wenn die Schwelle erreicht ist, wird das Angebot bestätigt.{% elif lang == 'pl' %}Gdy próg zostanie osiągnięty, oferta zostanie potwierdzona.{% else %}When the threshold is met, the offering will be confirmed.{% endif %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </li>
+                
+                {% if contribution and contribution.wants_to_participate %}
+                <li>
+                    <span class="step-icon">📋</span>
+                    <div class="step-content">
+                        <strong>{% if lang == 'de' %}Veranstaltungsdetails{% elif lang == 'pl' %}Szczegóły wydarzenia{% else %}Event Details{% endif %}</strong>
+                        <p>{% if lang == 'de' %}Sie erhalten alle Details zur Teilnahme, sobald das Angebot bestätigt ist.{% elif lang == 'pl' %}Otrzymasz wszystkie szczegóły uczestnictwa po potwierdzeniu oferty.{% else %}You'll receive all participation details once the offering is confirmed.{% endif %}</p>
+                    </div>
+                </li>
+                {% endif %}
+            </ol>
+        </div>
+        
+        <!-- Progress Update -->
+        <div class="progress-update-card">
+            <h3>{% if lang == 'de' %}Aktueller Fortschritt{% elif lang == 'pl' %}Aktualny postęp{% else %}Current Progress{% endif %}</h3>
+            
+            <div class="progress-bar-container large">
+                <div class="progress-bar" style="width: {{ [offering._percent, 100]|min }}%"></div>
+            </div>
+            
+            <div class="progress-stats">
+                <div class="stat">
+                    <span class="stat-value">€{{ offering._total }}</span>
+                    <span class="stat-label">{% if lang == 'de' %}gesammelt{% elif lang == 'pl' %}zebrano{% else %}raised{% endif %}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">€{{ offering.threshold_amount }}</span>
+                    <span class="stat-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}próg{% else %}threshold{% endif %}</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">{{ offering._percent|round(0)|int }}%</span>
+                    <span class="stat-label">{% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% else %}funded{% endif %}</span>
                 </div>
             </div>
-
-            <!-- Actions -->
-            <form action="/offering/{{ offering.id }}/contribute/submit" method="post">
-                <!-- Hidden fields with contribution data -->
-                <input type="hidden" name="euro" value="{{ contribution_data.euro or 0 }}">
-                <input type="hidden" name="tokens" value="{{ contribution_data.tokens or 0 }}">
-                <input type="hidden" name="hours" value="{{ contribution_data.hours or 0 }}">
-                <input type="hidden" name="hours_category" value="{{ contribution_data.hours_category or '' }}">
-                <input type="hidden" name="hours_description" value="{{ contribution_data.hours_description or '' }}">
-                <input type="hidden" name="name" value="{{ contribution_data.name or '' }}">
-                <input type="hidden" name="email" value="{{ contribution_data.email or '' }}">
-
-                <div class="flow-actions">
-                    <a href="/offering/{{ offering.id }}" class="btn btn-secondary">
-                        {% if lang == 'de' %}← Zurück{% elif lang == 'pl' %}← Wróć{% else %}← Back{% endif %}
-                    </a>
-                    <button type="submit" class="btn btn-primary btn-large">
-                        {% if lang == 'de' %}Beitrag bestätigen{% elif lang == 'pl' %}Potwierdź wpłatę{% else %}Confirm Contribution{% endif %}
-                    </button>
-                </div>
-            </form>
         </div>
-
-        <!-- Guiding reminder -->
-        <div class="flow-reminder">
+        
+        <!-- Philosophy Note -->
+        <div class="philosophy-note">
             <p>
                 {% if lang == 'de' %}
-                    „Die Gemeinschaft hält jedes Angebot gemeinsam ins Dasein."
+                    <em>„Die Gemeinschaft hält jedes Angebot ins Sein."</em> — Ihr Beitrag ist Teil einer kollektiven Bewegung, die das Mögliche zum Wirklichen macht.
                 {% elif lang == 'pl' %}
-                    „Społeczność wspólnie tworzy każdą ofertę."
+                    <em>„Społeczność wnosi każdą ofertę w istnienie."</em> — Twój wkład jest częścią zbiorowego ruchu, który przekształca możliwe w rzeczywiste.
                 {% else %}
-                    "The community holds each offering into being together."
+                    <em>"The community holds each offering into being."</em> — Your contribution is part of a collective movement that transforms the possible into the actual.
                 {% endif %}
             </p>
         </div>
+        
+        <!-- Actions -->
+        <div class="confirmation-actions">
+            <a href="/offering/{{ offering.id }}" class="btn btn-outline">
+                {% if lang == 'de' %}Zurück zum Angebot{% elif lang == 'pl' %}Powrót do oferty{% else %}Back to Offering{% endif %}
+            </a>
+            <a href="/offerings" class="btn btn-primary">
+                {% if lang == 'de' %}Weitere Angebote erkunden{% elif lang == 'pl' %}Odkryj więcej ofert{% else %}Explore More Offerings{% endif %}
+            </a>
+        </div>
+        
     </div>
 </section>
+
+<style>
+.container.narrow {
+    max-width: 600px;
+}
+
+.confirmation-hero {
+    padding: 3rem 0;
+    text-align: center;
+}
+
+/* Success Animation */
+.success-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 2rem;
+}
+
+.checkmark {
+    width: 100%;
+    height: 100%;
+}
+
+.checkmark-circle {
+    fill: none;
+    stroke: var(--erdpuls-primary, #4a7c59);
+    stroke-width: 4;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    animation: circle 0.6s ease-out forwards;
+}
+
+.checkmark-check {
+    fill: none;
+    stroke: var(--erdpuls-primary, #4a7c59);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    animation: check 0.4s ease-out 0.4s forwards;
+}
+
+@keyframes circle {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes check {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.confirmation-title {
+    font-size: 2rem;
+    color: var(--erdpuls-secondary, #2d4a3e);
+    margin-bottom: 0.5rem;
+}
+
+.confirmation-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+/* Details Card */
+.details-card {
+    background: white;
+    border: 1px solid #e8e4df;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.details-card h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: #666;
+}
+
+.detail-value {
+    font-weight: 600;
+}
+
+/* Next Steps Card */
+.next-steps-card {
+    background: var(--erdpuls-bg, #f8f6f3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.next-steps-card h3 {
+    margin-bottom: 1rem;
+}
+
+.next-steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: step-counter;
+}
+
+.next-steps-list li {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e8e4df;
+}
+
+.next-steps-list li:last-child {
+    border-bottom: none;
+}
+
+.step-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.step-content strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.step-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Progress Update */
+.progress-update-card {
+    background: white;
+    border: 1px solid #e8e4df;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.progress-update-card h3 {
+    margin-bottom: 1rem;
+}
+
+.progress-bar-container.large {
+    height: 16px;
+    margin-bottom: 1rem;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-around;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--erdpuls-primary, #4a7c59);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Philosophy Note */
+.philosophy-note {
+    background: linear-gradient(135deg, var(--erdpuls-primary, #4a7c59) 0%, var(--erdpuls-secondary, #2d4a3e) 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.philosophy-note p {
+    margin: 0;
+}
+
+/* Actions */
+.confirmation-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    background: #e8e4df;
+    border-radius: 8px;
+    height: 12px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--erdpuls-primary, #4a7c59), var(--erdpuls-accent, #8fbc8f));
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s ease;
+}
+</style>
 {% endblock %}

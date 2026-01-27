@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Benutzerverwaltung{% elif lang == 'pl' %}Zarządzanie użytkownikami{% else %}User Management{% endif %} | Erdpuls Admin
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+        
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <h1>
+                    {% if lang == 'de' %}Benutzerverwaltung{% elif lang == 'pl' %}Zarządzanie użytkownikami{% else %}User Management{% endif %}
+                </h1>
+                <p class="admin-subtitle">
+                    {{ total }} {% if lang == 'de' %}Benutzer insgesamt{% elif lang == 'pl' %}użytkowników łącznie{% else %}users total{% endif %}
+                </p>
+            </div>
+        </header>
+        
+        {% include "admin/_nav.html" %}
+        
+        <!-- Filters -->
+        <div class="admin-filters">
+            <form method="get" action="/admin/users" class="filter-form">
+                <div class="filter-group">
+                    <input type="text" name="search" value="{{ search }}" 
+                           placeholder="{% if lang == 'de' %}E-Mail oder Name suchen...{% elif lang == 'pl' %}Szukaj e-mail lub nazwę...{% else %}Search email or name...{% endif %}">
+                </div>
+                <div class="filter-group">
+                    <select name="role">
+                        <option value="">{% if lang == 'de' %}Alle Rollen{% elif lang == 'pl' %}Wszystkie role{% else %}All Roles{% endif %}</option>
+                        <option value="member" {% if role_filter == 'member' %}selected{% endif %}>👤 {% if lang == 'de' %}Mitglied{% elif lang == 'pl' %}Członek{% else %}Member{% endif %}</option>
+                        <option value="creator" {% if role_filter == 'creator' %}selected{% endif %}>✏️ {% if lang == 'de' %}Ersteller{% elif lang == 'pl' %}Twórca{% else %}Creator{% endif %}</option>
+                        <option value="facilitator" {% if role_filter == 'facilitator' %}selected{% endif %}>🌱 Facilitator</option>
+                        <option value="moderator" {% if role_filter == 'moderator' %}selected{% endif %}>🛡️ {% if lang == 'de' %}Moderator{% elif lang == 'pl' %}Moderator{% else %}Moderator{% endif %}</option>
+                        <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>👑 Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Filtern{% elif lang == 'pl' %}Filtruj{% else %}Filter{% endif %}</button>
+                {% if search or role_filter %}
+                <a href="/admin/users" class="btn btn-outline">{% if lang == 'de' %}Zurücksetzen{% elif lang == 'pl' %}Resetuj{% else %}Reset{% endif %}</a>
+                {% endif %}
+            </form>
+        </div>
+        
+        <!-- Users Table -->
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>{% if lang == 'de' %}Benutzer{% elif lang == 'pl' %}Użytkownik{% else %}User{% endif %}</th>
+                        <th>{% if lang == 'de' %}E-Mail{% elif lang == 'pl' %}E-mail{% else %}Email{% endif %}</th>
+                        <th>{% if lang == 'de' %}Rolle{% elif lang == 'pl' %}Rola{% else %}Role{% endif %}</th>
+                        <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                        <th>{% if lang == 'de' %}Registriert{% elif lang == 'pl' %}Zarejestrowany{% else %}Registered{% endif %}</th>
+                        <th>{% if lang == 'de' %}Letzter Login{% elif lang == 'pl' %}Ostatnie logowanie{% else %}Last Login{% endif %}</th>
+                        <th>{% if lang == 'de' %}Aktionen{% elif lang == 'pl' %}Akcje{% else %}Actions{% endif %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr class="{% if not u.is_active %}inactive{% endif %}">
+                        <td>
+                            <div class="user-cell">
+                                <span class="user-avatar">
+                                    {% if u.role == 'admin' %}👑
+                                    {% elif u.role == 'moderator' %}🛡️
+                                    {% elif u.role == 'facilitator' %}🌱
+                                    {% elif u.role == 'creator' %}✏️
+                                    {% else %}👤{% endif %}
+                                </span>
+                                <strong>{{ u.name or '—' }}</strong>
+                            </div>
+                        </td>
+                        <td>{{ u.email }}</td>
+                        <td>
+                            <span class="role-badge role-{{ u.role }}">
+                                {{ u.role|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if u.is_active %}
+                            <span class="status-badge status-active">{% if lang == 'de' %}Aktiv{% elif lang == 'pl' %}Aktywny{% else %}Active{% endif %}</span>
+                            {% else %}
+                            <span class="status-badge status-inactive">{% if lang == 'de' %}Inaktiv{% elif lang == 'pl' %}Nieaktywny{% else %}Inactive{% endif %}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.created_at.strftime('%d.%m.%Y') }}</td>
+                        <td>{{ u.last_login.strftime('%d.%m.%Y %H:%M') if u.last_login else '—' }}</td>
+                        <td>
+                            <a href="/admin/users/{{ u.id }}" class="btn btn-small">
+                                {% if lang == 'de' %}Bearbeiten{% elif lang == 'pl' %}Edytuj{% else %}Edit{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="empty-cell">
+                            {% if lang == 'de' %}Keine Benutzer gefunden{% elif lang == 'pl' %}Nie znaleziono użytkowników{% else %}No users found{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="/admin/users?page={{ page - 1 }}{% if search %}&search={{ search }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="btn btn-small btn-outline">← {% if lang == 'de' %}Zurück{% elif lang == 'pl' %}Wstecz{% else %}Previous{% endif %}</a>
+            {% endif %}
+            
+            <span class="pagination-info">
+                {% if lang == 'de' %}Seite{% elif lang == 'pl' %}Strona{% else %}Page{% endif %} {{ page }} {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} {{ total_pages }}
+            </span>
+            
+            {% if page < total_pages %}
+            <a href="/admin/users?page={{ page + 1 }}{% if search %}&search={{ search }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}" class="btn btn-small btn-outline">{% if lang == 'de' %}Weiter{% elif lang == 'pl' %}Dalej{% else %}Next{% endif %} →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+    </div>
+</section>
+
+{% include "admin/_styles.html" %}
+{% endblock %}

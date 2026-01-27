@@ -8,9 +8,9 @@
 
 | Property | Value |
 |----------|-------|
-| Generated | 2026-01-27T07:03:40.397024 |
+| Generated | 2026-01-27T17:43:55.373447 |
 | Schema | `erdpuls_threshold` |
-| Database Size | 9185 kB |
+| Database Size | 9297 kB |
 | PostgreSQL | PostgreSQL 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1) o... |
 | UUID Extension | ✅ Enabled |
 | Author | Farmer |
@@ -29,10 +29,10 @@
 
 | Metric | Count |
 |--------|-------|
-| Tables | 8 |
-| Columns | 76 |
-| Relationships | 5 |
-| Indexes | 19 |
+| Tables | 9 |
+| Columns | 92 |
+| Relationships | 6 |
+| Indexes | 22 |
 | Triggers | 1 |
 | Functions | 12 |
 | Erdpuls Core Tables | 8 |
@@ -121,10 +121,13 @@
 | `hours_category` | varchar(100) | ✓ | - |
 | `hours_amount` | numeric(5,2) | ✓ | - |
 | `status` | varchar(50) | ✓ | 'pending'::character varying |
+| `wants_to_participate` | boolean | ✓ | false |
+| `engagement_type` | varchar(50) | ✓ | 'support_only'::character vary |
 
 **Constraints:**
 
 - `contributions_contribution_type_check` (CHECK)
+- `contributions_engagement_type_check` (CHECK)
 - `contributions_offering_id_fkey` (FOREIGN KEY)
 - `contributions_pkey` (PRIMARY KEY)
 - `contributions_status_check` (CHECK)
@@ -144,6 +147,8 @@
 | `eur_per_hour` | numeric(10,2) | ✗ | - |
 | `description` | text | ✓ | - |
 | `created_at` | timestamp without time zone | ✓ | CURRENT_TIMESTAMP |
+| `description_de` | text | ✓ | - |
+| `description_pl` | text | ✓ | - |
 
 **Constraints:**
 
@@ -222,7 +227,7 @@
 
 > Participation intentions (separate from contributions for privacy)
 
-**Rows:** 1 | **Size:** 64 kB
+**Rows:** 1 | **Size:** 80 kB
 
 | Column | Type | Nullable | Default |
 |--------|------|----------|--------|
@@ -233,13 +238,40 @@
 | `referral_source` | varchar(255) | ✓ | - |
 | `status` | varchar(50) | ✓ | 'registered'::character varyin |
 | `registered_at` | timestamp without time zone | ✓ | CURRENT_TIMESTAMP |
+| `linked_contribution_id` | uuid | ✓ | - |
+| `registration_type` | varchar(50) | ✓ | 'participate_only'::character  |
 
 **Constraints:**
 
+- `registrations_linked_contribution_id_fkey` (FOREIGN KEY)
 - `registrations_offering_id_email_key` (UNIQUE)
 - `registrations_offering_id_fkey` (FOREIGN KEY)
 - `registrations_pkey` (PRIMARY KEY)
+- `registrations_registration_type_check` (CHECK)
 - `registrations_status_check` (CHECK)
+
+---
+
+### roles
+
+**Rows:** 5 | **Size:** 32 kB
+
+| Column | Type | Nullable | Default |
+|--------|------|----------|--------|
+| `name` | varchar(50) | ✗ | - |
+| `level` | integer | ✗ | - |
+| `description` | text | ✓ | - |
+| `description_de` | text | ✓ | - |
+| `description_pl` | text | ✓ | - |
+| `can_create_offering` | boolean | ✓ | false |
+| `can_publish_direct` | boolean | ✓ | false |
+| `can_approve_offerings` | boolean | ✓ | false |
+| `can_manage_users` | boolean | ✓ | false |
+| `created_at` | timestamp without time zone | ✓ | CURRENT_TIMESTAMP |
+
+**Constraints:**
+
+- `roles_pkey` (PRIMARY KEY)
 
 ---
 
@@ -267,7 +299,7 @@
 
 > User accounts with authentication credentials (admin/user roles)
 
-**Rows:** 1 | **Size:** 64 kB
+**Rows:** 2 | **Size:** 80 kB
 
 | Column | Type | Nullable | Default |
 |--------|------|----------|--------|
@@ -297,6 +329,7 @@
 | `contributions` | offering_id | `offerings` | id | CASCADE |
 | `offerings` | creator_id | `users` | id | SET NULL |
 | `regeneration_fund` | offering_id | `offerings` | id | SET NULL |
+| `registrations` | linked_contribution_id | `contributions` | id | SET NULL |
 | `registrations` | offering_id | `offerings` | id | CASCADE |
 
 ## Indexes
@@ -330,9 +363,14 @@
 
 ### registrations
 
+- 📇 `idx_registrations_linked_contribution` on (linked_contribution_id)
 - 📇 `idx_registrations_offering` on (offering_id)
 - 🔒 `registrations_offering_id_email_key` on (offering_id, email)
 - 🔑 `registrations_pkey` on (id)
+
+### roles
+
+- 🔑 `roles_pkey` on (name)
 
 ### token_rates
 
@@ -341,6 +379,7 @@
 ### users
 
 - 📇 `idx_users_email` on (email)
+- 📇 `idx_users_role` on (role)
 - 🔒 `users_email_key` on (email)
 - 🔑 `users_pkey` on (id)
 

@@ -1,0 +1,31 @@
+<!-- Admin Navigation - include in all admin pages -->
+<nav class="admin-nav">
+    <a href="/admin" class="admin-nav-item {% if request.url.path == '/admin' or request.url.path == '/admin/' %}active{% endif %}">
+        <span class="nav-icon">📊</span>
+        {% if lang == 'de' %}Dashboard{% elif lang == 'pl' %}Panel{% else %}Dashboard{% endif %}
+    </a>
+    <a href="/admin/users" class="admin-nav-item {% if '/admin/users' in request.url.path %}active{% endif %}">
+        <span class="nav-icon">👥</span>
+        {% if lang == 'de' %}Benutzer{% elif lang == 'pl' %}Użytkownicy{% else %}Users{% endif %}
+    </a>
+    <a href="/admin/registrations" class="admin-nav-item {% if '/admin/registrations' in request.url.path %}active{% endif %}">
+        <span class="nav-icon">📝</span>
+        {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}Uczestnicy{% else %}Participants{% endif %}
+    </a>
+    <a href="/admin/contributions" class="admin-nav-item {% if '/admin/contributions' in request.url.path %}active{% endif %}">
+        <span class="nav-icon">💚</span>
+        {% if lang == 'de' %}Unterstützer{% elif lang == 'pl' %}Wspierający{% else %}Supporters{% endif %}
+    </a>
+    <a href="/admin/offerings" class="admin-nav-item {% if '/admin/offerings' in request.url.path %}active{% endif %}">
+        <span class="nav-icon">🌱</span>
+        {% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}
+    </a>
+    <a href="/admin/fund" class="admin-nav-item {% if '/admin/fund' in request.url.path %}active{% endif %}">
+        <span class="nav-icon">🏦</span>
+        {% if lang == 'de' %}Fonds{% elif lang == 'pl' %}Fundusz{% else %}Fund{% endif %}
+    </a>
+    <a href="/admin/settings" class="admin-nav-item {% if '/admin/settings' in request.url.path %}active{% endif %}">
+        <span class="nav-icon">⚙️</span>
+        {% if lang == 'de' %}Einstellungen{% elif lang == 'pl' %}Ustawienia{% else %}Settings{% endif %}
+    </a>
+</nav>

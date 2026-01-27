@@ -1,263 +1,530 @@
 {% extends "base.html" %}
 
-{% block title %}{{ offering.get_title(lang) }}{% endblock %}
+{% block title %}{{ offering.get_title(lang) }} | Erdpuls Müllrose{% endblock %}
 
 {% block content %}
-<section class="offering-detail">
+<!-- Hero Section -->
+<section class="offering-hero">
     <div class="container">
-        <nav class="breadcrumb">
-            <a href="/offerings">{% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}</a>
-            <span>›</span>
-            <span>{{ offering.get_title(lang) }}</span>
-        </nav>
-
-        {% if request.query_params.get('success') %}
-        <div class="alert alert-success">
-            {% if request.query_params.get('success') == 'registered' %}
-                {% if lang == 'de' %}Erfolgreich registriert!{% elif lang == 'pl' %}Pomyślnie zarejestrowano!{% else %}Successfully registered!{% endif %}
-            {% elif request.query_params.get('success') == 'contributed' %}
-                {% if lang == 'de' %}Danke für Ihren Beitrag zum kollektiven Topf!{% elif lang == 'pl' %}Dziękujemy za wkład do wspólnego funduszu!{% else %}Thank you for your contribution to the collective pot!{% endif %}
+        <a href="/offerings" class="back-link">
+            ← {% if lang == 'de' %}Alle Angebote{% elif lang == 'pl' %}Wszystkie oferty{% else %}All Offerings{% endif %}
+        </a>
+        
+        <!-- Status Badge -->
+        <div class="status-badge status-{{ offering.status }}">
+            {% if offering.status == 'open' %}
+                {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% else %}Open{% endif %}
+            {% elif offering.status == 'threshold_met' %}
+                {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}
+            {% elif offering.status == 'confirmed' %}
+                {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}
+            {% elif offering.status == 'completed' %}
+                {% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Zakończone{% else %}Completed{% endif %}
+            {% elif offering.status == 'cancelled' %}
+                {% if lang == 'de' %}Abgesagt{% elif lang == 'pl' %}Odwołane{% else %}Cancelled{% endif %}
             {% endif %}
         </div>
-        {% endif %}
-
-        {% if request.query_params.get('error') %}
-        <div class="alert alert-error">
-            {% if request.query_params.get('error') == 'registration_closed' %}
-                {% if lang == 'de' %}Registrierung ist geschlossen{% elif lang == 'pl' %}Rejestracja jest zamknięta{% else %}Registration is closed{% endif %}
-            {% elif request.query_params.get('error') == 'contributions_closed' %}
-                {% if lang == 'de' %}Beiträge sind geschlossen{% elif lang == 'pl' %}Wpłaty są zamknięte{% else %}Contributions are closed{% endif %}
-            {% else %}
-                {% if lang == 'de' %}Ein Fehler ist aufgetreten{% elif lang == 'pl' %}Wystąpił błąd{% else %}An error occurred{% endif %}
-            {% endif %}
+        
+        <h1 class="offering-title">{{ offering.get_title(lang) }}</h1>
+        
+        {% if offering.event_date %}
+        <div class="event-meta">
+            <span class="meta-item">
+                📅 {{ offering.event_date.strftime('%d.%m.%Y') }}
+                {% if offering.event_date.strftime('%H:%M') != '00:00' %}
+                    • {{ offering.event_date.strftime('%H:%M') }}
+                {% endif %}
+            </span>
         </div>
         {% endif %}
+    </div>
+</section>
 
+<!-- Main Content -->
+<section class="section">
+    <div class="container">
         <div class="offering-layout">
-            <div class="offering-main">
-                <header class="offering-header">
-                    <h1>{{ offering.get_title(lang) }}</h1>
-                    {% if offering._threshold_reached %}
-                    <span class="badge badge-success badge-large">
-                        {% if lang == 'de' %}Schwelle erreicht!{% elif lang == 'pl' %}Próg osiągnięty!{% else %}Threshold Reached!{% endif %}
-                    </span>
-                    {% endif %}
-                </header>
-
-                <div class="offering-description">
-                    {{ offering.get_description(lang) }}
+            
+            <!-- Left: Content -->
+            <div class="offering-content">
+                
+                <!-- Description -->
+                <div class="content-section">
+                    <h2>{% if lang == 'de' %}Über dieses Angebot{% elif lang == 'pl' %}O tej ofercie{% else %}About This Offering{% endif %}</h2>
+                    <div class="description">
+                        {{ offering.get_description(lang)|safe }}
+                    </div>
                 </div>
-
-                <!-- Dates Section - Table Layout -->
-                <table class="info-table">
-                    {% if offering.event_date %}
-                    <tr>
-                        <td class="info-label">{% if lang == 'de' %}Veranstaltung{% elif lang == 'pl' %}Wydarzenie{% else %}Event Date{% endif %}</td>
-                        <td class="info-value">{{ offering.event_date.strftime('%d.%m.%Y') }}{% if offering.event_date.hour != 0 or offering.event_date.minute != 0 %}, {{ offering.event_date.strftime('%H:%M') }}{% endif %}</td>
-                    </tr>
-                    {% endif %}
-                    <tr>
-                        <td class="info-label">{% if lang == 'de' %}Registrierung bis{% elif lang == 'pl' %}Rejestracja do{% else %}Register by{% endif %}</td>
-                        <td class="info-value">{{ offering.registration_deadline.strftime('%d.%m.%Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="info-label">{% if lang == 'de' %}Beiträge bis{% elif lang == 'pl' %}Wpłaty do{% else %}Contribute by{% endif %}</td>
-                        <td class="info-value">{{ offering.contribution_deadline.strftime('%d.%m.%Y, %H:%M') }}</td>
-                    </tr>
-                </table>
-
+                
                 <!-- Cost Breakdown -->
-                <div class="cost-breakdown">
-                    <h3>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% else %}Cost Breakdown{% endif %}</h3>
-                    <p class="transparency-note">
-                        {% if lang == 'de' %}
-                            Volle Transparenz darüber, was dieses Angebot braucht und warum
-                        {% elif lang == 'pl' %}
-                            Pełna przejrzystość tego, czego potrzebuje ta oferta i dlaczego
-                        {% else %}
-                            Full transparency of what this offering needs and why
-                        {% endif %}
-                    </p>
-                    <table class="cost-table">
+                {% if offering.facilitator_cost or offering.materials_cost or offering.meals_cost or offering.space_cost %}
+                <div class="content-section">
+                    <h2>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% else %}Cost Breakdown{% endif %}</h2>
+                    <div class="cost-breakdown">
                         {% if offering.facilitator_cost and offering.facilitator_cost > 0 %}
-                        <tr>
-                            <td>{% if lang == 'de' %}Honorar{% elif lang == 'pl' %}Wynagrodzenie{% else %}Facilitator{% endif %}</td>
-                            <td class="cost-amount">€{{ "%.2f"|format(offering.facilitator_cost) }}</td>
-                        </tr>
+                        <div class="cost-item">
+                            <span class="cost-label">{% if lang == 'de' %}Facilitator{% elif lang == 'pl' %}Prowadzący{% else %}Facilitator{% endif %}</span>
+                            <span class="cost-value">€{{ offering.facilitator_cost }}</span>
+                        </div>
                         {% endif %}
                         {% if offering.materials_cost and offering.materials_cost > 0 %}
-                        <tr>
-                            <td>{% if lang == 'de' %}Materialien{% elif lang == 'pl' %}Materiały{% else %}Materials{% endif %}</td>
-                            <td class="cost-amount">€{{ "%.2f"|format(offering.materials_cost) }}</td>
-                        </tr>
+                        <div class="cost-item">
+                            <span class="cost-label">{% if lang == 'de' %}Materialien{% elif lang == 'pl' %}Materiały{% else %}Materials{% endif %}</span>
+                            <span class="cost-value">€{{ offering.materials_cost }}</span>
+                        </div>
                         {% endif %}
                         {% if offering.meals_cost and offering.meals_cost > 0 %}
-                        <tr>
-                            <td>{% if lang == 'de' %}Mahlzeiten{% elif lang == 'pl' %}Posiłki{% else %}Meals{% endif %}</td>
-                            <td class="cost-amount">€{{ "%.2f"|format(offering.meals_cost) }}</td>
-                        </tr>
+                        <div class="cost-item">
+                            <span class="cost-label">{% if lang == 'de' %}Mahlzeiten{% elif lang == 'pl' %}Posiłki{% else %}Meals{% endif %}</span>
+                            <span class="cost-value">€{{ offering.meals_cost }}</span>
+                        </div>
                         {% endif %}
                         {% if offering.space_cost and offering.space_cost > 0 %}
-                        <tr>
-                            <td>{% if lang == 'de' %}Raum{% elif lang == 'pl' %}Przestrzeń{% else %}Space{% endif %}</td>
-                            <td class="cost-amount">€{{ "%.2f"|format(offering.space_cost) }}</td>
-                        </tr>
+                        <div class="cost-item">
+                            <span class="cost-label">{% if lang == 'de' %}Raum{% elif lang == 'pl' %}Przestrzeń{% else %}Space{% endif %}</span>
+                            <span class="cost-value">€{{ offering.space_cost }}</span>
+                        </div>
                         {% endif %}
                         {% if offering.sustainability_contribution and offering.sustainability_contribution > 0 %}
-                        <tr>
-                            <td>{% if lang == 'de' %}Nachhaltigkeit{% elif lang == 'pl' %}Zrównoważoność{% else %}Sustainability{% endif %}</td>
-                            <td class="cost-amount">€{{ "%.2f"|format(offering.sustainability_contribution) }}</td>
-                        </tr>
+                        <div class="cost-item">
+                            <span class="cost-label">{% if lang == 'de' %}Nachhaltigkeitsbeitrag{% elif lang == 'pl' %}Wkład na zrównoważony rozwój{% else %}Sustainability Contribution{% endif %}</span>
+                            <span class="cost-value">€{{ offering.sustainability_contribution }}</span>
+                        </div>
                         {% endif %}
-                        <tr class="cost-total">
-                            <td><strong>{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}</strong></td>
-                            <td class="cost-amount"><strong>€{{ "%.2f"|format(offering.threshold_amount) }}</strong></td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Organizer (visible on mobile) -->
-                {% if offering.organizer_name %}
-                <div class="organizer-section mobile-only">
-                    <h3>{% if lang == 'de' %}Organisator{% elif lang == 'pl' %}Organizator{% else %}Organizer{% endif %}</h3>
-                    <div class="organizer-details">
-                        <strong>{{ offering.organizer_name }}</strong>
-                        {% if offering.organizer_email %}
-                        <a href="mailto:{{ offering.organizer_email }}">📧 {{ offering.organizer_email }}</a>
-                        {% endif %}
-                        {% if offering.organizer_phone %}
-                        <a href="tel:{{ offering.organizer_phone }}">📞 {{ offering.organizer_phone }}</a>
-                        {% endif %}
+                        <div class="cost-item total">
+                            <span class="cost-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}</span>
+                            <span class="cost-value">€{{ offering.threshold_amount }}</span>
+                        </div>
                     </div>
                 </div>
                 {% endif %}
+                
+                <!-- Engagement Summary -->
+                <div class="content-section">
+                    <h2>{% if lang == 'de' %}Gemeinschaftsengagement{% elif lang == 'pl' %}Zaangażowanie społeczności{% else %}Community Engagement{% endif %}</h2>
+                    <div class="engagement-summary">
+                        <div class="engagement-stat">
+                            <span class="stat-value">{{ offering._engagement.total_participants }}</span>
+                            <span class="stat-label">{% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}Uczestników{% else %}Participants{% endif %}</span>
+                        </div>
+                        <div class="engagement-stat">
+                            <span class="stat-value">{{ offering._engagement.total_supporters }}</span>
+                            <span class="stat-label">{% if lang == 'de' %}Unterstützer{% elif lang == 'pl' %}Wspierających{% else %}Supporters{% endif %}</span>
+                        </div>
+                        <div class="engagement-stat">
+                            <span class="stat-value">{{ offering._engagement.total_engaged }}</span>
+                            <span class="stat-label">{% if lang == 'de' %}Gesamt engagiert{% elif lang == 'pl' %}Łącznie zaangażowanych{% else %}Total Engaged{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
-
+            
+            <!-- Right: Sidebar -->
             <aside class="offering-sidebar">
+                
                 <!-- Progress Card -->
-                <div class="sidebar-card">
-                    <h3>{% if lang == 'de' %}Kollektiver Fortschritt{% elif lang == 'pl' %}Postęp zbiorowy{% else %}Collective Progress{% endif %}</h3>
-                    
-                    <div class="progress-ring-container">
-                        <svg class="progress-ring" viewBox="0 0 120 120">
-                            <circle class="progress-ring-bg" cx="60" cy="60" r="50" />
-                            <circle class="progress-ring-fill" cx="60" cy="60" r="50" 
-                                    stroke-dasharray="{{ (offering._percent * 3.14159)|round(1) }}, 314.159"
-                                    stroke-dashoffset="0" />
-                        </svg>
-                        <div class="progress-ring-text">
-                            <span class="progress-value">{{ "%.0f"|format(offering._percent) }}%</span>
-                        </div>
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span class="progress-amount">€{{ offering._total }}</span>
+                        <span class="progress-of">{% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} €{{ offering.threshold_amount }}</span>
                     </div>
-
+                    
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ [offering._percent, 100]|min }}%"></div>
+                    </div>
+                    
                     <div class="progress-stats">
-                        <div class="stat-primary">€{{ "%.2f"|format(offering._total) }}</div>
-                        <div class="stat-secondary">{% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} €{{ "%.2f"|format(offering.threshold_amount) }}</div>
-                        {% if offering._remaining > 0 %}
-                        <div class="stat-remaining">€{{ "%.2f"|format(offering._remaining) }} {% if lang == 'de' %}verbleibend{% elif lang == 'pl' %}pozostało{% else %}remaining{% endif %}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="participant-count">
-                        👥 {{ offering._reg_count }} {% if lang == 'de' %}registriert{% elif lang == 'pl' %}zarejestrowanych{% else %}registered{% endif %}{% if offering.max_participants %} / {{ offering.max_participants }}{% endif %}
-                    </div>
-                </div>
-
-                <!-- Organizer Card (desktop) -->
-                {% if offering.organizer_name %}
-                <div class="sidebar-card desktop-only">
-                    <h3>{% if lang == 'de' %}Organisator{% elif lang == 'pl' %}Organizator{% else %}Organizer{% endif %}</h3>
-                    <div class="organizer-details">
-                        <strong>{{ offering.organizer_name }}</strong>
-                        {% if offering.organizer_email %}
-                        <a href="mailto:{{ offering.organizer_email }}">📧 {{ offering.organizer_email }}</a>
-                        {% endif %}
-                        {% if offering.organizer_phone %}
-                        <a href="tel:{{ offering.organizer_phone }}">📞 {{ offering.organizer_phone }}</a>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-
-                {% if offering._registration_open %}
-                <!-- Registration Card -->
-                <div class="sidebar-card">
-                    <h3>{% if lang == 'de' %}Absicht registrieren{% elif lang == 'pl' %}Zarejestruj zamiar{% else %}Register Intention{% endif %}</h3>
-                    <p class="card-note">
-                        {% if lang == 'de' %}
-                            Getrennt von Beiträgen — registrieren Sie Ihren Wunsch teilzunehmen
-                        {% elif lang == 'pl' %}
-                            Oddzielone od wpłat — zarejestruj chęć uczestnictwa
-                        {% else %}
-                            Separate from contributions — register your desire to participate
-                        {% endif %}
-                    </p>
-                    <form action="/offering/{{ offering.id }}/register" method="post">
-                        <div class="form-group">
-                            <label for="email">Email *</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="name">{% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię{% else %}Name{% endif %}</label>
-                            <input type="text" id="name" name="name">
-                        </div>
-                        <button type="submit" class="btn btn-secondary btn-full">
-                            {% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj{% else %}Register{% endif %}
-                        </button>
-                    </form>
-                </div>
-                {% endif %}
-
-                {% if offering._contribution_open %}
-                <!-- Contribution Card -->
-                <div class="sidebar-card">
-                    <h3>{% if lang == 'de' %}Anonym beitragen{% elif lang == 'pl' %}Wpłać anonimowo{% else %}Contribute Anonymously{% endif %}</h3>
-                    <p class="card-note">
-                        {% if lang == 'de' %}
-                            Geben Sie, was sich richtig anfühlt aus Ihrer aktuellen Lebenssituation
-                        {% elif lang == 'pl' %}
-                            Daj to, co czujesz, że jest słuszne z twojego obecnego miejsca w życiu
-                        {% else %}
-                            Give what feels right from your current place in life
-                        {% endif %}
-                    </p>
-                    
-                    <div class="contribution-options">
-                        <div class="contribution-option">
-                            <span class="option-icon">💶</span>
-                            <span>{% if lang == 'de' %}Finanziell (Euro){% elif lang == 'pl' %}Finansowy (Euro){% else %}Financial (Euro){% endif %}</span>
-                        </div>
-                        <div class="contribution-option">
-                            <span class="option-icon">🪙</span>
-                            <span>{% if lang == 'de' %}UBECrc Token{% elif lang == 'pl' %}Tokeny UBECrc{% else %}UBECrc Tokens{% endif %}</span>
-                        </div>
-                        <div class="contribution-option">
-                            <span class="option-icon">🕐</span>
-                            <span>{% if lang == 'de' %}Arbeitsstunden{% elif lang == 'pl' %}Godziny pracy{% else %}Work Hours{% endif %}</span>
-                        </div>
+                        <span class="stat">
+                            <strong>{{ offering._percent|round(1) }}%</strong>
+                            {% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% else %}funded{% endif %}
+                        </span>
+                        <span class="stat">
+                            <strong>{{ offering._reg_count }}</strong>
+                            {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}uczestników{% else %}participants{% endif %}
+                        </span>
                     </div>
                     
-                    <a href="/offering/{{ offering.id }}/contribute" class="btn btn-primary btn-full">
-                        {% if lang == 'de' %}Jetzt beitragen{% elif lang == 'pl' %}Wpłać teraz{% else %}Contribute Now{% endif %} →
+                    {% if offering._percent >= 100 %}
+                    <div class="threshold-met-notice">
+                        🎉 {% if lang == 'de' %}Schwelle erreicht! Dieses Angebot findet statt.{% elif lang == 'pl' %}Próg osiągnięty! Ta oferta się odbędzie.{% else %}Threshold met! This offering will happen.{% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Main CTA: Engage Button -->
+                    {% if offering.status in ['open', 'threshold_met'] %}
+                    <a href="/offering/{{ offering.id }}/engage" class="btn btn-primary btn-large btn-block">
+                        🌱 {% if lang == 'de' %}Engagieren{% elif lang == 'pl' %}Zaangażuj się{% else %}Get Involved{% endif %}
                     </a>
                     
-                    <p class="anonymity-hint">
-                        🔒 {% if lang == 'de' %}Ihr Beitrag ist vollständig anonym{% elif lang == 'pl' %}Twój wkład jest całkowicie anonimowy{% else %}Your contribution is fully anonymous{% endif %}
+                    <p class="cta-note">
+                        {% if lang == 'de' %}
+                            Wählen Sie Ihren Weg: Teilnehmen, Unterstützen oder beides
+                        {% elif lang == 'pl' %}
+                            Wybierz swoją ścieżkę: Uczestnictwo, Wsparcie lub oba
+                        {% else %}
+                            Choose your pathway: Participate, Support, or both
+                        {% endif %}
                     </p>
+                    {% else %}
+                    <div class="closed-notice">
+                        {% if lang == 'de' %}Engagement für dieses Angebot ist geschlossen.{% elif lang == 'pl' %}Zaangażowanie w tę ofertę jest zamknięte.{% else %}Engagement for this offering is closed.{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Quick Actions -->
+                {% if offering.status in ['open', 'threshold_met'] %}
+                <div class="quick-actions">
+                    <a href="/offering/{{ offering.id }}/participate" class="quick-action">
+                        🙋 {% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% else %}Participate Only{% endif %}
+                    </a>
+                    <a href="/offering/{{ offering.id }}/contribute?pathway=support_only" class="quick-action">
+                        💚 {% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% else %}Support Only{% endif %}
+                    </a>
+                    <a href="/offering/{{ offering.id }}/contribute?pathway=support_and_participate" class="quick-action featured">
+                        🌱 {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+                    </a>
                 </div>
                 {% endif %}
-
-                <!-- Guiding Questions -->
-                <div class="guiding-questions">
-                    <h4>{% if lang == 'de' %}Leitfragen{% elif lang == 'pl' %}Pytania przewodnie{% else %}Guiding Questions{% endif %}</h4>
-                    <ul>
-                        <li>{% if lang == 'de' %}„Was bedeutet dieses Angebot für mich?"{% elif lang == 'pl' %}„Co ta oferta dla mnie znaczy?"{% else %}"What does this offering mean to me?"{% endif %}</li>
-                        <li>{% if lang == 'de' %}„Was ist meine aktuelle Kapazität zu geben?"{% elif lang == 'pl' %}„Jaka jest moja obecna zdolność dawania?"{% else %}"What is my current capacity to give?"{% endif %}</li>
-                        <li>{% if lang == 'de' %}„Was würde ich mir wünschen, dass andere beitragen, wenn sie in meiner Situation wären?"{% elif lang == 'pl' %}„Co chciałbym, żeby inni wnieśli, gdyby byli w mojej sytuacji?"{% else %}"What would I want others to contribute if they were in my situation?"{% endif %}</li>
-                    </ul>
+                
+                <!-- Dates Card -->
+                <div class="dates-card">
+                    <h3>{% if lang == 'de' %}Wichtige Termine{% elif lang == 'pl' %}Ważne daty{% else %}Important Dates{% endif %}</h3>
+                    
+                    {% if offering.event_date %}
+                    <div class="date-item">
+                        <span class="date-icon">📅</span>
+                        <div>
+                            <span class="date-label">{% if lang == 'de' %}Veranstaltung{% elif lang == 'pl' %}Wydarzenie{% else %}Event{% endif %}</span>
+                            <span class="date-value">{{ offering.event_date.strftime('%d.%m.%Y') }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="date-item">
+                        <span class="date-icon">🙋</span>
+                        <div>
+                            <span class="date-label">{% if lang == 'de' %}Anmeldeschluss{% elif lang == 'pl' %}Termin rejestracji{% else %}Registration Deadline{% endif %}</span>
+                            <span class="date-value">{{ offering.registration_deadline.strftime('%d.%m.%Y') }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="date-item">
+                        <span class="date-icon">💶</span>
+                        <div>
+                            <span class="date-label">{% if lang == 'de' %}Beitragsschluss{% elif lang == 'pl' %}Termin wpłat{% else %}Contribution Deadline{% endif %}</span>
+                            <span class="date-value">{{ offering.contribution_deadline.strftime('%d.%m.%Y') }}</span>
+                        </div>
+                    </div>
                 </div>
+                
             </aside>
+            
         </div>
     </div>
 </section>
+
+<style>
+/* Offering Layout */
+.offering-hero {
+    background: linear-gradient(135deg, var(--erdpuls-bg, #f8f6f3), white);
+    padding: 2rem 0 3rem;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: var(--erdpuls-primary, #4a7c59);
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.status-open {
+    background: #e3f2e1;
+    color: #2e7d32;
+}
+
+.status-threshold_met {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.offering-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--erdpuls-secondary, #2d4a3e);
+}
+
+.event-meta {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* Layout Grid */
+.offering-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .offering-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .offering-sidebar {
+        order: -1;
+    }
+}
+
+/* Content Sections */
+.content-section {
+    margin-bottom: 2rem;
+}
+
+.content-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--erdpuls-secondary, #2d4a3e);
+}
+
+.description {
+    line-height: 1.7;
+}
+
+/* Cost Breakdown */
+.cost-breakdown {
+    background: var(--erdpuls-bg, #f8f6f3);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.cost-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e8e4df;
+}
+
+.cost-item:last-child {
+    border-bottom: none;
+}
+
+.cost-item.total {
+    font-weight: 700;
+    border-top: 2px solid var(--erdpuls-primary, #4a7c59);
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+}
+
+/* Engagement Summary */
+.engagement-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.engagement-stat {
+    text-align: center;
+    padding: 1rem;
+    background: var(--erdpuls-bg, #f8f6f3);
+    border-radius: 8px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--erdpuls-primary, #4a7c59);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Sidebar */
+.offering-sidebar {
+    position: sticky;
+    top: 2rem;
+}
+
+.progress-card,
+.dates-card {
+    background: white;
+    border: 1px solid #e8e4df;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.progress-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.progress-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--erdpuls-primary, #4a7c59);
+}
+
+.progress-of {
+    color: #666;
+}
+
+.progress-bar-container {
+    background: #e8e4df;
+    border-radius: 8px;
+    height: 12px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--erdpuls-primary, #4a7c59), var(--erdpuls-accent, #8fbc8f));
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s ease;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+}
+
+.progress-stats .stat {
+    text-align: center;
+}
+
+.threshold-met-notice {
+    background: #fff3cd;
+    color: #856404;
+    padding: 0.75rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.cta-note {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.75rem;
+}
+
+.closed-notice {
+    background: #e2e3e5;
+    color: #383d41;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.quick-action {
+    display: block;
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 1px solid #e8e4df;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--erdpuls-secondary, #2d4a3e);
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.quick-action:hover {
+    border-color: var(--erdpuls-primary, #4a7c59);
+    background: #f0f7f2;
+}
+
+.quick-action.featured {
+    background: var(--erdpuls-primary, #4a7c59);
+    color: white;
+    border-color: var(--erdpuls-primary, #4a7c59);
+}
+
+.quick-action.featured:hover {
+    background: #3d6a4a;
+}
+
+/* Dates Card */
+.dates-card h3 {
+    margin-bottom: 1rem;
+}
+
+.date-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e8e4df;
+}
+
+.date-item:last-child {
+    border-bottom: none;
+}
+
+.date-icon {
+    font-size: 1.2rem;
+}
+
+.date-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.date-value {
+    font-weight: 600;
+}
+</style>
 {% endblock %}

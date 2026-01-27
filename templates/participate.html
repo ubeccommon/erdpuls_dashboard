@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Teilnahme registrieren{% elif lang == 'pl' %}Zarejestruj uczestnictwo{% else %}Register to Participate{% endif %} | {{ offering.get_title(lang) }}
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="page-hero compact">
+    <div class="container">
+        <a href="/offering/{{ offering.id }}/engage" class="back-link">
+            ← {% if lang == 'de' %}Zurück zur Auswahl{% elif lang == 'pl' %}Powrót do wyboru{% else %}Back to Selection{% endif %}
+        </a>
+        <span class="hero-eyebrow">
+            {% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% else %}Participate Only{% endif %}
+        </span>
+        <h1 class="page-title">
+            {% if lang == 'de' %}Registrieren Sie Ihre Teilnahme{% elif lang == 'pl' %}Zarejestruj swoje uczestnictwo{% else %}Register Your Participation{% endif %}
+        </h1>
+        <p class="page-intro">
+            {{ offering.get_title(lang) }}
+        </p>
+    </div>
+</section>
+
+<!-- Registration Form -->
+<section class="section">
+    <div class="container narrow">
+        
+        <!-- Ubuntu Philosophy Note -->
+        <div class="philosophy-card">
+            <div class="philosophy-icon">🤝</div>
+            <blockquote>
+                {% if lang == 'de' %}
+                    „Ich bin, weil wir sind." — Die Gemeinschaft trägt Sie. Keine finanzielle Beitrag erforderlich.
+                {% elif lang == 'pl' %}
+                    „Jestem, ponieważ jesteśmy." — Społeczność Cię wspiera. Nie wymagany jest wkład finansowy.
+                {% else %}
+                    "I am because we are." — The community supports you. No financial contribution required.
+                {% endif %}
+            </blockquote>
+        </div>
+        
+        <!-- Form -->
+        <div class="form-card">
+            <form action="/offering/{{ offering.id }}/participate" method="POST" class="participate-form">
+                
+                <div class="form-group">
+                    <label for="email">
+                        Email <span class="required">*</span>
+                    </label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="{% if lang == 'de' %}ihre.email@beispiel.de{% elif lang == 'pl' %}twoj.email@przyklad.pl{% else %}your.email@example.com{% endif %}">
+                    <p class="form-hint">
+                        {% if lang == 'de' %}
+                            Wir senden Ihnen eine Bestätigung und Updates zum Angebot.
+                        {% elif lang == 'pl' %}
+                            Wyślemy Ci potwierdzenie i aktualizacje dotyczące oferty.
+                        {% else %}
+                            We'll send you confirmation and updates about the offering.
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">
+                        {% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię{% else %}Name{% endif %}
+                    </label>
+                    <input type="text" id="name" name="name" 
+                           placeholder="{% if lang == 'de' %}Ihr Name{% elif lang == 'pl' %}Twoje imię{% else %}Your name{% endif %}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="referral">
+                        {% if lang == 'de' %}Wie haben Sie von uns erfahren?{% elif lang == 'pl' %}Jak się o nas dowiedziałeś?{% else %}How did you hear about us?{% endif %}
+                    </label>
+                    <select id="referral" name="referral">
+                        <option value="">{% if lang == 'de' %}Bitte auswählen{% elif lang == 'pl' %}Proszę wybrać{% else %}Please select{% endif %}</option>
+                        <option value="friend">{% if lang == 'de' %}Freund/Bekannter{% elif lang == 'pl' %}Znajomy{% else %}Friend/Acquaintance{% endif %}</option>
+                        <option value="school">{% if lang == 'de' %}Schule{% elif lang == 'pl' %}Szkoła{% else %}School{% endif %}</option>
+                        <option value="social_media">{% if lang == 'de' %}Soziale Medien{% elif lang == 'pl' %}Media społecznościowe{% else %}Social Media{% endif %}</option>
+                        <option value="website">{% if lang == 'de' %}Website{% elif lang == 'pl' %}Strona internetowa{% else %}Website{% endif %}</option>
+                        <option value="event">{% if lang == 'de' %}Veranstaltung{% elif lang == 'pl' %}Wydarzenie{% else %}Event{% endif %}</option>
+                        <option value="other">{% if lang == 'de' %}Andere{% elif lang == 'pl' %}Inne{% else %}Other{% endif %}</option>
+                    </select>
+                </div>
+                
+                <!-- Privacy Notice -->
+                <div class="privacy-notice">
+                    <span class="notice-icon">🔒</span>
+                    <div class="notice-text">
+                        {% if lang == 'de' %}
+                            <strong>Datenschutz:</strong> Ihre Kontaktdaten werden nur für die Koordination dieser Veranstaltung verwendet.
+                        {% elif lang == 'pl' %}
+                            <strong>Prywatność:</strong> Twoje dane kontaktowe będą używane tylko do koordynacji tego wydarzenia.
+                        {% else %}
+                            <strong>Privacy:</strong> Your contact information will only be used for coordinating this event.
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-large btn-block">
+                    {% if lang == 'de' %}Teilnahme bestätigen{% elif lang == 'pl' %}Potwierdź uczestnictwo{% else %}Confirm Participation{% endif %}
+                </button>
+                
+            </form>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="info-box">
+            <h3>{% if lang == 'de' %}Was passiert als nächstes?{% elif lang == 'pl' %}Co dalej?{% else %}What happens next?{% endif %}</h3>
+            <ol class="next-steps">
+                <li>
+                    {% if lang == 'de' %}
+                        Sie erhalten eine E-Mail-Bestätigung Ihrer Registrierung.
+                    {% elif lang == 'pl' %}
+                        Otrzymasz e-mail z potwierdzeniem rejestracji.
+                    {% else %}
+                        You'll receive an email confirmation of your registration.
+                    {% endif %}
+                </li>
+                <li>
+                    {% if lang == 'de' %}
+                        Wenn die Schwelle erreicht ist, wird das Angebot bestätigt.
+                    {% elif lang == 'pl' %}
+                        Gdy próg zostanie osiągnięty, oferta zostanie potwierdzona.
+                    {% else %}
+                        When the threshold is met, the offering will be confirmed.
+                    {% endif %}
+                </li>
+                <li>
+                    {% if lang == 'de' %}
+                        Sie erhalten alle Details zur Teilnahme.
+                    {% elif lang == 'pl' %}
+                        Otrzymasz wszystkie szczegóły dotyczące uczestnictwa.
+                    {% else %}
+                        You'll receive all details for participation.
+                    {% endif %}
+                </li>
+            </ol>
+        </div>
+        
+        <!-- Change of Mind -->
+        <div class="change-mind">
+            <p>
+                {% if lang == 'de' %}
+                    Möchten Sie doch beitragen? <a href="/offering/{{ offering.id }}/engage">Wählen Sie einen anderen Weg</a>
+                {% elif lang == 'pl' %}
+                    Chcesz jednak wnieść wkład? <a href="/offering/{{ offering.id }}/engage">Wybierz inną ścieżkę</a>
+                {% else %}
+                    Want to contribute after all? <a href="/offering/{{ offering.id }}/engage">Choose a different pathway</a>
+                {% endif %}
+            </p>
+        </div>
+        
+    </div>
+</section>
+
+<style>
+.container.narrow {
+    max-width: 600px;
+}
+
+.philosophy-card {
+    background: linear-gradient(135deg, var(--erdpuls-bg, #f8f6f3), white);
+    border: 1px solid #e8e4df;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.philosophy-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.philosophy-card blockquote {
+    margin: 0;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--erdpuls-secondary, #2d4a3e);
+}
+
+.form-card {
+    background: white;
+    border: 1px solid #e8e4df;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--erdpuls-secondary, #2d4a3e);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--erdpuls-primary, #4a7c59);
+    box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+}
+
+.form-hint {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.required {
+    color: #c44;
+}
+
+.privacy-notice {
+    display: flex;
+    gap: 1rem;
+    background: #f0f7f2;
+    border-left: 4px solid var(--erdpuls-primary, #4a7c59);
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.notice-icon {
+    font-size: 1.5rem;
+}
+
+.notice-text {
+    font-size: 0.9rem;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.info-box {
+    background: var(--erdpuls-bg, #f8f6f3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-box h3 {
+    margin-bottom: 1rem;
+}
+
+.next-steps {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.next-steps li {
+    margin-bottom: 0.75rem;
+}
+
+.change-mind {
+    text-align: center;
+    color: #666;
+}
+
+.change-mind a {
+    color: var(--erdpuls-primary, #4a7c59);
+}
+</style>
+{% endblock %}

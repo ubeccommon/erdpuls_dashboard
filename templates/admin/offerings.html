@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Angebotsverwaltung{% elif lang == 'pl' %}Zarządzanie ofertami{% else %}Offering Management{% endif %} | Erdpuls Admin
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+        
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <h1>
+                    {% if lang == 'de' %}Angebotsverwaltung{% elif lang == 'pl' %}Zarządzanie ofertami{% else %}Offering Management{% endif %}
+                </h1>
+                <p class="admin-subtitle">
+                    {{ total }} {% if lang == 'de' %}Angebote insgesamt{% elif lang == 'pl' %}ofert łącznie{% else %}offerings total{% endif %}
+                </p>
+            </div>
+        </header>
+        
+        {% include "admin/_nav.html" %}
+        
+        <!-- Filters -->
+        <div class="admin-filters">
+            <form method="get" action="/admin/offerings" class="filter-form">
+                <div class="filter-group">
+                    <select name="status">
+                        <option value="">{% if lang == 'de' %}Alle Status{% elif lang == 'pl' %}Wszystkie statusy{% else %}All Status{% endif %}</option>
+                        <option value="draft" {% if status_filter == 'draft' %}selected{% endif %}>{% if lang == 'de' %}Entwurf{% elif lang == 'pl' %}Szkic{% else %}Draft{% endif %}</option>
+                        <option value="open" {% if status_filter == 'open' %}selected{% endif %}>{% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% else %}Open{% endif %}</option>
+                        <option value="threshold_met" {% if status_filter == 'threshold_met' %}selected{% endif %}>{% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}</option>
+                        <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>{% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>{% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Zakończone{% else %}Completed{% endif %}</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>{% if lang == 'de' %}Storniert{% elif lang == 'pl' %}Anulowane{% else %}Cancelled{% endif %}</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Filtern{% elif lang == 'pl' %}Filtruj{% else %}Filter{% endif %}</button>
+                {% if status_filter %}
+                <a href="/admin/offerings" class="btn btn-outline">{% if lang == 'de' %}Zurücksetzen{% elif lang == 'pl' %}Resetuj{% else %}Reset{% endif %}</a>
+                {% endif %}
+            </form>
+        </div>
+        
+        <!-- Offerings Table -->
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>{% if lang == 'de' %}Titel{% elif lang == 'pl' %}Tytuł{% else %}Title{% endif %}</th>
+                        <th>{% if lang == 'de' %}Ersteller{% elif lang == 'pl' %}Twórca{% else %}Creator{% endif %}</th>
+                        <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                        <th>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% else %}Progress{% endif %}</th>
+                        <th>{% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}Uczestnicy{% else %}Participants{% endif %}</th>
+                        <th>{% if lang == 'de' %}Datum{% elif lang == 'pl' %}Data{% else %}Date{% endif %}</th>
+                        <th>{% if lang == 'de' %}Aktionen{% elif lang == 'pl' %}Akcje{% else %}Actions{% endif %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for offering in offerings %}
+                    <tr>
+                        <td>
+                            <a href="/offering/{{ offering.id }}" class="offering-link">
+                                <strong>{{ offering.get_title(lang)[:40] }}{% if offering.get_title(lang)|length > 40 %}...{% endif %}</strong>
+                            </a>
+                        </td>
+                        <td>{{ offering.created_by or '—' }}</td>
+                        <td>
+                            <span class="status-badge status-{{ offering.status }}">
+                                {% if offering.status == 'draft' %}
+                                    {% if lang == 'de' %}Entwurf{% elif lang == 'pl' %}Szkic{% else %}Draft{% endif %}
+                                {% elif offering.status == 'open' %}
+                                    {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% else %}Open{% endif %}
+                                {% elif offering.status == 'threshold_met' %}
+                                    {% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}
+                                {% elif offering.status == 'confirmed' %}
+                                    {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}
+                                {% elif offering.status == 'completed' %}
+                                    {% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Zakończone{% else %}Completed{% endif %}
+                                {% elif offering.status == 'cancelled' %}
+                                    {% if lang == 'de' %}Storniert{% elif lang == 'pl' %}Anulowane{% else %}Cancelled{% endif %}
+                                {% else %}
+                                    {{ offering.status }}
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="progress-cell">
+                                <div class="progress-mini">
+                                    <div class="progress-fill" style="width: {{ [offering._percent, 100]|min }}%"></div>
+                                </div>
+                                <span class="progress-text">€{{ offering._total|int }} / €{{ offering.threshold_amount|int }} ({{ offering._percent|int }}%)</span>
+                            </div>
+                        </td>
+                        <td>{{ offering._reg_count }}</td>
+                        <td>{{ offering.event_date.strftime('%d.%m.%Y') if offering.event_date else '—' }}</td>
+                        <td>
+                            <a href="/dashboard/offering/{{ offering.id }}" class="btn btn-small">
+                                {% if lang == 'de' %}Verwalten{% elif lang == 'pl' %}Zarządzaj{% else %}Manage{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="empty-cell">
+                            {% if lang == 'de' %}Keine Angebote gefunden{% elif lang == 'pl' %}Nie znaleziono ofert{% else %}No offerings found{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="/admin/offerings?page={{ page - 1 }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-small btn-outline">← {% if lang == 'de' %}Zurück{% elif lang == 'pl' %}Wstecz{% else %}Previous{% endif %}</a>
+            {% endif %}
+            
+            <span class="pagination-info">
+                {% if lang == 'de' %}Seite{% elif lang == 'pl' %}Strona{% else %}Page{% endif %} {{ page }} {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} {{ total_pages }}
+            </span>
+            
+            {% if page < total_pages %}
+            <a href="/admin/offerings?page={{ page + 1 }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-small btn-outline">{% if lang == 'de' %}Weiter{% elif lang == 'pl' %}Dalej{% else %}Next{% endif %} →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+    </div>
+</section>
+
+{% include "admin/_styles.html" %}
+
+<style>
+.offering-link {
+    color: var(--color-forest, #2d4a3e);
+    text-decoration: none;
+}
+
+.offering-link:hover {
+    color: var(--color-moss, #4a7c59);
+}
+
+.progress-cell {
+    min-width: 150px;
+}
+
+.progress-mini {
+    height: 6px;
+    background: var(--color-sand, #e8e4df);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-moss, #4a7c59), var(--color-lichen, #8fbc8f));
+    border-radius: 3px;
+}
+
+.progress-text {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #888);
+}
+</style>
+{% endblock %}

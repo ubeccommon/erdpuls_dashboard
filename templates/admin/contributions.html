@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Unterstützerverwaltung{% elif lang == 'pl' %}Zarządzanie wspierającymi{% else %}Supporter Management{% endif %} | Erdpuls Admin
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+        
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <h1>
+                    {% if lang == 'de' %}Unterstützerverwaltung{% elif lang == 'pl' %}Zarządzanie wspierającymi{% else %}Supporter Management{% endif %}
+                </h1>
+                <p class="admin-subtitle">
+                    {{ total }} {% if lang == 'de' %}Beiträge{% elif lang == 'pl' %}wpłat{% else %}contributions{% endif %} · 
+                    €{{ total_eur|round(2) }} {% if lang == 'de' %}insgesamt{% elif lang == 'pl' %}łącznie{% else %}total{% endif %}
+                </p>
+            </div>
+        </header>
+        
+        {% include "admin/_nav.html" %}
+        
+        <!-- Filters -->
+        <div class="admin-filters">
+            <form method="get" action="/admin/contributions" class="filter-form">
+                <div class="filter-group">
+                    <select name="offering_id">
+                        <option value="">{% if lang == 'de' %}Alle Angebote{% elif lang == 'pl' %}Wszystkie oferty{% else %}All Offerings{% endif %}</option>
+                        {% for offering in offerings %}
+                        <option value="{{ offering.id }}" {% if offering_filter == offering.id %}selected{% endif %}>
+                            {{ offering.get_title(lang)[:40] }}{% if offering.get_title(lang)|length > 40 %}...{% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select name="contribution_type">
+                        <option value="">{% if lang == 'de' %}Alle Typen{% elif lang == 'pl' %}Wszystkie typy{% else %}All Types{% endif %}</option>
+                        <option value="euro" {% if type_filter == 'euro' %}selected{% endif %}>💶 Euro</option>
+                        <option value="token" {% if type_filter == 'token' %}selected{% endif %}>🪙 Token</option>
+                        <option value="hours" {% if type_filter == 'hours' %}selected{% endif %}>⏱️ {% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% else %}Hours{% endif %}</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select name="status">
+                        <option value="">{% if lang == 'de' %}Alle Status{% elif lang == 'pl' %}Wszystkie statusy{% else %}All Status{% endif %}</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>{% if lang == 'de' %}Ausstehend{% elif lang == 'pl' %}Oczekujące{% else %}Pending{% endif %}</option>
+                        <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>{% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>{% if lang == 'de' %}Storniert{% elif lang == 'pl' %}Anulowane{% else %}Cancelled{% endif %}</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Filtern{% elif lang == 'pl' %}Filtruj{% else %}Filter{% endif %}</button>
+                {% if offering_filter or type_filter or status_filter %}
+                <a href="/admin/contributions" class="btn btn-outline">{% if lang == 'de' %}Zurücksetzen{% elif lang == 'pl' %}Resetuj{% else %}Reset{% endif %}</a>
+                {% endif %}
+            </form>
+        </div>
+        
+        <!-- Contributions Table -->
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>{% if lang == 'de' %}Betrag{% elif lang == 'pl' %}Kwota{% else %}Amount{% endif %}</th>
+                        <th>{% if lang == 'de' %}Typ{% elif lang == 'pl' %}Typ{% else %}Type{% endif %}</th>
+                        <th>{% if lang == 'de' %}Angebot{% elif lang == 'pl' %}Oferta{% else %}Offering{% endif %}</th>
+                        <th>{% if lang == 'de' %}Engagement{% elif lang == 'pl' %}Zaangażowanie{% else %}Engagement{% endif %}</th>
+                        <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                        <th>{% if lang == 'de' %}Datum{% elif lang == 'pl' %}Data{% else %}Date{% endif %}</th>
+                        <th>{% if lang == 'de' %}Aktionen{% elif lang == 'pl' %}Akcje{% else %}Actions{% endif %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contrib in contributions %}
+                    <tr>
+                        <td>
+                            <strong>€{{ contrib.amount_eur|round(2) }}</strong>
+                            {% if contrib.contribution_type == 'token' and contrib.token_amount %}
+                            <br><small class="text-muted">{{ contrib.token_amount }} tokens</small>
+                            {% elif contrib.contribution_type == 'hours' and contrib.hours_amount %}
+                            <br><small class="text-muted">{{ contrib.hours_amount }}h {{ contrib.hours_category }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="type-icon">
+                                {% if contrib.contribution_type == 'euro' %}💶
+                                {% elif contrib.contribution_type == 'token' %}🪙
+                                {% elif contrib.contribution_type == 'hours' %}⏱️
+                                {% else %}💰{% endif %}
+                            </span>
+                            {{ contrib.contribution_type|capitalize }}
+                        </td>
+                        <td>
+                            <a href="/offering/{{ contrib.offering_id }}">
+                                {{ contrib.offering.get_title(lang)[:25] }}{% if contrib.offering.get_title(lang)|length > 25 %}...{% endif %}
+                            </a>
+                        </td>
+                        <td>
+                            {% if contrib.engagement_type %}
+                                {% if contrib.engagement_type.value == 'support_only' %}
+                                    💚 {% if lang == 'de' %}Nur Unterstützung{% elif lang == 'pl' %}Tylko wsparcie{% else %}Support Only{% endif %}
+                                {% elif contrib.engagement_type.value == 'support_and_participate' %}
+                                    🌱 {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+                                {% else %}
+                                    {{ contrib.engagement_type.value }}
+                                {% endif %}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{ contrib.status }}">{{ contrib.status }}</span>
+                        </td>
+                        <td>{{ contrib.contributed_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        <td>
+                            <a href="/admin/contributions/{{ contrib.id }}" class="btn btn-small">
+                                {% if lang == 'de' %}Details{% elif lang == 'pl' %}Szczegóły{% else %}Details{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="empty-cell">
+                            {% if lang == 'de' %}Keine Beiträge gefunden{% elif lang == 'pl' %}Nie znaleziono wpłat{% else %}No contributions found{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="/admin/contributions?page={{ page - 1 }}{% if offering_filter %}&offering_id={{ offering_filter }}{% endif %}{% if type_filter %}&contribution_type={{ type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-small btn-outline">← {% if lang == 'de' %}Zurück{% elif lang == 'pl' %}Wstecz{% else %}Previous{% endif %}</a>
+            {% endif %}
+            
+            <span class="pagination-info">
+                {% if lang == 'de' %}Seite{% elif lang == 'pl' %}Strona{% else %}Page{% endif %} {{ page }} {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} {{ total_pages }}
+            </span>
+            
+            {% if page < total_pages %}
+            <a href="/admin/contributions?page={{ page + 1 }}{% if offering_filter %}&offering_id={{ offering_filter }}{% endif %}{% if type_filter %}&contribution_type={{ type_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-small btn-outline">{% if lang == 'de' %}Weiter{% elif lang == 'pl' %}Dalej{% else %}Next{% endif %} →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+    </div>
+</section>
+
+{% include "admin/_styles.html" %}
+
+<style>
+.type-icon {
+    font-size: 1.1rem;
+    margin-right: 0.25rem;
+}
+
+.text-muted {
+    color: var(--color-text-muted, #888);
+}
+</style>
+{% endblock %}

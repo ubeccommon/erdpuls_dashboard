@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Teilnehmerverwaltung{% elif lang == 'pl' %}Zarządzanie uczestnikami{% else %}Participant Management{% endif %} | Erdpuls Admin
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+        
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <h1>
+                    {% if lang == 'de' %}Teilnehmerverwaltung{% elif lang == 'pl' %}Zarządzanie uczestnikami{% else %}Participant Management{% endif %}
+                </h1>
+                <p class="admin-subtitle">
+                    {{ total }} {% if lang == 'de' %}Registrierungen insgesamt{% elif lang == 'pl' %}rejestracji łącznie{% else %}registrations total{% endif %}
+                </p>
+            </div>
+        </header>
+        
+        {% include "admin/_nav.html" %}
+        
+        <!-- Success Alert -->
+        {% if request.query_params.get('success') == 'deleted' %}
+        <div class="alert alert-success">
+            {% if lang == 'de' %}Registrierung gelöscht{% elif lang == 'pl' %}Rejestracja usunięta{% else %}Registration deleted{% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Filters -->
+        <div class="admin-filters">
+            <form method="get" action="/admin/registrations" class="filter-form">
+                <div class="filter-group">
+                    <input type="text" name="search" value="{{ search }}" 
+                           placeholder="{% if lang == 'de' %}E-Mail oder Name suchen...{% elif lang == 'pl' %}Szukaj e-mail lub nazwę...{% else %}Search email or name...{% endif %}">
+                </div>
+                <div class="filter-group">
+                    <select name="offering_id">
+                        <option value="">{% if lang == 'de' %}Alle Angebote{% elif lang == 'pl' %}Wszystkie oferty{% else %}All Offerings{% endif %}</option>
+                        {% for offering in offerings %}
+                        <option value="{{ offering.id }}" {% if offering_filter == offering.id %}selected{% endif %}>
+                            {{ offering.get_title(lang)[:40] }}{% if offering.get_title(lang)|length > 40 %}...{% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Filtern{% elif lang == 'pl' %}Filtruj{% else %}Filter{% endif %}</button>
+                {% if search or offering_filter %}
+                <a href="/admin/registrations" class="btn btn-outline">{% if lang == 'de' %}Zurücksetzen{% elif lang == 'pl' %}Resetuj{% else %}Reset{% endif %}</a>
+                {% endif %}
+            </form>
+        </div>
+        
+        <!-- Registrations Table -->
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>{% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}Uczestnik{% else %}Participant{% endif %}</th>
+                        <th>{% if lang == 'de' %}E-Mail{% elif lang == 'pl' %}E-mail{% else %}Email{% endif %}</th>
+                        <th>{% if lang == 'de' %}Angebot{% elif lang == 'pl' %}Oferta{% else %}Offering{% endif %}</th>
+                        <th>{% if lang == 'de' %}Typ{% elif lang == 'pl' %}Typ{% else %}Type{% endif %}</th>
+                        <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                        <th>{% if lang == 'de' %}Registriert{% elif lang == 'pl' %}Zarejestrowano{% else %}Registered{% endif %}</th>
+                        <th>{% if lang == 'de' %}Aktionen{% elif lang == 'pl' %}Akcje{% else %}Actions{% endif %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reg in registrations %}
+                    <tr>
+                        <td>
+                            <strong>{{ reg.name or '—' }}</strong>
+                        </td>
+                        <td>{{ reg.email }}</td>
+                        <td>
+                            <a href="/offering/{{ reg.offering_id }}">
+                                {{ reg.offering.get_title(lang)[:30] }}{% if reg.offering.get_title(lang)|length > 30 %}...{% endif %}
+                            </a>
+                        </td>
+                        <td>
+                            {% if reg.registration_type %}
+                            <span class="type-badge">
+                                {% if reg.registration_type.value == 'participate_only' %}
+                                    🙋 {% if lang == 'de' %}Nur Teilnahme{% elif lang == 'pl' %}Tylko uczestnictwo{% else %}Participate Only{% endif %}
+                                {% elif reg.registration_type.value == 'linked_to_contribution' %}
+                                    💚 {% if lang == 'de' %}Mit Beitrag{% elif lang == 'pl' %}Z wkładem{% else %}With Contribution{% endif %}
+                                {% else %}
+                                    {{ reg.registration_type.value }}
+                                {% endif %}
+                            </span>
+                            {% else %}
+                            <span class="type-badge">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{ reg.status }}">{{ reg.status }}</span>
+                        </td>
+                        <td>{{ reg.registered_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                        <td>
+                            <form action="/admin/registrations/{{ reg.id }}/delete" method="post" 
+                                  onsubmit="return confirm('{% if lang == 'de' %}Wirklich löschen?{% elif lang == 'pl' %}Na pewno usunąć?{% else %}Really delete?{% endif %}');" style="display:inline;">
+                                <button type="submit" class="btn btn-small btn-danger">
+                                    {% if lang == 'de' %}Löschen{% elif lang == 'pl' %}Usuń{% else %}Delete{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="empty-cell">
+                            {% if lang == 'de' %}Keine Registrierungen gefunden{% elif lang == 'pl' %}Nie znaleziono rejestracji{% else %}No registrations found{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="/admin/registrations?page={{ page - 1 }}{% if search %}&search={{ search }}{% endif %}{% if offering_filter %}&offering_id={{ offering_filter }}{% endif %}" class="btn btn-small btn-outline">← {% if lang == 'de' %}Zurück{% elif lang == 'pl' %}Wstecz{% else %}Previous{% endif %}</a>
+            {% endif %}
+            
+            <span class="pagination-info">
+                {% if lang == 'de' %}Seite{% elif lang == 'pl' %}Strona{% else %}Page{% endif %} {{ page }} {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} {{ total_pages }}
+            </span>
+            
+            {% if page < total_pages %}
+            <a href="/admin/registrations?page={{ page + 1 }}{% if search %}&search={{ search }}{% endif %}{% if offering_filter %}&offering_id={{ offering_filter }}{% endif %}" class="btn btn-small btn-outline">{% if lang == 'de' %}Weiter{% elif lang == 'pl' %}Dalej{% else %}Next{% endif %} →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+    </div>
+</section>
+
+{% include "admin/_styles.html" %}
+
+<style>
+.type-badge {
+    font-size: 0.8rem;
+    color: var(--color-bark, #5a5a5a);
+}
+</style>
+{% endblock %}

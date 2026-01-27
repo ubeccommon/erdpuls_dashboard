@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Engagement wählen{% elif lang == 'pl' %}Wybierz zaangażowanie{% else %}Choose Your Engagement{% endif %} | {{ offering.get_title(lang) }}
+{% endblock %}
+
+{% block content %}
+<!-- Minimal Header -->
+<section class="engage-header">
+    <div class="container">
+        <a href="/offering/{{ offering.id }}" class="back-link">
+            ← {% if lang == 'de' %}Zurück zum Angebot{% elif lang == 'pl' %}Powrót do oferty{% else %}Back to Offering{% endif %}
+        </a>
+    </div>
+</section>
+
+<!-- Main Intro Section -->
+<section class="engage-intro">
+    <div class="container">
+        <h1 class="offering-title-large">{{ offering.get_title(lang) }}</h1>
+        
+        <div class="engage-subtitle">
+            <h2 class="engage-question">
+                {% if lang == 'de' %}Wie möchten Sie sich engagieren?{% elif lang == 'pl' %}Jak chcesz się zaangażować?{% else %}How would you like to engage?{% endif %}
+            </h2>
+            <p class="engage-description">
+                {% if lang == 'de' %}
+                    Es gibt verschiedene Wege zur Teilnahme. Wählen Sie, was für Ihre Situation passt.
+                {% elif lang == 'pl' %}
+                    Istnieją różne ścieżki uczestnictwa. Wybierz to, co pasuje do Twojej sytuacji.
+                {% else %}
+                    There are different pathways to engagement. Choose what fits your situation.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Pathway Selection -->
+<section class="section pathways-section">
+    <div class="container">
+        
+        <!-- Pathway Cards -->
+        <div class="pathway-grid">
+            
+            <!-- Participate Only -->
+            <article class="engagement-card">
+                <div class="card-icon">🙋</div>
+                <h2 class="card-title">
+                    {% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% else %}Participate Only{% endif %}
+                </h2>
+                <p class="card-subtitle">
+                    {% if lang == 'de' %}Registrieren Sie Ihre Teilnahmeabsicht{% elif lang == 'pl' %}Zarejestruj zamiar uczestnictwa{% else %}Register your intention to participate{% endif %}
+                </p>
+                <ul class="card-features">
+                    <li>
+                        {% if lang == 'de' %}Kein finanzieller Beitrag erforderlich{% elif lang == 'pl' %}Nie wymaga wkładu finansowego{% else %}No financial contribution required{% endif %}
+                    </li>
+                    <li>
+                        {% if lang == 'de' %}Sichern Sie Ihren Platz{% elif lang == 'pl' %}Zarezerwuj swoje miejsce{% else %}Secure your spot{% endif %}
+                    </li>
+                    <li>
+                        {% if lang == 'de' %}Die Gemeinschaft trägt die Kosten{% elif lang == 'pl' %}Społeczność pokrywa koszty{% else %}Community covers the costs{% endif %}
+                    </li>
+                </ul>
+                <div class="card-note">
+                    {% if lang == 'de' %}
+                        <strong>Ubuntu:</strong> Individuelles Wohlergehen hängt von der Gemeinschaft ab
+                    {% elif lang == 'pl' %}
+                        <strong>Ubuntu:</strong> Indywidualne dobro zależy od społeczności
+                    {% else %}
+                        <strong>Ubuntu:</strong> Individual wellbeing depends on community
+                    {% endif %}
+                </div>
+                <a href="/offering/{{ offering.id }}/participate" class="btn btn-outline btn-block">
+                    {% if lang == 'de' %}Teilnahme registrieren{% elif lang == 'pl' %}Zarejestruj uczestnictwo{% else %}Register to Participate{% endif %}
+                </a>
+            </article>
+            
+            <!-- Contribute Only -->
+            <article class="engagement-card">
+                <div class="card-icon">💚</div>
+                <h2 class="card-title">
+                    {% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% else %}Support Only{% endif %}
+                </h2>
+                <p class="card-subtitle">
+                    {% if lang == 'de' %}Registrieren Sie Ihre Unterstützungsabsicht{% elif lang == 'pl' %}Zarejestruj zamiar wsparcia{% else %}Register your intention to support{% endif %}
+                </p>
+                <ul class="card-features">
+                    <li>
+                        {% if lang == 'de' %}Ermöglichen Sie die Teilnahme anderer{% elif lang == 'pl' %}Umożliw uczestnictwo innych{% else %}Enable others to participate{% endif %}
+                    </li>
+                    <li>
+                        {% if lang == 'de' %}Euro, Tokens oder Stunden{% elif lang == 'pl' %}Euro, tokeny lub godziny{% else %}Euro, tokens, or hours{% endif %}
+                    </li>
+                    <li>
+                        {% if lang == 'de' %}Privatsphäre geschützt{% elif lang == 'pl' %}Prywatność chroniona{% else %}Privacy protected{% endif %}
+                    </li>
+                </ul>
+                <div class="card-note">
+                    {% if lang == 'de' %}
+                        <strong>Pflanzliche Großzügigkeit:</strong> Mehr geben als nehmen
+                    {% elif lang == 'pl' %}
+                        <strong>Hojna roślina:</strong> Dawać więcej niż brać
+                    {% else %}
+                        <strong>Plant generosity:</strong> Giving more than taking
+                    {% endif %}
+                </div>
+                <a href="/offering/{{ offering.id }}/contribute?pathway=support_only" class="btn btn-outline btn-block">
+                    {% if lang == 'de' %}Angebot unterstützen{% elif lang == 'pl' %}Wesprzyj ofertę{% else %}Support This Offering{% endif %}
+                </a>
+            </article>
+            
+            <!-- Contribute & Participate -->
+            <article class="engagement-card featured">
+                <div class="card-badge">
+                    {% if lang == 'de' %}Empfohlen{% elif lang == 'pl' %}Zalecane{% else %}Recommended{% endif %}
+                </div>
+                <div class="card-icon">🌱</div>
+                <h2 class="card-title">
+                    {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+                </h2>
+                <p class="card-subtitle">
+                    {% if lang == 'de' %}Registrieren Sie Ihre Absicht zu beitragen und teilzunehmen{% elif lang == 'pl' %}Zarejestruj zamiar wkładu i uczestnictwa{% else %}Register your intention to contribute and attend{% endif %}
+                </p>
+                <ul class="card-features">
+                    <li>
+                        {% if lang == 'de' %}Wählen Sie Ihren Beitrag{% elif lang == 'pl' %}Wybierz swój wkład{% else %}Choose your contribution{% endif %}
+                    </li>
+                    <li>
+                        {% if lang == 'de' %}Sichern Sie Ihren Platz{% elif lang == 'pl' %}Zarezerwuj miejsce{% else %}Secure your spot{% endif %}
+                    </li>
+                    <li>
+                        {% if lang == 'de' %}Alles in einem Schritt{% elif lang == 'pl' %}Wszystko w jednym kroku{% else %}All in one step{% endif %}
+                    </li>
+                </ul>
+                <div class="card-note">
+                    {% if lang == 'de' %}
+                        <strong>Reziprozität:</strong> Wert fließt in beide Richtungen
+                    {% elif lang == 'pl' %}
+                        <strong>Wzajemność:</strong> Wartość płynie w obie strony
+                    {% else %}
+                        <strong>Reciprocity:</strong> Value flows in both directions
+                    {% endif %}
+                </div>
+                <a href="/offering/{{ offering.id }}/contribute?pathway=support_and_participate" class="btn btn-primary btn-block">
+                    {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+                </a>
+            </article>
+            
+        </div>
+        
+        <!-- Current Progress -->
+        <div class="progress-summary">
+            <h3>{% if lang == 'de' %}Aktueller Stand{% elif lang == 'pl' %}Aktualny status{% else %}Current Progress{% endif %}</h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: {{ [offering._percent, 100]|min }}%">
+                    {% if offering._percent >= 100 %}
+                        <span class="progress-label">✓ {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="progress-stats">
+                <span class="stat">
+                    <strong>€{{ offering._total|round(2) }}</strong> 
+                    {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} 
+                    €{{ offering.threshold_amount }}
+                </span>
+                <span class="stat">
+                    <strong>{{ offering._percent|round(1) }}%</strong> 
+                    {% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% else %}funded{% endif %}
+                </span>
+                <span class="stat">
+                    <strong>{{ offering._reg_count }}</strong> 
+                    {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}uczestników{% else %}participants{% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Help Text -->
+        <div class="help-section">
+            <h3>{% if lang == 'de' %}Nicht sicher, welchen Weg Sie wählen sollen?{% elif lang == 'pl' %}Nie wiesz, którą ścieżkę wybrać?{% else %}Not sure which pathway to choose?{% endif %}</h3>
+            <div class="help-grid">
+                <div class="help-item">
+                    <strong>{% if lang == 'de' %}Wählen Sie "Nur Teilnehmen" wenn:{% elif lang == 'pl' %}Wybierz "Tylko Uczestnictwo" jeśli:{% else %}Choose "Participate Only" if:{% endif %}</strong>
+                    <p>
+                        {% if lang == 'de' %}
+                            Sie teilnehmen möchten, aber derzeit keine finanziellen Ressourcen haben. Es wird keine Rechtfertigung benötigt — die Gemeinschaft ist für Sie da.
+                        {% elif lang == 'pl' %}
+                            Chcesz uczestniczyć, ale obecnie nie masz zasobów finansowych. Nie potrzeba uzasadnienia — społeczność jest dla Ciebie.
+                        {% else %}
+                            You want to participate but don't currently have financial resources to contribute. No justification needed — the community is here for you.
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="help-item">
+                    <strong>{% if lang == 'de' %}Wählen Sie "Nur Unterstützen" wenn:{% elif lang == 'pl' %}Wybierz "Tylko Wsparcie" jeśli:{% else %}Choose "Support Only" if:{% endif %}</strong>
+                    <p>
+                        {% if lang == 'de' %}
+                            Sie nicht teilnehmen können oder möchten, aber die Mission unterstützen wollen. Ihre Unterstützung ermöglicht anderen die Teilnahme.
+                        {% elif lang == 'pl' %}
+                            Nie możesz lub nie chcesz uczestniczyć, ale chcesz wspierać misję. Twoje wsparcie umożliwia innym uczestnictwo.
+                        {% else %}
+                            You can't or don't want to attend but want to support the mission. Your support enables others to participate.
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="help-item">
+                    <strong>{% if lang == 'de' %}Wählen Sie "Unterstützen & Teilnehmen" wenn:{% elif lang == 'pl' %}Wybierz "Wesprzyj & Uczestniczyj" jeśli:{% else %}Choose "Support & Participate" if:{% endif %}</strong>
+                    <p>
+                        {% if lang == 'de' %}
+                            Sie sowohl teilnehmen als auch beitragen möchten. Wählen Sie den Betrag, der für Ihre Situation richtig erscheint.
+                        {% elif lang == 'pl' %}
+                            Chcesz zarówno uczestniczyć, jak i wnieść wkład. Wybierz kwotę, która wydaje się właściwa dla Twojej sytuacji.
+                        {% else %}
+                            You want to both attend and contribute. Choose the amount that feels right for your situation.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+<style>
+/* Engage Header */
+.engage-header {
+    padding: 1.5rem 0 0.5rem;
+}
+
+.back-link {
+    color: var(--color-forest, #2d4a3e);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.back-link:hover {
+    color: var(--color-moss, #4a7c59);
+}
+
+/* Engage Intro Section */
+.engage-intro {
+    padding: 2rem 0 3rem;
+    text-align: center;
+}
+
+.offering-title-large {
+    font-family: var(--font-display, serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 500;
+    color: var(--color-forest, #2d4a3e);
+    margin: 0 0 2rem 0;
+    line-height: 1.2;
+}
+
+.engage-subtitle {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.engage-question {
+    font-family: var(--font-display, serif);
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--color-forest, #2d4a3e);
+    margin: 0 0 0.75rem 0;
+}
+
+.engage-description {
+    font-size: 1rem;
+    color: var(--color-bark, #5a5a5a);
+    margin: 0;
+}
+
+/* Pathways Section */
+.pathways-section {
+    padding-top: 0;
+}
+
+.pathway-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.engagement-card {
+    background: white;
+    border: 2px solid #e8e4df;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.engagement-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.engagement-card.featured {
+    border-color: var(--erdpuls-primary, #4a7c59);
+    background: linear-gradient(to bottom, #f0f7f2, white);
+}
+
+.card-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--erdpuls-primary, #4a7c59);
+    color: white;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--erdpuls-secondary, #2d4a3e);
+}
+
+.card-subtitle {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.card-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    text-align: left;
+}
+
+.card-features li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.card-features li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--erdpuls-primary, #4a7c59);
+    font-weight: bold;
+}
+
+.card-note {
+    background: var(--erdpuls-bg, #f8f6f3);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+/* Progress Summary */
+.progress-summary {
+    background: white;
+    border: 1px solid #e8e4df;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+}
+
+.progress-summary h3 {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.progress-bar-container {
+    background: #e8e4df;
+    border-radius: 8px;
+    height: 24px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--erdpuls-primary, #4a7c59), var(--erdpuls-accent, #8fbc8f));
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    transition: width 0.5s ease;
+}
+
+.progress-label {
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.progress-stats .stat {
+    text-align: center;
+}
+
+/* Help Section */
+.help-section {
+    background: var(--erdpuls-bg, #f8f6f3);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.help-section h3 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.help-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.help-item strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--erdpuls-secondary, #2d4a3e);
+}
+
+.help-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pathway-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Beitragsdetails{% elif lang == 'pl' %}Szczegóły wpłaty{% else %}Contribution Details{% endif %} | Erdpuls Admin
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+        
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <a href="/admin/contributions" class="back-link">← {% if lang == 'de' %}Zurück zur Liste{% elif lang == 'pl' %}Powrót do listy{% else %}Back to List{% endif %}</a>
+                <h1>
+                    {% if lang == 'de' %}Beitragsdetails{% elif lang == 'pl' %}Szczegóły wpłaty{% else %}Contribution Details{% endif %}
+                </h1>
+            </div>
+        </header>
+        
+        {% include "admin/_nav.html" %}
+        
+        <!-- Success Alert -->
+        {% if request.query_params.get('success') == 'updated' %}
+        <div class="alert alert-success">
+            {% if lang == 'de' %}Status aktualisiert{% elif lang == 'pl' %}Status zaktualizowany{% else %}Status updated{% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="detail-grid">
+            
+            <!-- Contribution Info -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>{% if lang == 'de' %}Beitragsinformationen{% elif lang == 'pl' %}Informacje o wpłacie{% else %}Contribution Information{% endif %}</h2>
+                    <span class="status-badge status-{{ contribution.status }}">{{ contribution.status }}</span>
+                </div>
+                <div class="admin-card-content">
+                    <div class="contribution-amount">
+                        <span class="amount-value">€{{ contribution.amount_eur|round(2) }}</span>
+                        <span class="amount-type">
+                            {% if contribution.contribution_type == 'euro' %}💶 Euro
+                            {% elif contribution.contribution_type == 'token' %}🪙 Token ({{ contribution.token_amount }} UBECrc)
+                            {% elif contribution.contribution_type == 'hours' %}⏱️ {% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% else %}Hours{% endif %} ({{ contribution.hours_amount }}h {{ contribution.hours_category }})
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="detail-list">
+                        <div class="detail-item">
+                            <div class="detail-label">{% if lang == 'de' %}Angebot{% elif lang == 'pl' %}Oferta{% else %}Offering{% endif %}</div>
+                            <div class="detail-value">
+                                <a href="/offering/{{ contribution.offering_id }}">{{ contribution.offering.get_title(lang) }}</a>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-label">{% if lang == 'de' %}Engagement-Typ{% elif lang == 'pl' %}Typ zaangażowania{% else %}Engagement Type{% endif %}</div>
+                            <div class="detail-value">
+                                {% if contribution.engagement_type %}
+                                    {% if contribution.engagement_type.value == 'support_only' %}
+                                        💚 {% if lang == 'de' %}Nur Unterstützung{% elif lang == 'pl' %}Tylko wsparcie{% else %}Support Only{% endif %}
+                                    {% elif contribution.engagement_type.value == 'support_and_participate' %}
+                                        🌱 {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+                                    {% else %}
+                                        {{ contribution.engagement_type.value }}
+                                    {% endif %}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-label">{% if lang == 'de' %}Beigetragen am{% elif lang == 'pl' %}Data wpłaty{% else %}Contributed At{% endif %}</div>
+                            <div class="detail-value">{{ contribution.contributed_at.strftime('%d.%m.%Y %H:%M') }}</div>
+                        </div>
+                        
+                        {% if contribution.hours_description %}
+                        <div class="detail-item">
+                            <div class="detail-label">{% if lang == 'de' %}Stundenbeschreibung{% elif lang == 'pl' %}Opis godzin{% else %}Hours Description{% endif %}</div>
+                            <div class="detail-value">{{ contribution.hours_description }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>{% if lang == 'de' %}Kontaktinformationen{% elif lang == 'pl' %}Informacje kontaktowe{% else %}Contact Information{% endif %}</h2>
+                </div>
+                <div class="admin-card-content">
+                    {% if contact %}
+                    <div class="detail-list">
+                        <div class="detail-item">
+                            <div class="detail-label">{% if lang == 'de' %}Name{% elif lang == 'pl' %}Nazwa{% else %}Name{% endif %}</div>
+                            <div class="detail-value">{{ contact.name or '—' }}</div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-label">{% if lang == 'de' %}E-Mail{% elif lang == 'pl' %}E-mail{% else %}Email{% endif %}</div>
+                            <div class="detail-value">
+                                {% if contact.email %}
+                                <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                                {% else %}
+                                —
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-label">{% if lang == 'de' %}Telefon{% elif lang == 'pl' %}Telefon{% else %}Phone{% endif %}</div>
+                            <div class="detail-value">{{ contact.phone or '—' }}</div>
+                        </div>
+                        
+                        {% if contact.notes %}
+                        <div class="detail-item">
+                            <div class="detail-label">{% if lang == 'de' %}Notizen{% elif lang == 'pl' %}Notatki{% else %}Notes{% endif %}</div>
+                            <div class="detail-value">{{ contact.notes }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <p class="empty-state">{% if lang == 'de' %}Keine Kontaktinformationen (anonymer Beitrag){% elif lang == 'pl' %}Brak informacji kontaktowych (anonimowa wpłata){% else %}No contact information (anonymous contribution){% endif %}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Status Update -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>{% if lang == 'de' %}Status aktualisieren{% elif lang == 'pl' %}Zaktualizuj status{% else %}Update Status{% endif %}</h2>
+                </div>
+                <div class="admin-card-content">
+                    <form action="/admin/contributions/{{ contribution.id }}/status" method="post" class="admin-form">
+                        <div class="form-group">
+                            <label for="status">{% if lang == 'de' %}Neuer Status{% elif lang == 'pl' %}Nowy status{% else %}New Status{% endif %}</label>
+                            <select id="status" name="status" required>
+                                <option value="pending" {% if contribution.status == 'pending' %}selected{% endif %}>{% if lang == 'de' %}Ausstehend{% elif lang == 'pl' %}Oczekujące{% else %}Pending{% endif %}</option>
+                                <option value="confirmed" {% if contribution.status == 'confirmed' %}selected{% endif %}>{% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}</option>
+                                <option value="cancelled" {% if contribution.status == 'cancelled' %}selected{% endif %}>{% if lang == 'de' %}Storniert{% elif lang == 'pl' %}Anulowane{% else %}Cancelled{% endif %}</option>
+                                <option value="refunded" {% if contribution.status == 'refunded' %}selected{% endif %}>{% if lang == 'de' %}Erstattet{% elif lang == 'pl' %}Zwrócone{% else %}Refunded{% endif %}</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Status aktualisieren{% elif lang == 'pl' %}Zaktualizuj status{% else %}Update Status{% endif %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+</section>
+
+{% include "admin/_styles.html" %}
+
+<style>
+.back-link {
+    display: inline-block;
+    color: var(--color-moss, #4a7c59);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.contribution-amount {
+    background: var(--color-cream, #f8f6f3);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.amount-value {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--color-forest, #2d4a3e);
+}
+
+.amount-type {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--color-bark, #5a5a5a);
+    margin-top: 0.5rem;
+}
+
+.detail-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border, #e8e4df);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #888);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: var(--color-forest, #2d4a3e);
+}
+
+.detail-value a {
+    color: var(--color-moss, #4a7c59);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--color-text-muted, #888);
+    padding: 1rem 0;
+}
+</style>
+{% endblock %}

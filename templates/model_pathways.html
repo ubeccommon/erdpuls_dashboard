@@ -36,105 +36,63 @@
 <section class="section">
     <div class="container">
         <div class="pathways-grid">
-            <!-- Full Rate -->
+            <!-- Sustaining Contribution -->
             <article class="pathway-card">
                 <div class="pathway-icon">🌳</div>
                 <h3 class="pathway-title">
-                    {% if lang == 'de' %}Voller Beitrag{% elif lang == 'pl' %}Pełna Stawka{% else %}Full Rate{% endif %}
+                    {% if lang == 'de' %}Erhaltender Beitrag{% elif lang == 'pl' %}Wkład Podtrzymujący{% else %}Sustaining Contribution{% endif %}
                 </h3>
-                <p class="pathway-subtitle">
-                    {% if lang == 'de' %}Erhaltender Beitrag{% elif lang == 'pl' %}Wkład podtrzymujący{% else %}Sustaining Contribution{% endif %}
-                </p>
                 <p class="pathway-text">
                     {% if lang == 'de' %}
-                        Wer den vollen Preis zahlt, „kauft nicht einfach eine Dienstleistung". Sie leisten einen erhaltenden Beitrag, der die Betriebskosten deckt und gleichzeitig Kapazitäten für andere zur Teilnahme schafft. Dies ist pflanzliche Großzügigkeit in wirtschaftlicher Form — mehr geben als nehmen.
+                        Wer beiträgt, „kauft nicht einfach eine Dienstleistung". Sie leisten einen erhaltenden Beitrag, der die Betriebskosten deckt und gleichzeitig Kapazitäten für andere zur Teilnahme schafft. Dies ist pflanzliche Großzügigkeit in wirtschaftlicher Form — mehr geben als nehmen.
                     {% elif lang == 'pl' %}
-                        Ci, którzy płacą pełną stawkę, nie „kupują po prostu usługi". Wnoszą wkład podtrzymujący, który pokrywa koszty operacyjne, jednocześnie tworząc możliwości uczestnictwa dla innych. To roślinna hojność w formie ekonomicznej — dawanie więcej niż branie.
+                        Ci, którzy wnoszą wkład, nie „kupują po prostu usługi". Wnoszą wkład podtrzymujący, który pokrywa koszty operacyjne, jednocześnie tworząc możliwości uczestnictwa dla innych. To roślinna hojność w formie ekonomicznej — dawanie więcej niż branie.
                     {% else %}
-                        Those who pay the full rate are not simply "buying a service." They are making a sustaining contribution that covers operational costs while creating capacity for others to participate. This is plant generosity in economic form — giving more than taking.
-                    {% endif %}
-                </p>
-                <p class="pathway-who">
-                    <strong>{% if lang == 'de' %}Für wen:{% elif lang == 'pl' %}Dla kogo:{% else %}Who chooses this:{% endif %}</strong>
-                    {% if lang == 'de' %}
-                        Menschen mit stabilen finanziellen Ressourcen, Organisationen und Institutionen.
-                    {% elif lang == 'pl' %}
-                        Osoby ze stabilnymi zasobami finansowymi, organizacje i instytucje.
-                    {% else %}
-                        Those with stable financial resources, organizations and institutions.
+                        Those who contribute are not simply "buying a service." They are making a sustaining contribution that covers operational costs while creating capacity for others to participate. This is plant generosity in economic form — giving more than taking.
                     {% endif %}
                 </p>
             </article>
 
-            <!-- Supported Rate -->
+            <!-- Community-Held Participation -->
             <article class="pathway-card">
                 <div class="pathway-icon">🤲</div>
                 <h3 class="pathway-title">
-                    {% if lang == 'de' %}Unterstützter Beitrag{% elif lang == 'pl' %}Stawka Wspierana{% else %}Supported Rate{% endif %}
+                    {% if lang == 'de' %}Gemeinschaftsgetragene Teilnahme{% elif lang == 'pl' %}Uczestnictwo Wspierane przez Wspólnotę{% else %}Community-Held Participation{% endif %}
                 </h3>
-                <p class="pathway-subtitle">
-                    {% if lang == 'de' %}Gemeinschaftsgetragene Teilnahme{% elif lang == 'pl' %}Uczestnictwo wspierane przez wspólnotę{% else %}Community-Held Participation{% endif %}
-                </p>
                 <p class="pathway-text">
                     {% if lang == 'de' %}
-                        Der unterstützte Beitrag (50-80% des vollen Preises) erkennt wirtschaftliche Realitäten an, ohne Wohltätigkeitsdynamiken zu schaffen. Teilnehmende wählen selbst basierend auf echtem Bedarf — kein Nachweis erforderlich, keine Fragen gestellt. Dieses Vertrauen ist wesentlich.
+                        Dieser Weg erkennt wirtschaftliche Realitäten an, ohne Wohltätigkeitsdynamiken zu schaffen. Teilnehmende wählen selbst basierend auf echtem Bedarf — kein Nachweis erforderlich, keine Fragen gestellt. Dieses Vertrauen ist wesentlich.
                     {% elif lang == 'pl' %}
-                        Stawka wspierana (50-80% pełnej ceny) uznaje realia ekonomiczne bez tworzenia dynamiki dobroczynności. Uczestnicy sami wybierają w oparciu o rzeczywistą potrzebę — bez wymaganego dowodu, bez pytań. To zaufanie jest kluczowe.
+                        Ta ścieżka uznaje realia ekonomiczne bez tworzenia dynamiki dobroczynności. Uczestnicy sami wybierają w oparciu o rzeczywistą potrzebę — bez wymaganego dowodu, bez pytań. To zaufanie jest kluczowe.
                     {% else %}
-                        The supported rate (50-80% of full rate) acknowledges economic reality without creating charity dynamics. Participants self-select based on genuine need — no proof required, no questions asked. This trust is essential.
-                    {% endif %}
-                </p>
-                <p class="pathway-who">
-                    <strong>{% if lang == 'de' %}Für wen:{% elif lang == 'pl' %}Dla kogo:{% else %}Who chooses this:{% endif %}</strong>
-                    {% if lang == 'de' %}
-                        Studierende, Pädagogen, Familien, Menschen mit schwankendem Einkommen, grenzüberschreitende Teilnehmende aus Polen.
-                    {% elif lang == 'pl' %}
-                        Studenci, pedagodzy, rodziny, osoby o zmiennych dochodach, uczestnicy transgraniczni z Polski.
-                    {% else %}
-                        Students, educators, families, those with fluctuating income, cross-border participants from Poland.
+                        This pathway acknowledges economic reality without creating charity dynamics. Participants self-select based on genuine need — no proof required, no questions asked. This trust is essential.
                     {% endif %}
                 </p>
             </article>
 
-            <!-- Contribution Pathway -->
+            <!-- Skills-Based Exchange -->
             <article class="pathway-card">
                 <div class="pathway-icon">🛠️</div>
                 <h3 class="pathway-title">
-                    {% if lang == 'de' %}Beitragsweg{% elif lang == 'pl' %}Ścieżka Wkładu{% else %}Contribution Pathway{% endif %}
+                    {% if lang == 'de' %}Fähigkeitenbasierter Austausch{% elif lang == 'pl' %}Wymiana Oparta na Umiejętnościach{% else %}Skills-Based Exchange{% endif %}
                 </h3>
-                <p class="pathway-subtitle">
-                    {% if lang == 'de' %}Fähigkeitenbasierter Austausch{% elif lang == 'pl' %}Wymiana oparta na umiejętnościach{% else %}Skills-Based Exchange{% endif %}
-                </p>
                 <p class="pathway-text">
                     {% if lang == 'de' %}
-                        Dieser Weg erkennt an, dass Wert in vielen Formen kommt. Zeit, Fähigkeiten, Wissen, Arbeit — alles sind echte Beiträge, die die Gemeinschaft unterstützen. Teilnehmende verhandeln spezifische Beiträge, die einige oder alle finanziellen Kosten ausgleichen.
+                        Dieser Beitragsweg erkennt an, dass Wert in vielen Formen kommt. Zeit, Fähigkeiten, Wissen, Arbeit — alles sind echte Beiträge, die die Gemeinschaft unterstützen. Teilnehmende können spezifische Beiträge verhandeln, die einige oder alle finanziellen Kosten ausgleichen.
                     {% elif lang == 'pl' %}
-                        Ta ścieżka uznaje, że wartość przychodzi w wielu formach. Czas, umiejętności, wiedza, praca — wszystko to prawdziwe wkłady wspierające społeczność. Uczestnicy negocjują konkretne wkłady, które kompensują część lub całość kosztów finansowych.
+                        Ta ścieżka wkładu uznaje, że wartość przychodzi w wielu formach. Czas, umiejętności, wiedza, praca — wszystko to prawdziwe wkłady wspierające społeczność. Uczestnicy mogą negocjować konkretne wkłady, które kompensują część lub całość kosztów finansowych.
                     {% else %}
-                        This pathway recognizes that value comes in many forms. Time, skill, knowledge, labor — all are genuine contributions that support the community. Participants negotiate specific contributions that offset some or all of the financial cost.
-                    {% endif %}
-                </p>
-                <p class="pathway-who">
-                    <strong>{% if lang == 'de' %}Akzeptierte Beiträge:{% elif lang == 'pl' %}Akceptowane wkłady:{% else %}Accepted contributions:{% endif %}</strong>
-                    {% if lang == 'de' %}
-                        Gartenarbeit, technische Fähigkeiten, Wissensteilung, Übersetzung (DE/EN/PL), administrativ Unterstützung.
-                    {% elif lang == 'pl' %}
-                        Praca w ogrodzie, umiejętności techniczne, dzielenie się wiedzą, tłumaczenia (DE/EN/PL), wsparcie administracyjne.
-                    {% else %}
-                        Garden work, technical skills, knowledge sharing, translation (DE/EN/PL), administrative support.
+                        This contribution pathway recognizes that value comes in many forms. Time, skill, knowledge, labor — all are genuine contributions that support the community. Participants can negotiate specific contributions that offset some or all of the financial cost.
                     {% endif %}
                 </p>
             </article>
 
             <!-- Token Exchange -->
-            <article class="pathway-card highlight">
+            <article class="pathway-card">
                 <div class="pathway-icon">🪙</div>
                 <h3 class="pathway-title">
                     {% if lang == 'de' %}Token-Austausch{% elif lang == 'pl' %}Wymiana Tokenów{% else %}Token Exchange{% endif %}
                 </h3>
-                <p class="pathway-subtitle">
-                    {% if lang == 'de' %}Verdiente Teilnahme{% elif lang == 'pl' %}Wypracowane uczestnictwo{% else %}Earned Participation{% endif %}
-                </p>
                 <p class="pathway-text">
                     {% if lang == 'de' %}
                         UBECrc-Tokens, die durch Umweltüberwachung und Bürgerwissenschaft verdient werden, können gegen Teilnahme an Kursen, Veranstaltungen und Diensten eingetauscht werden. Dies schließt den reziproken Kreislauf: Umweltpflege erzeugt Wert, der weiteres Lernen ermöglicht.
@@ -174,74 +132,6 @@
     </div>
 </section>
 
-<!-- Special Populations -->
-<section class="section">
-    <div class="container">
-        <div class="section-header">
-            <span class="section-eyebrow">
-                {% if lang == 'de' %}Besondere Gruppen{% elif lang == 'pl' %}Grupy specjalne{% else %}Special Populations{% endif %}
-            </span>
-            <h2 class="section-title">
-                {% if lang == 'de' %}Automatische Unterstützung{% elif lang == 'pl' %}Automatyczne wsparcie{% else %}Automatic Support{% endif %}
-            </h2>
-        </div>
-        <div class="features-grid">
-            <article class="feature-card">
-                <div class="feature-icon">👶</div>
-                <h3>{% if lang == 'de' %}Kinder & Jugendliche{% elif lang == 'pl' %}Dzieci i młodzież{% else %}Children & Youth{% endif %}</h3>
-                <p>
-                    {% if lang == 'de' %}
-                        Immer kostenlos oder stark reduziert. Die Teilnahme junger Menschen ist eine Investition in zukünftige Generationen.
-                    {% elif lang == 'pl' %}
-                        Zawsze bezpłatnie lub znacznie zredukowane. Uczestnictwo młodych ludzi to inwestycja w przyszłe pokolenia.
-                    {% else %}
-                        Always free or deeply reduced. Young people's participation is an investment in future generations.
-                    {% endif %}
-                </p>
-            </article>
-            <article class="feature-card">
-                <div class="feature-icon">👩‍🏫</div>
-                <h3>{% if lang == 'de' %}Pädagogen{% elif lang == 'pl' %}Pedagodzy{% else %}Educators{% endif %}</h3>
-                <p>
-                    {% if lang == 'de' %}
-                        Automatischer unterstützter Beitrag. Wir erkennen an, dass Lehrer oft aus eigener Tasche für Fortbildungen zahlen.
-                    {% elif lang == 'pl' %}
-                        Automatyczna stawka wspierana. Uznajemy, że nauczyciele często płacą za rozwój zawodowy z własnych środków.
-                    {% else %}
-                        Automatic supported rate. We recognize that teachers often pay from personal funds for professional development.
-                    {% endif %}
-                </p>
-            </article>
-            <article class="feature-card">
-                <div class="feature-icon">👨‍👩‍👧‍👦</div>
-                <h3>{% if lang == 'de' %}Familien{% elif lang == 'pl' %}Rodziny{% else %}Families{% endif %}</h3>
-                <p>
-                    {% if lang == 'de' %}
-                        Ein Erwachsener zum vollen Preis + jedes weitere Familienmitglied zu 50%. Familien, die gemeinsam teilnehmen, stärken generationsübergreifendes Lernen.
-                    {% elif lang == 'pl' %}
-                        Jeden dorosły w pełnej cenie + każdy kolejny członek rodziny za 50%. Rodziny uczestniczące razem wzmacniają międzypokoleniowe uczenie się.
-                    {% else %}
-                        One full-rate adult + each additional family member at 50%. Families participating together strengthen intergenerational learning.
-                    {% endif %}
-                </p>
-            </article>
-            <article class="feature-card">
-                <div class="feature-icon">🇵🇱</div>
-                <h3>{% if lang == 'de' %}Grenzüberschreitend (Polen){% elif lang == 'pl' %}Transgraniczni (Polska){% else %}Cross-Border (Poland){% endif %}</h3>
-                <p>
-                    {% if lang == 'de' %}
-                        Automatischer unterstützter Beitrag, der wirtschaftliche Unterschiede zwischen Regionen anerkennt und gleichzeitig die grenzüberschreitende Zusammenarbeit feiert.
-                    {% elif lang == 'pl' %}
-                        Automatyczna stawka wspierana uznająca różnice ekonomiczne między regionami, jednocześnie celebrująca współpracę transgraniczną.
-                    {% else %}
-                        Automatic supported rate recognizing economic differences between regions while celebrating cross-border collaboration.
-                    {% endif %}
-                </p>
-            </article>
-        </div>
-    </div>
-</section>
-
 <!-- CTA -->
 <section class="section cta-section">
     <div class="cta-container">
@@ -267,4 +157,41 @@
         </div>
     </div>
 </section>
+
+<style>
+/* Four Pathways - 4 columns layout */
+.pathways-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.pathways-grid .pathway-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.pathways-grid .pathway-text {
+    font-size: 0.9rem;
+    flex-grow: 1;
+}
+
+.pathways-grid .pathway-title {
+    font-size: 1.1rem;
+}
+
+/* Tablet - 2 columns */
+@media (max-width: 1024px) {
+    .pathways-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile - 1 column */
+@media (max-width: 640px) {
+    .pathways-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 {% endblock %}

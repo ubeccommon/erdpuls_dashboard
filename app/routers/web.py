@@ -1,12 +1,15 @@
 """
-Erdpuls Collective Threshold Model - Web Router (HTML Pages)
+Erdpuls Collective Threshold Model - Web Routes
+Updated with Participation Pathways Architecture
+
+Three engagement pathways:
+1. /offering/{id}/participate - Participate Only
+2. /offering/{id}/contribute?pathway=support_only - Support Only  
+3. /offering/{id}/contribute?pathway=support_and_participate - Support & Participate
 """
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
-import logging
-
-from fastapi import APIRouter, Depends, Request, Form, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -14,38 +17,41 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import (
     Offering, Registration, Contribution, ContributionContact,
-    RegenerationFund, TokenRate, HoursRate
+    TokenRate, HoursRate, EngagementType, RegistrationType
 )
-from ..auth import get_current_user_optional
 from ..email import send_contribution_confirmation
 
-logger = logging.getLogger(__name__)
-
-router = APIRouter(tags=["web"])
+router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
 def get_lang(request: Request) -> str:
-    """Get language from query param or cookie"""
-    lang = request.query_params.get('lang')
-    if lang and lang in ['en', 'de', 'pl']:
-        return lang
+    """Get language from cookie or default to 'en'."""
     return request.cookies.get('lang', 'en')
 
 
+def get_current_user_optional(request: Request, db: Session):
+    """Get current user from session if logged in."""
+    from ..models import User
+    user_id = request.cookies.get('user_id')
+    if user_id:
+        return db.query(User).filter(User.id == user_id).first()
+    return None
+
+
 # ============================================
-# Pages
+# STATIC PAGES
 # ============================================
 
 @router.get("/", response_class=HTMLResponse)
-def index(request: Request, db: Session = Depends(get_db)):
-    """Homepage - list all open offerings"""
+def home(request: Request, db: Session = Depends(get_db)):
+    """Home page"""
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     
     offerings = db.query(Offering).filter(
         Offering.status.in_(['open', 'threshold_met'])
-    ).order_by(Offering.event_date).all()
+    ).order_by(Offering.event_date).limit(3).all()
     
     # Add computed properties
     for o in offerings:
@@ -54,204 +60,107 @@ def index(request: Request, db: Session = Depends(get_db)):
         o._percent = round((float(o._total) / float(o.threshold_amount)) * 100, 1) if o.threshold_amount else 0
         o._threshold_reached = float(o._total) >= float(o.threshold_amount)
     
+    from ..models import RegenerationFund
     fund_balance = RegenerationFund.get_balance(db)
     
     response = templates.TemplateResponse(
         "index.html",
         {
-            "request": request,
+            "request": request, 
+            "lang": lang, 
+            "user": user, 
             "offerings": offerings,
-            "fund_balance": fund_balance,
-            "lang": lang,
-            "user": user
+            "fund_balance": fund_balance
         }
     )
     response.set_cookie("lang", lang, max_age=31536000)  # 1 year
     return response
 
 
-@router.get("/offering/{offering_id}", response_class=HTMLResponse)
-def offering_detail(offering_id: str, request: Request, db: Session = Depends(get_db)):
-    """Offering detail page with contribution form"""
-    lang = get_lang(request)
-    user = get_current_user_optional(request, db)
-    
-    offering = db.query(Offering).filter(Offering.id == offering_id).first()
-    if not offering:
-        raise HTTPException(status_code=404, detail="Offering not found")
-    
-    # Add computed properties
-    offering._total = offering.get_total_contributed(db)
-    offering._reg_count = offering.get_registration_count(db)
-    offering._percent = round((float(offering._total) / float(offering.threshold_amount)) * 100, 1)
-    offering._threshold_reached = float(offering._total) >= float(offering.threshold_amount)
-    offering._remaining = max(Decimal('0'), offering.threshold_amount - offering._total)
-    
-    now = datetime.utcnow()
-    offering._registration_open = (
-        offering.status in ['open', 'threshold_met'] and
-        now < offering.registration_deadline and
-        (offering.max_participants is None or offering._reg_count < offering.max_participants)
-    )
-    offering._contribution_open = (
-        offering.status in ['open', 'threshold_met'] and
-        now < offering.contribution_deadline
-    )
-    
-    hours_rates = db.query(HoursRate).all()
-    token_rate = TokenRate.get_current_rate(db)
-    
-    response = templates.TemplateResponse(
-        "offering.html",
-        {
-            "request": request,
-            "offering": offering,
-            "hours_rates": hours_rates,
-            "token_rate": token_rate,
-            "lang": lang,
-            "user": user
-        }
-    )
-    response.set_cookie("lang", lang, max_age=31536000)
-    return response
-
-
-@router.get("/fund", response_class=HTMLResponse)
-def regeneration_fund(request: Request, db: Session = Depends(get_db)):
-    """Regeneration Fund page"""
-    lang = get_lang(request)
-    user = get_current_user_optional(request, db)
-    
-    balance = RegenerationFund.get_balance(db)
-    transactions = db.query(RegenerationFund)\
-        .order_by(RegenerationFund.created_at.desc())\
-        .limit(50).all()
-    
-    return templates.TemplateResponse(
-        "fund.html",
-        {
-            "request": request,
-            "balance": balance,
-            "transactions": transactions,
-            "lang": lang,
-            "user": user
-        }
-    )
-
-
 @router.get("/about", response_class=HTMLResponse)
 def about(request: Request, db: Session = Depends(get_db)):
-    """About the Collective Threshold Model"""
+    """About page"""
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     return templates.TemplateResponse(
-        "about.html", 
-        {
-            "request": request, 
-            "lang": lang,
-            "user": user
-        }
+        "about.html",
+        {"request": request, "lang": lang, "user": user}
     )
-
-
-@router.get("/offerings", response_class=HTMLResponse)
-def offerings_page(request: Request, db: Session = Depends(get_db)):
-    """Offerings page - list all open offerings"""
-    lang = get_lang(request)
-    user = get_current_user_optional(request, db)
-    
-    offerings = db.query(Offering).filter(
-        Offering.status.in_(['open', 'threshold_met'])
-    ).order_by(Offering.event_date).all()
-    
-    # Add computed properties
-    for o in offerings:
-        o._total = o.get_total_contributed(db)
-        o._reg_count = o.get_registration_count(db)
-        o._percent = round((float(o._total) / float(o.threshold_amount)) * 100, 1) if o.threshold_amount else 0
-        o._threshold_reached = float(o._total) >= float(o.threshold_amount)
-    
-    response = templates.TemplateResponse(
-        "offerings.html",
-        {
-            "request": request,
-            "offerings": offerings,
-            "lang": lang,
-            "user": user
-        }
-    )
-    response.set_cookie("lang", lang, max_age=31536000)
-    return response
 
 
 @router.get("/model", response_class=HTMLResponse)
-def model_redirect(request: Request):
-    """Redirect /model to /model/reciprocity"""
-    return RedirectResponse(url="/model/reciprocity", status_code=302)
+def model(request: Request, db: Session = Depends(get_db)):
+    """Model overview page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "model.html",
+        {"request": request, "lang": lang, "user": user}
+    )
 
 
 @router.get("/model/threshold", response_class=HTMLResponse)
 def model_threshold(request: Request, db: Session = Depends(get_db)):
-    """Collective Threshold Model page"""
+    """Threshold model page"""
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     return templates.TemplateResponse(
-        "model_threshold.html", 
-        {
-            "request": request, 
-            "lang": lang,
-            "user": user
-        }
+        "model_threshold.html",
+        {"request": request, "lang": lang, "user": user}
     )
 
 
 @router.get("/model/pathways", response_class=HTMLResponse)
 def model_pathways(request: Request, db: Session = Depends(get_db)):
-    """Four Pathways page"""
+    """Participation pathways page"""
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     return templates.TemplateResponse(
-        "model_pathways.html", 
-        {
-            "request": request, 
-            "lang": lang,
-            "user": user
-        }
+        "model_pathways.html",
+        {"request": request, "lang": lang, "user": user}
     )
 
 
-@router.get("/model/tokens", response_class=HTMLResponse)
-def model_tokens(request: Request, db: Session = Depends(get_db)):
-    """Token Economy page"""
+@router.get("/privacy", response_class=HTMLResponse)
+def privacy(request: Request, db: Session = Depends(get_db)):
+    """Privacy policy page"""
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     return templates.TemplateResponse(
-        "model_tokens.html", 
-        {
-            "request": request, 
-            "lang": lang,
-            "user": user
-        }
+        "legal_privacy.html",
+        {"request": request, "lang": lang, "user": user}
     )
 
 
-@router.get("/model/reciprocity", response_class=HTMLResponse)
-def model_reciprocity(request: Request, db: Session = Depends(get_db)):
-    """Reciprocal Economics philosophy page"""
+@router.get("/fund", response_class=HTMLResponse)
+def fund(request: Request, db: Session = Depends(get_db)):
+    """Regeneration Fund page"""
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
+    
+    from ..models import RegenerationFund
+    balance = RegenerationFund.get_balance(db)
+    
     return templates.TemplateResponse(
-        "model_reciprocity.html", 
-        {
-            "request": request, 
-            "lang": lang,
-            "user": user
-        }
+        "fund.html",
+        {"request": request, "lang": lang, "user": user, "balance": balance}
+    )
+
+
+@router.get("/create-offering", response_class=HTMLResponse)
+def create_offering_info(request: Request, db: Session = Depends(get_db)):
+    """Info page about creating offerings - explains the process and roles"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    
+    return templates.TemplateResponse(
+        "create_offering.html",
+        {"request": request, "lang": lang, "user": user}
     )
 
 
 # ============================================
-# Legal Pages
+# LEGAL PAGES
 # ============================================
 
 @router.get("/legal/imprint", response_class=HTMLResponse)
@@ -260,12 +169,8 @@ def legal_imprint(request: Request, db: Session = Depends(get_db)):
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     return templates.TemplateResponse(
-        "legal_imprint.html", 
-        {
-            "request": request, 
-            "lang": lang,
-            "user": user
-        }
+        "legal_imprint.html",
+        {"request": request, "lang": lang, "user": user}
     )
 
 
@@ -275,12 +180,8 @@ def legal_privacy(request: Request, db: Session = Depends(get_db)):
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     return templates.TemplateResponse(
-        "legal_privacy.html", 
-        {
-            "request": request, 
-            "lang": lang,
-            "user": user
-        }
+        "legal_privacy.html",
+        {"request": request, "lang": lang, "user": user}
     )
 
 
@@ -290,21 +191,165 @@ def legal_terms(request: Request, db: Session = Depends(get_db)):
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     return templates.TemplateResponse(
-        "legal_terms.html", 
-        {
-            "request": request, 
-            "lang": lang,
-            "user": user
-        }
+        "legal_terms.html",
+        {"request": request, "lang": lang, "user": user}
     )
 
 
 # ============================================
-# Form Handlers
+# MODEL PAGES (additional)
 # ============================================
 
-@router.post("/offering/{offering_id}/register")
-def register(
+@router.get("/model/tokens", response_class=HTMLResponse)
+def model_tokens(request: Request, db: Session = Depends(get_db)):
+    """UBECrc tokens model page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "model_tokens.html",
+        {"request": request, "lang": lang, "user": user}
+    )
+
+
+@router.get("/model/reciprocity", response_class=HTMLResponse)
+def model_reciprocity(request: Request, db: Session = Depends(get_db)):
+    """Reciprocal economics model page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "model_reciprocity.html",
+        {"request": request, "lang": lang, "user": user}
+    )
+
+
+# ============================================
+# LANGUAGE SWITCHING
+# ============================================
+
+@router.get("/set-lang/{lang}")
+def set_language(lang: str, request: Request):
+    """Set language preference via cookie"""
+    if lang not in ['en', 'de', 'pl']:
+        lang = 'en'
+    
+    referer = request.headers.get('referer', '/')
+    response = RedirectResponse(url=referer, status_code=303)
+    response.set_cookie(key='lang', value=lang, max_age=365*24*60*60)
+    return response
+
+
+# ============================================
+# OFFERINGS
+# ============================================
+
+@router.get("/offerings", response_class=HTMLResponse)
+def offerings_list(request: Request, db: Session = Depends(get_db)):
+    """List all open offerings"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    
+    offerings = db.query(Offering).filter(
+        Offering.status.in_(['open', 'threshold_met', 'confirmed'])
+    ).order_by(Offering.event_date).all()
+    
+    # Add computed properties
+    for o in offerings:
+        o._total = o.get_total_contributed(db)
+        o._percent = round((float(o._total) / float(o.threshold_amount)) * 100, 1) if o.threshold_amount else 0
+        o._reg_count = o.get_registration_count(db)
+    
+    return templates.TemplateResponse(
+        "offerings.html",
+        {"request": request, "lang": lang, "user": user, "offerings": offerings}
+    )
+
+
+@router.get("/offering/{offering_id}", response_class=HTMLResponse)
+def offering_detail(offering_id: str, request: Request, db: Session = Depends(get_db)):
+    """Single offering detail page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    
+    offering = db.query(Offering).filter(Offering.id == offering_id).first()
+    if not offering:
+        raise HTTPException(status_code=404, detail="Offering not found")
+    
+    # Add computed properties
+    offering._total = offering.get_total_contributed(db)
+    offering._percent = round((float(offering._total) / float(offering.threshold_amount)) * 100, 1) if offering.threshold_amount else 0
+    offering._reg_count = offering.get_registration_count(db)
+    offering._remaining = max(Decimal('0'), offering.threshold_amount - offering._total)
+    offering._engagement = offering.get_engagement_summary(db)
+    
+    return templates.TemplateResponse(
+        "offering.html",
+        {"request": request, "lang": lang, "user": user, "offering": offering}
+    )
+
+
+# ============================================
+# ENGAGEMENT PATHWAY SELECTION
+# ============================================
+
+@router.get("/offering/{offering_id}/engage", response_class=HTMLResponse)
+def engage_selection(offering_id: str, request: Request, db: Session = Depends(get_db)):
+    """Engagement pathway selection page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    
+    offering = db.query(Offering).filter(Offering.id == offering_id).first()
+    if not offering:
+        raise HTTPException(status_code=404, detail="Offering not found")
+    
+    # Check if engagement is open
+    now = datetime.utcnow()
+    if offering.status not in ['open', 'threshold_met']:
+        return RedirectResponse(
+            url=f"/offering/{offering_id}?error=engagement_closed",
+            status_code=303
+        )
+    
+    # Add computed properties
+    offering._total = offering.get_total_contributed(db)
+    offering._percent = round((float(offering._total) / float(offering.threshold_amount)) * 100, 1) if offering.threshold_amount else 0
+    offering._reg_count = offering.get_registration_count(db)
+    
+    return templates.TemplateResponse(
+        "engage.html",
+        {"request": request, "lang": lang, "user": user, "offering": offering}
+    )
+
+
+# ============================================
+# PATHWAY 1: PARTICIPATE ONLY
+# ============================================
+
+@router.get("/offering/{offering_id}/participate", response_class=HTMLResponse)
+def participate_page(offering_id: str, request: Request, db: Session = Depends(get_db)):
+    """Participate-only registration page"""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    
+    offering = db.query(Offering).filter(Offering.id == offering_id).first()
+    if not offering:
+        raise HTTPException(status_code=404, detail="Offering not found")
+    
+    # Check if registration is open
+    now = datetime.utcnow()
+    if now >= offering.registration_deadline:
+        return RedirectResponse(
+            url=f"/offering/{offering_id}?error=registration_closed",
+            status_code=303
+        )
+    
+    return templates.TemplateResponse(
+        "participate.html",
+        {"request": request, "lang": lang, "user": user, "offering": offering}
+    )
+
+
+@router.post("/offering/{offering_id}/participate")
+def participate_submit(
     offering_id: str,
     request: Request,
     email: str = Form(...),
@@ -312,17 +357,29 @@ def register(
     referral: str = Form(None),
     db: Session = Depends(get_db)
 ):
-    """Register intention to participate"""
+    """Process participate-only registration"""
+    lang = get_lang(request)
+    
     offering = db.query(Offering).filter(Offering.id == offering_id).first()
     if not offering:
         raise HTTPException(status_code=404, detail="Offering not found")
     
+    # Check deadline
     now = datetime.utcnow()
     if now >= offering.registration_deadline:
         return RedirectResponse(
             url=f"/offering/{offering_id}?error=registration_closed",
             status_code=303
         )
+    
+    # Check capacity
+    if offering.max_participants:
+        count = offering.get_registration_count(db)
+        if count >= offering.max_participants:
+            return RedirectResponse(
+                url=f"/offering/{offering_id}?error=offering_full",
+                status_code=303
+            )
     
     # Check for existing registration
     existing = db.query(Registration).filter(
@@ -336,15 +393,20 @@ def register(
             status_code=303
         )
     
+    # Create registration
     registration = Registration(
         offering_id=offering_id,
         email=email.lower(),
         name=name,
-        referral_source=referral
+        referral_source=referral,
+        registration_type=RegistrationType.PARTICIPATE_ONLY,
+        status='registered'
     )
     
     db.add(registration)
     db.commit()
+    
+    # TODO: Send confirmation email
     
     return RedirectResponse(
         url=f"/offering/{offering_id}?success=registered",
@@ -353,14 +415,23 @@ def register(
 
 
 # ============================================
-# NEW CONTRIBUTION FLOW (Multi-step)
+# PATHWAYS 2 & 3: CONTRIBUTE (with/without participation)
 # ============================================
 
 @router.get("/offering/{offering_id}/contribute", response_class=HTMLResponse)
-def contribute_page(offering_id: str, request: Request, db: Session = Depends(get_db)):
-    """Contribution form page"""
+def contribute_page(
+    offering_id: str, 
+    request: Request, 
+    pathway: str = 'support_only',
+    db: Session = Depends(get_db)
+):
+    """Contribution page (handles both support_only and support_and_participate)"""
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
+    
+    # Validate pathway
+    if pathway not in ['support_only', 'support_and_participate']:
+        pathway = 'support_only'
     
     offering = db.query(Offering).filter(Offering.id == offering_id).first()
     if not offering:
@@ -374,10 +445,18 @@ def contribute_page(offering_id: str, request: Request, db: Session = Depends(ge
             status_code=303
         )
     
+    # For support_and_participate, also check registration deadline
+    if pathway == 'support_and_participate' and now >= offering.registration_deadline:
+        return RedirectResponse(
+            url=f"/offering/{offering_id}/contribute?pathway=support_only&info=registration_closed",
+            status_code=303
+        )
+    
     # Add computed properties
     offering._total = offering.get_total_contributed(db)
     offering._percent = round((float(offering._total) / float(offering.threshold_amount)) * 100, 1) if offering.threshold_amount else 0
     offering._remaining = max(Decimal('0'), offering.threshold_amount - offering._total)
+    offering._reg_count = offering.get_registration_count(db)
     
     hours_rates = db.query(HoursRate).all()
     token_rate = TokenRate.get_current_rate(db)
@@ -386,41 +465,195 @@ def contribute_page(offering_id: str, request: Request, db: Session = Depends(ge
         "contribute.html",
         {
             "request": request,
-            "offering": offering,
-            "hours_rates": hours_rates,
-            "token_rate": token_rate,
             "lang": lang,
-            "user": user
+            "user": user,
+            "offering": offering,
+            "pathway": pathway,
+            "hours_rates": hours_rates,
+            "token_rate": token_rate
         }
     )
 
 
-@router.get("/offering/{offering_id}/contribute/confirm")
-def contribute_confirm_get(offering_id: str, request: Request):
-    """Redirect GET requests to the contribute page (confirmation requires POST data)"""
+@router.post("/offering/{offering_id}/contribute/submit")
+def contribute_submit(
+    offering_id: str,
+    request: Request,
+    pathway: str = Form(...),
+    contribution_type: str = Form(...),
+    # Euro
+    amount_eur: float = Form(None),
+    # Token
+    token_amount: float = Form(None),
+    # Hours
+    hours_category: str = Form(None),
+    hours_amount: float = Form(None),
+    hours_description: str = Form(None),
+    # Contact
+    contact_name: str = Form(None),
+    contact_email: str = Form(None),
+    contact_phone: str = Form(None),
+    contact_notes: str = Form(None),
+    referral: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    """Process contribution submission"""
+    lang = get_lang(request)
+    
+    offering = db.query(Offering).filter(Offering.id == offering_id).first()
+    if not offering:
+        raise HTTPException(status_code=404, detail="Offering not found")
+    
+    # Validate pathway
+    if pathway not in ['support_only', 'support_and_participate']:
+        pathway = 'support_only'
+    
+    wants_to_participate = (pathway == 'support_and_participate')
+    
+    # For support_and_participate, contact info is required
+    if wants_to_participate and (not contact_name or not contact_email):
+        return RedirectResponse(
+            url=f"/offering/{offering_id}/contribute?pathway={pathway}&error=contact_required",
+            status_code=303
+        )
+    
+    # Calculate EUR equivalent
+    final_amount_eur = Decimal('0')
+    token_rate = TokenRate.get_current_rate(db)
+    
+    if contribution_type == 'euro':
+        if not amount_eur or amount_eur <= 0:
+            return RedirectResponse(
+                url=f"/offering/{offering_id}/contribute?pathway={pathway}&error=invalid_amount",
+                status_code=303
+            )
+        final_amount_eur = Decimal(str(amount_eur))
+    
+    elif contribution_type == 'token':
+        if not token_amount or token_amount <= 0:
+            return RedirectResponse(
+                url=f"/offering/{offering_id}/contribute?pathway={pathway}&error=invalid_amount",
+                status_code=303
+            )
+        # Convert tokens to EUR
+        final_amount_eur = Decimal(str(token_amount)) / token_rate.tokens_per_eur
+    
+    elif contribution_type == 'hours':
+        if not hours_category or not hours_amount or hours_amount <= 0:
+            return RedirectResponse(
+                url=f"/offering/{offering_id}/contribute?pathway={pathway}&error=invalid_hours",
+                status_code=303
+            )
+        # Get rate for category
+        hours_rate = db.query(HoursRate).filter(HoursRate.category == hours_category).first()
+        if not hours_rate:
+            return RedirectResponse(
+                url=f"/offering/{offering_id}/contribute?pathway={pathway}&error=invalid_category",
+                status_code=303
+            )
+        final_amount_eur = Decimal(str(hours_amount)) * hours_rate.eur_per_hour
+    
+    # Create contribution
+    contribution = Contribution(
+        offering_id=offering_id,
+        amount_eur=final_amount_eur,
+        contribution_type=contribution_type,
+        engagement_type=EngagementType.SUPPORT_AND_PARTICIPATE if wants_to_participate else EngagementType.SUPPORT_ONLY,
+        wants_to_participate=wants_to_participate,
+        status='pending'
+    )
+    
+    # Add type-specific fields
+    if contribution_type == 'token':
+        contribution.token_amount = Decimal(str(token_amount))
+    elif contribution_type == 'hours':
+        contribution.hours_category = hours_category
+        contribution.hours_amount = Decimal(str(hours_amount))
+        contribution.hours_description = hours_description
+        contribution.hours_equivalent_eur = final_amount_eur
+    
+    db.add(contribution)
+    db.flush()  # Get contribution ID
+    
+    # Create contact record if provided
+    if contact_name or contact_email:
+        contact = ContributionContact(
+            contribution_id=contribution.id,
+            name=contact_name,
+            email=contact_email.lower() if contact_email else None,
+            phone=contact_phone,
+            notes=contact_notes
+        )
+        db.add(contact)
+    
+    # For support_and_participate, create registration
+    registration = None
+    if wants_to_participate and contact_email:
+        # Check for existing registration
+        existing_reg = db.query(Registration).filter(
+            Registration.offering_id == offering_id,
+            Registration.email == contact_email.lower()
+        ).first()
+        
+        if existing_reg:
+            # Update existing registration to link to contribution
+            existing_reg.linked_contribution_id = contribution.id
+            existing_reg.registration_type = RegistrationType.LINKED_TO_CONTRIBUTION
+            registration = existing_reg
+        else:
+            # Create new registration
+            registration = Registration(
+                offering_id=offering_id,
+                email=contact_email.lower(),
+                name=contact_name,
+                referral_source=referral,
+                registration_type=RegistrationType.LINKED_TO_CONTRIBUTION,
+                linked_contribution_id=contribution.id,
+                status='registered'
+            )
+            db.add(registration)
+    
+    db.commit()
+    db.refresh(contribution)
+    
+    # Send confirmation email
+    if contact_email:
+        contribution_data = {
+            'amount_eur': float(final_amount_eur),
+            'contribution_type': contribution_type,
+            'wants_to_participate': wants_to_participate,
+            'email': contact_email
+        }
+        if contribution_type == 'token':
+            contribution_data['token_amount'] = token_amount
+        elif contribution_type == 'hours':
+            contribution_data['hours_category'] = hours_category
+            contribution_data['hours_amount'] = hours_amount
+        
+        send_contribution_confirmation(
+            to_email=contact_email,
+            to_name=contact_name,
+            offering_title=offering.get_title(lang),
+            offering_id=offering_id,
+            contribution_data=contribution_data,
+            lang=lang
+        )
+    
+    # Redirect to confirmation page
     return RedirectResponse(
-        url=f"/offering/{offering_id}/contribute",
+        url=f"/offering/{offering_id}/contribute/confirm?id={contribution.id}",
         status_code=303
     )
 
 
-@router.post("/offering/{offering_id}/contribute/confirm", response_class=HTMLResponse)
+@router.get("/offering/{offering_id}/contribute/confirm", response_class=HTMLResponse)
 def contribute_confirm(
     offering_id: str,
     request: Request,
-    contact_name: Optional[str] = Form(None),
-    contact_email: Optional[str] = Form(None),
-    include_euro: Optional[str] = Form(None),
-    euro_amount: Optional[str] = Form(None),
-    include_tokens: Optional[str] = Form(None),
-    token_amount: Optional[str] = Form(None),
-    include_hours: Optional[str] = Form(None),
-    hours_amount: Optional[str] = Form(None),
-    hours_category: Optional[str] = Form(None),
-    hours_description: Optional[str] = Form(None),
+    id: str = None,
     db: Session = Depends(get_db)
 ):
-    """Confirmation page showing contribution summary"""
+    """Contribution confirmation page"""
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     
@@ -428,263 +661,45 @@ def contribute_confirm(
     if not offering:
         raise HTTPException(status_code=404, detail="Offering not found")
     
-    # Helper to parse float from form
-    def parse_float(val):
-        if val and val.strip():
-            try:
-                return float(val)
-            except ValueError:
-                return None
-        return None
+    contribution = None
+    if id:
+        contribution = db.query(Contribution).filter(Contribution.id == id).first()
     
-    # Build contribution data
-    contribution_data = {
-        'name': contact_name.strip() if contact_name else None,
-        'email': contact_email.strip() if contact_email else None,
-        'euro': None,
-        'tokens': None,
-        'tokens_eur': None,
-        'hours': None,
-        'hours_category': None,
-        'hours_description': None,
-        'hours_eur': None,
-        'total_eur': Decimal('0')
-    }
-    
-    # Process Euro contribution
-    euro_val = parse_float(euro_amount)
-    if include_euro and euro_val and euro_val > 0:
-        contribution_data['euro'] = euro_val
-        contribution_data['total_eur'] += Decimal(str(euro_val))
-    
-    # Process Token contribution
-    token_val = parse_float(token_amount)
-    if include_tokens and token_val and token_val > 0:
-        token_eur = TokenRate.tokens_to_eur(token_val, db)
-        contribution_data['tokens'] = token_val
-        contribution_data['tokens_eur'] = float(token_eur)
-        contribution_data['total_eur'] += token_eur
-    
-    # Process Hours contribution
-    hours_val = parse_float(hours_amount)
-    if include_hours and hours_val and hours_val > 0 and hours_category:
-        hours_eur = HoursRate.hours_to_eur(hours_val, hours_category, db)
-        contribution_data['hours'] = hours_val
-        contribution_data['hours_category'] = hours_category
-        contribution_data['hours_description'] = hours_description.strip() if hours_description else None
-        contribution_data['hours_eur'] = float(hours_eur)
-        contribution_data['total_eur'] += hours_eur
-    
-    # Check if at least one contribution was made
-    if contribution_data['total_eur'] <= 0:
-        return RedirectResponse(
-            url=f"/offering/{offering_id}/contribute?error=empty",
-            status_code=303
-        )
+    # Add computed properties
+    offering._total = offering.get_total_contributed(db)
+    offering._percent = round((float(offering._total) / float(offering.threshold_amount)) * 100, 1) if offering.threshold_amount else 0
     
     return templates.TemplateResponse(
         "contribute_confirm.html",
         {
             "request": request,
-            "offering": offering,
-            "contribution_data": contribution_data,
             "lang": lang,
-            "user": user
+            "user": user,
+            "offering": offering,
+            "contribution": contribution
         }
     )
 
 
-@router.get("/offering/{offering_id}/contribute/submit")
-def contribute_submit_get(offering_id: str, request: Request):
-    """Redirect GET requests to the contribute page"""
-    return RedirectResponse(
-        url=f"/offering/{offering_id}/contribute",
-        status_code=303
-    )
+# ============================================
+# LEGACY ROUTES (for backward compatibility)
+# ============================================
 
-
-@router.post("/offering/{offering_id}/contribute/submit", response_class=HTMLResponse)
-def contribute_submit(
+@router.post("/offering/{offering_id}/register")
+def register_legacy(
     offering_id: str,
     request: Request,
-    euro: Optional[str] = Form(None),
-    tokens: Optional[str] = Form(None),
-    hours: Optional[str] = Form(None),
-    hours_category: Optional[str] = Form(None),
-    hours_description: Optional[str] = Form(None),
-    name: Optional[str] = Form(None),
-    email: Optional[str] = Form(None),
+    email: str = Form(...),
+    name: str = Form(None),
+    referral: str = Form(None),
     db: Session = Depends(get_db)
 ):
-    """Process the contribution and show thank you page"""
-    lang = get_lang(request)
-    user = get_current_user_optional(request, db)
-    
-    offering = db.query(Offering).filter(Offering.id == offering_id).first()
-    if not offering:
-        raise HTTPException(status_code=404, detail="Offering not found")
-    
-    # Check if contributions are still open
-    now = datetime.utcnow()
-    if offering.status not in ['open', 'threshold_met'] or now > offering.contribution_deadline:
-        return RedirectResponse(
-            url=f"/offering/{offering_id}?error=contributions_closed",
-            status_code=303
-        )
-    
-    # Track if threshold was already reached before this contribution
-    old_total = offering.get_total_contributed(db)
-    was_threshold_reached = float(old_total) >= float(offering.threshold_amount)
-    
-    contribution_data = {
-        'euro': None,
-        'tokens': None,
-        'tokens_eur': None,
-        'hours': None,
-        'hours_category': None,
-        'hours_description': None,
-        'hours_eur': None,
-        'total_eur': Decimal('0')
-    }
-    
-    # Track created contributions for linking contact info
-    created_contributions = []
-    
-    # Create Euro contribution
-    if euro and euro.strip() and float(euro) > 0:
-        try:
-            amount = float(euro)
-            contribution_data['euro'] = amount
-            contribution_data['total_eur'] += Decimal(str(amount))
-            
-            contribution = Contribution(
-                offering_id=offering_id,
-                amount_eur=Decimal(str(amount)),
-                contribution_type='euro',
-                status='pending'
-            )
-            db.add(contribution)
-            db.flush()  # Get ID
-            created_contributions.append(contribution)
-        except ValueError:
-            pass
-    
-    # Create Token contribution
-    if tokens and tokens.strip() and float(tokens) > 0:
-        try:
-            token_amount = float(tokens)
-            token_eur = TokenRate.tokens_to_eur(token_amount, db)
-            contribution_data['tokens'] = token_amount
-            contribution_data['tokens_eur'] = float(token_eur)
-            contribution_data['total_eur'] += token_eur
-            
-            contribution = Contribution(
-                offering_id=offering_id,
-                amount_eur=token_eur,
-                contribution_type='token',
-                token_amount=Decimal(str(token_amount)),
-                status='pending'
-            )
-            db.add(contribution)
-            db.flush()
-            created_contributions.append(contribution)
-        except ValueError:
-            pass
-    
-    # Create Hours contribution
-    if hours and hours.strip() and float(hours) > 0 and hours_category:
-        try:
-            hours_val = float(hours)
-            hours_eur = HoursRate.hours_to_eur(hours_val, hours_category, db)
-            contribution_data['hours'] = hours_val
-            contribution_data['hours_category'] = hours_category
-            contribution_data['hours_description'] = hours_description
-            contribution_data['hours_eur'] = float(hours_eur)
-            contribution_data['total_eur'] += hours_eur
-            
-            contribution = Contribution(
-                offering_id=offering_id,
-                amount_eur=hours_eur,
-                contribution_type='hours',
-                hours_category=hours_category,
-                hours_amount=Decimal(str(hours_val)),
-                hours_description=hours_description or '',
-                hours_equivalent_eur=hours_eur,
-                status='pending'
-            )
-            db.add(contribution)
-            db.flush()
-            created_contributions.append(contribution)
-        except ValueError:
-            pass
-    
-    # Create ContributionContact records if contact info provided
-    # This links identity to contribution for operational purposes only
-    contact_name = name.strip() if name else None
-    contact_email = email.strip() if email else None
-    
-    # DEBUG - using print to ensure visibility
-    print(f"DEBUG contribute_submit: name param = '{name}', email param = '{email}'")
-    print(f"DEBUG contribute_submit: contact_name = '{contact_name}', contact_email = '{contact_email}'")
-    
-    if contact_name or contact_email:
-        for contrib in created_contributions:
-            contact = ContributionContact(
-                contribution_id=contrib.id,
-                name=contact_name,
-                email=contact_email,
-                notes=hours_description if contrib.contribution_type == 'hours' else None
-            )
-            db.add(contact)
-    
-    # Check if threshold is now met
-    new_total = offering.get_total_contributed(db)
-    threshold_reached = float(new_total) >= float(offering.threshold_amount)
-    threshold_just_reached = threshold_reached and not was_threshold_reached
-    
-    if threshold_reached and offering.status == 'open':
-        offering.status = 'threshold_met'
-    
-    db.commit()
-    
-    # Send confirmation email if contact email provided
-    print(f"DEBUG: About to check if should send email. contact_email = '{contact_email}'")
-    if contact_email:
-        print(f"DEBUG: Sending email to {contact_email}")
-        try:
-            result = send_contribution_confirmation(
-                to_email=contact_email,
-                to_name=contact_name,
-                offering_title=offering.get_title(lang),
-                offering_id=offering.id,
-                contribution_data=contribution_data,
-                lang=lang
-            )
-            print(f"DEBUG: Email function returned: {result}")
-        except Exception as e:
-            # Log error but don't fail the contribution
-            print(f"DEBUG: Failed to send confirmation email: {e}")
-            logger.error(f"Failed to send confirmation email: {e}")
-    else:
-        print("DEBUG: No contact_email provided, skipping email")
-    
-    # Calculate new progress
-    new_percent = round((float(new_total) / float(offering.threshold_amount)) * 100, 1) if offering.threshold_amount else 0
-    new_remaining = max(Decimal('0'), offering.threshold_amount - new_total)
-    
-    return templates.TemplateResponse(
-        "contribute_thankyou.html",
-        {
-            "request": request,
-            "offering": offering,
-            "contribution_data": contribution_data,
-            "new_total": new_total,
-            "new_percent": new_percent,
-            "new_remaining": new_remaining,
-            "threshold_reached": threshold_reached,
-            "threshold_just_reached": threshold_just_reached,
-            "lang": lang,
-            "user": user
-        }
+    """Legacy registration route - redirects to new participate flow"""
+    return participate_submit(
+        offering_id=offering_id,
+        request=request,
+        email=email,
+        name=name,
+        referral=referral,
+        db=db
     )
-

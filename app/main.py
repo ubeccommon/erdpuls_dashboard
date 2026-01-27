@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
 from .routers import api_router, web_router, auth_router
+from .routers import admin as admin_router
 
 settings = get_settings()
 
@@ -35,6 +36,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(api_router)
 app.include_router(web_router)
 app.include_router(auth_router)
+app.include_router(admin_router.router)
 
 
 @app.get("/health")

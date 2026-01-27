@@ -1,5 +1,6 @@
 """
 Erdpuls Collective Threshold Model - Auth Router
+With role-based permissions for offering creation.
 """
 from typing import Optional
 
@@ -16,6 +17,10 @@ from ..auth import (
     set_session_cookie, clear_session_cookie,
     SESSION_COOKIE_NAME
 )
+from ..roles import (
+    UserRole, can_create_offering, can_publish_direct, 
+    can_approve_offerings, has_role_or_higher
+)
 
 router = APIRouter(tags=["auth"])
 templates = Jinja2Templates(directory="templates")
@@ -27,6 +32,14 @@ def get_lang(request: Request) -> str:
     if lang and lang in ['en', 'de', 'pl']:
         return lang
     return request.cookies.get('lang', 'en')
+
+
+def get_user_home(user: User) -> str:
+    """Get the appropriate home page for a user based on their role"""
+    # Admins and moderators go to admin panel
+    if has_role_or_higher(user.role, UserRole.MODERATOR.value):
+        return "/admin"
+    return "/dashboard"
 
 
 # ============================================
@@ -44,9 +57,11 @@ def login_page(
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     
-    # Already logged in
+    # Already logged in - redirect to appropriate page
     if user:
-        return RedirectResponse(url=next or "/dashboard", status_code=303)
+        if next:
+            return RedirectResponse(url=next, status_code=303)
+        return RedirectResponse(url=get_user_home(user), status_code=303)
     
     return templates.TemplateResponse(
         "auth/login.html",
@@ -82,7 +97,11 @@ def login(
     db.commit()
     
     # Create session and redirect
-    redirect_url = next if next else "/dashboard"
+    if next:
+        redirect_url = next
+    else:
+        redirect_url = get_user_home(user)
+    
     response = RedirectResponse(url=redirect_url, status_code=303)
     set_session_cookie(response, user.id)
     return response
@@ -115,9 +134,9 @@ def register_page(
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     
-    # Already logged in
+    # Already logged in - redirect to appropriate page
     if user:
-        return RedirectResponse(url="/dashboard", status_code=303)
+        return RedirectResponse(url=get_user_home(user), status_code=303)
     
     return templates.TemplateResponse(
         "auth/register.html",
@@ -155,13 +174,13 @@ def register(
             status_code=303
         )
     
-    # Try to create user
+    # Try to create user with 'member' role (default)
     try:
         user = create_user(
             email=email,
             password=password,
             name=name,
-            role="user",
+            role=UserRole.MEMBER.value,  # New users are members by default
             db=db
         )
     except ValueError as e:
@@ -193,26 +212,31 @@ def dashboard(
     if not user:
         return RedirectResponse(url="/login?next=/dashboard", status_code=303)
     
-    # Get user's offerings
+    # Get user's offerings (only if they can create)
     from ..models import Offering
-    my_offerings = db.query(Offering).filter(
-        Offering.creator_id == user.id
-    ).order_by(Offering.created_at.desc()).all()
+    my_offerings = []
+    if can_create_offering(user.role):
+        my_offerings = db.query(Offering).filter(
+            Offering.creator_id == user.id
+        ).order_by(Offering.created_at.desc()).all()
+        
+        # Add computed properties
+        for o in my_offerings:
+            o._total = o.get_total_contributed(db)
+            o._reg_count = o.get_registration_count(db)
+            o._percent = round((float(o._total) / float(o.threshold_amount)) * 100, 1) if o.threshold_amount else 0
     
-    # Add computed properties
-    for o in my_offerings:
-        o._total = o.get_total_contributed(db)
-        o._reg_count = o.get_registration_count(db)
-        o._percent = round((float(o._total) / float(o.threshold_amount)) * 100, 1) if o.threshold_amount else 0
-    
-    # For admins, get all offerings
+    # For moderators and admins, get all offerings
     all_offerings = None
-    if user.is_admin:
+    if can_approve_offerings(user.role):
         all_offerings = db.query(Offering).order_by(Offering.created_at.desc()).all()
         for o in all_offerings:
             o._total = o.get_total_contributed(db)
             o._reg_count = o.get_registration_count(db)
             o._percent = round((float(o._total) / float(o.threshold_amount)) * 100, 1) if o.threshold_amount else 0
+    
+    # Check if user can create offerings
+    user_can_create = can_create_offering(user.role)
     
     return templates.TemplateResponse(
         "auth/dashboard.html",
@@ -222,7 +246,8 @@ def dashboard(
             "user": user,
             "my_offerings": my_offerings,
             "all_offerings": all_offerings,
-            "welcome": welcome
+            "welcome": welcome,
+            "can_create": user_can_create
         }
     )
 
@@ -242,6 +267,10 @@ def create_offering_page(
     
     if not user:
         return RedirectResponse(url="/login?next=/dashboard/create", status_code=303)
+    
+    # Check if user has permission to create offerings
+    if not can_create_offering(user.role):
+        return RedirectResponse(url="/dashboard?error=no_create_permission", status_code=303)
     
     return templates.TemplateResponse(
         "auth/create_offering.html",
@@ -283,6 +312,10 @@ def create_offering(
     if not user:
         return RedirectResponse(url="/login?next=/dashboard/create", status_code=303)
     
+    # Check if user has permission to create offerings
+    if not can_create_offering(user.role):
+        return RedirectResponse(url="/dashboard?error=no_create_permission", status_code=303)
+    
     from datetime import datetime
     from decimal import Decimal
     from ..models import Offering
@@ -303,16 +336,9 @@ def create_offering(
         
         date_str = date_str.strip()
         
-        # List of formats to try
         formats = [
-            '%Y-%m-%dT%H:%M:%S',      # 2026-03-05T10:30:00
-            '%Y-%m-%dT%H:%M',          # 2026-03-05T10:30
-            '%Y-%m-%d %H:%M:%S',       # 2026-03-05 10:30:00
-            '%Y-%m-%d %H:%M',          # 2026-03-05 10:30
-            '%Y-%m-%d',                # 2026-03-05
-            '%d.%m.%Y %H:%M',          # 05.03.2026 10:30
-            '%d.%m.%Y',                # 05.03.2026
-            '%d/%m/%Y',                # 05/03/2026
+            '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M:%S',
+            '%Y-%m-%d %H:%M', '%Y-%m-%d', '%d.%m.%Y %H:%M', '%d.%m.%Y', '%d/%m/%Y',
         ]
         
         for fmt in formats:
@@ -321,15 +347,12 @@ def create_offering(
             except ValueError:
                 continue
         
-        # Try ISO format with timezone
         try:
             return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
         except:
             pass
         
-        # If all fails, try to extract just the date part
         try:
-            # Handle cases like "2026-03-05T" or partial datetime
             date_part = date_str.split('T')[0].split(' ')[0]
             return datetime.strptime(date_part, '%Y-%m-%d')
         except:
@@ -337,7 +360,6 @@ def create_offering(
         
         return None
     
-    # Combine contribution deadline date and time
     def parse_datetime(date_str, time_str):
         if not date_str:
             return None
@@ -351,11 +373,18 @@ def create_offering(
     parsed_registration = parse_date(registration_deadline)
     parsed_contribution = parse_datetime(contribution_deadline_date, contribution_deadline_time)
     
-    # Validate required dates
     if not parsed_registration:
         return RedirectResponse(url="/dashboard/create?error=invalid_registration_date", status_code=303)
     if not parsed_contribution:
         return RedirectResponse(url="/dashboard/create?error=invalid_contribution_date", status_code=303)
+    
+    # Determine initial status based on user's role
+    # Facilitators, moderators, and admins can publish directly
+    # Creators need approval (draft status)
+    if can_publish_direct(user.role):
+        initial_status = 'open'
+    else:
+        initial_status = 'draft'
     
     offering = Offering(
         title=title,
@@ -379,7 +408,7 @@ def create_offering(
         organizer_phone=organizer_phone or None,
         creator_id=user.id,
         created_by=user.name or user.email,
-        status='draft' if not user.is_admin else 'open'
+        status=initial_status
     )
     
     db.add(offering)
@@ -411,8 +440,11 @@ def manage_offering_page(
     if not offering:
         raise HTTPException(status_code=404, detail="Offering not found")
     
-    # Check permission
-    if offering.creator_id != user.id and not user.is_admin:
+    # Check permission: own offering OR moderator/admin
+    is_owner = offering.creator_id == user.id
+    is_moderator = can_approve_offerings(user.role)
+    
+    if not is_owner and not is_moderator:
         raise HTTPException(status_code=403, detail="Access denied")
     
     # Get registrations
@@ -420,7 +452,7 @@ def manage_offering_page(
         Registration.offering_id == offering_id
     ).order_by(Registration.registered_at.desc()).all()
     
-    # Get contributions with their contact info (for organizer operational use)
+    # Get contributions
     contributions = db.query(Contribution).filter(
         Contribution.offering_id == offering_id
     ).order_by(Contribution.contributed_at.desc()).all()
@@ -439,7 +471,8 @@ def manage_offering_page(
             "user": user,
             "offering": offering,
             "registrations": registrations,
-            "contributions": contributions
+            "contributions": contributions,
+            "can_approve": is_moderator
         }
     )
 
@@ -463,9 +496,9 @@ def update_offering_status(
     if not offering:
         raise HTTPException(status_code=404, detail="Offering not found")
     
-    # Check permission (only admin can change status)
-    if not user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
+    # Check permission: only moderators and admins can change status
+    if not can_approve_offerings(user.role):
+        raise HTTPException(status_code=403, detail="Moderator access required")
     
     valid_statuses = ['draft', 'open', 'threshold_met', 'confirmed', 'completed', 'cancelled']
     if status not in valid_statuses:
@@ -481,7 +514,6 @@ def update_offering_status(
 # Edit Offering
 # ============================================
 
-# Statuses that allow editing
 EDITABLE_STATUSES = ['draft', 'open', 'threshold_met']
 
 @router.get("/dashboard/offering/{offering_id}/edit", response_class=HTMLResponse)
@@ -503,8 +535,11 @@ def edit_offering_page(
     if not offering:
         raise HTTPException(status_code=404, detail="Offering not found")
     
-    # Check permission
-    if offering.creator_id != user.id and not user.is_admin:
+    # Check permission: own offering OR moderator/admin
+    is_owner = offering.creator_id == user.id
+    is_moderator = can_approve_offerings(user.role)
+    
+    if not is_owner and not is_moderator:
         raise HTTPException(status_code=403, detail="Access denied")
     
     # Check if editable
@@ -562,7 +597,10 @@ def edit_offering(
         raise HTTPException(status_code=404, detail="Offering not found")
     
     # Check permission
-    if offering.creator_id != user.id and not user.is_admin:
+    is_owner = offering.creator_id == user.id
+    is_moderator = can_approve_offerings(user.role)
+    
+    if not is_owner and not is_moderator:
         raise HTTPException(status_code=403, detail="Access denied")
     
     # Check if editable
@@ -653,7 +691,7 @@ def delete_offering(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Delete an offering (only if in draft status or by admin)"""
+    """Delete an offering"""
     user = get_current_user_optional(request, db)
     
     if not user:
@@ -666,11 +704,14 @@ def delete_offering(
         raise HTTPException(status_code=404, detail="Offering not found")
     
     # Check permission
-    if offering.creator_id != user.id and not user.is_admin:
+    is_owner = offering.creator_id == user.id
+    is_admin = user.role == UserRole.ADMIN.value
+    
+    if not is_owner and not is_admin:
         raise HTTPException(status_code=403, detail="Access denied")
     
-    # Only draft can be deleted by regular users, admins can delete any
-    if offering.status != 'draft' and not user.is_admin:
+    # Only draft can be deleted by regular creators, admins can delete any
+    if offering.status != 'draft' and not is_admin:
         return RedirectResponse(url=f"/dashboard/offering/{offering_id}?error=cannot_delete", status_code=303)
     
     db.delete(offering)

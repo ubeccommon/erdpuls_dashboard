@@ -1,202 +1,366 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if lang == 'de' %}Neues Angebot{% elif lang == 'pl' %}Nowa oferta{% else %}New Offering{% endif %}
+{% if lang == 'de' %}Ein Angebot erstellen{% elif lang == 'pl' %}Utwórz ofertę{% else %}Create an Offering{% endif %}
 {% endblock %}
 
 {% block content %}
-<section class="create-offering-page">
+<!-- Hero Section -->
+<section class="page-hero compact">
     <div class="container">
-        <nav class="breadcrumb">
-            <a href="/dashboard">{% if lang == 'de' %}Dashboard{% elif lang == 'pl' %}Panel{% else %}Dashboard{% endif %}</a>
-            <span>›</span>
-            <span>{% if lang == 'de' %}Neues Angebot{% elif lang == 'pl' %}Nowa oferta{% else %}New Offering{% endif %}</span>
-        </nav>
-
-        <header class="page-header">
-            <h1>{% if lang == 'de' %}Neues Angebot erstellen{% elif lang == 'pl' %}Utwórz nową ofertę{% else %}Create New Offering{% endif %}</h1>
-            <p>
-                {% if lang == 'de' %}
-                    Definieren Sie die Schwelle (Mindestbetrag) und die Kostenaufschlüsselung für Ihr Angebot.
-                {% elif lang == 'pl' %}
-                    Określ próg (minimalną kwotę) i podział kosztów dla swojej oferty.
-                {% else %}
-                    Define the threshold (minimum amount) and cost breakdown for your offering.
-                {% endif %}
-            </p>
-        </header>
-
-        {% if request.query_params.get('error') %}
-        <div class="alert alert-error">
-            {% set error = request.query_params.get('error') %}
-            {% if error == 'invalid_registration_date' %}
-                {% if lang == 'de' %}Ungültiges Registrierungsdatum{% elif lang == 'pl' %}Nieprawidłowa data rejestracji{% else %}Invalid registration deadline date{% endif %}
-            {% elif error == 'invalid_contribution_date' %}
-                {% if lang == 'de' %}Ungültiges Beitragsdatum{% elif lang == 'pl' %}Nieprawidłowa data wpłat{% else %}Invalid contribution deadline date{% endif %}
+        <span class="hero-eyebrow">
+            {% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% else %}Collective Threshold Model{% endif %}
+        </span>
+        <h1 class="page-title">
+            {% if lang == 'de' %}
+                Ein Angebot erstellen
+            {% elif lang == 'pl' %}
+                Utwórz ofertę
             {% else %}
-                {% if lang == 'de' %}Ein Fehler ist aufgetreten{% elif lang == 'pl' %}Wystąpił błąd{% else %}An error occurred{% endif %}
+                Create an Offering
             {% endif %}
-        </div>
-        {% endif %}
-
-        <form action="/dashboard/create" method="post" class="create-form">
-            <div class="form-section">
-                <h2>{% if lang == 'de' %}Grundinformationen{% elif lang == 'pl' %}Podstawowe informacje{% else %}Basic Information{% endif %}</h2>
-                
-                <div class="form-group">
-                    <label for="title">{% if lang == 'de' %}Titel (Englisch){% elif lang == 'pl' %}Tytuł (angielski){% else %}Title (English){% endif %} *</label>
-                    <input type="text" id="title" name="title" required>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="title_de">{% if lang == 'de' %}Titel (Deutsch){% elif lang == 'pl' %}Tytuł (niemiecki){% else %}Title (German){% endif %}</label>
-                        <input type="text" id="title_de" name="title_de">
-                    </div>
-                    <div class="form-group">
-                        <label for="title_pl">{% if lang == 'de' %}Titel (Polnisch){% elif lang == 'pl' %}Tytuł (polski){% else %}Title (Polish){% endif %}</label>
-                        <input type="text" id="title_pl" name="title_pl">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description">{% if lang == 'de' %}Beschreibung (Englisch){% elif lang == 'pl' %}Opis (angielski){% else %}Description (English){% endif %} *</label>
-                    <textarea id="description" name="description" rows="5" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description_de">{% if lang == 'de' %}Beschreibung (Deutsch){% elif lang == 'pl' %}Opis (niemiecki){% else %}Description (German){% endif %}</label>
-                    <textarea id="description_de" name="description_de" rows="5"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description_pl">{% if lang == 'de' %}Beschreibung (Polnisch){% elif lang == 'pl' %}Opis (polski){% else %}Description (Polish){% endif %}</label>
-                    <textarea id="description_pl" name="description_pl" rows="5"></textarea>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% else %}Cost Breakdown{% endif %}</h2>
-                <p class="section-note">
-                    {% if lang == 'de' %}
-                        Die Schwelle wird automatisch aus der Summe der Kosten berechnet.
-                    {% elif lang == 'pl' %}
-                        Próg jest automatycznie obliczany na podstawie sumy kosztów.
-                    {% else %}
-                        The threshold is automatically calculated from the sum of costs.
-                    {% endif %}
-                </p>
-                
-                <div class="cost-inputs">
-                    <div class="form-group">
-                        <label for="facilitator_cost">{% if lang == 'de' %}Honorar (€){% elif lang == 'pl' %}Wynagrodzenie (€){% else %}Facilitator (€){% endif %}</label>
-                        <input type="number" id="facilitator_cost" name="facilitator_cost" value="0" min="0" step="0.01" class="cost-input">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="materials_cost">{% if lang == 'de' %}Materialien (€){% elif lang == 'pl' %}Materiały (€){% else %}Materials (€){% endif %}</label>
-                        <input type="number" id="materials_cost" name="materials_cost" value="0" min="0" step="0.01" class="cost-input">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="meals_cost">{% if lang == 'de' %}Mahlzeiten (€){% elif lang == 'pl' %}Posiłki (€){% else %}Meals (€){% endif %}</label>
-                        <input type="number" id="meals_cost" name="meals_cost" value="0" min="0" step="0.01" class="cost-input">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="space_cost">{% if lang == 'de' %}Raum (€){% elif lang == 'pl' %}Przestrzeń (€){% else %}Space (€){% endif %}</label>
-                        <input type="number" id="space_cost" name="space_cost" value="0" min="0" step="0.01" class="cost-input">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="sustainability_contribution">{% if lang == 'de' %}Nachhaltigkeitsbeitrag (€){% elif lang == 'pl' %}Wkład na rzecz zrównoważonego rozwoju (€){% else %}Sustainability Contribution (€){% endif %}</label>
-                        <input type="number" id="sustainability_contribution" name="sustainability_contribution" value="0" min="0" step="0.01" class="cost-input">
-                    </div>
-                </div>
-                
-                <div class="threshold-display">
-                    <span class="threshold-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}:</span>
-                    <span class="threshold-value">€<span id="threshold-total">0.00</span></span>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h2>{% if lang == 'de' %}Termine{% elif lang == 'pl' %}Daty{% else %}Dates{% endif %}</h2>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="event_date">{% if lang == 'de' %}Veranstaltungsdatum{% elif lang == 'pl' %}Data wydarzenia{% else %}Event Date{% endif %}</label>
-                        <input type="date" id="event_date" name="event_date">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="max_participants">{% if lang == 'de' %}Max. Teilnehmer{% elif lang == 'pl' %}Maks. uczestników{% else %}Max Participants{% endif %}</label>
-                        <input type="number" id="max_participants" name="max_participants" min="1">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="registration_deadline">{% if lang == 'de' %}Registrierung bis{% elif lang == 'pl' %}Rejestracja do{% else %}Registration Deadline{% endif %} *</label>
-                        <input type="date" id="registration_deadline" name="registration_deadline" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="contribution_deadline_date">{% if lang == 'de' %}Beiträge bis{% elif lang == 'pl' %}Wpłaty do{% else %}Contribution Deadline{% endif %} *</label>
-                        <div class="datetime-inputs">
-                            <input type="date" id="contribution_deadline_date" name="contribution_deadline_date" required>
-                            <input type="time" id="contribution_deadline_time" name="contribution_deadline_time" value="23:59" required>
-                        </div>
-                        <span class="form-hint">
-                            {% if lang == 'de' %}Datum und Uhrzeit{% elif lang == 'pl' %}Data i godzina{% else %}Date and time{% endif %}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {% if not user.is_admin %}
-            <div class="info-box">
-                <p>
-                    {% if lang == 'de' %}
-                        <strong>Hinweis:</strong> Ihr Angebot wird als Entwurf erstellt und muss von einem Administrator genehmigt werden, bevor es öffentlich sichtbar ist.
-                    {% elif lang == 'pl' %}
-                        <strong>Uwaga:</strong> Twoja oferta zostanie utworzona jako szkic i musi zostać zatwierdzona przez administratora, zanim będzie publicznie widoczna.
-                    {% else %}
-                        <strong>Note:</strong> Your offering will be created as a draft and must be approved by an administrator before it becomes publicly visible.
-                    {% endif %}
-                </p>
-            </div>
+        </h1>
+        <p class="page-intro">
+            {% if lang == 'de' %}
+                Teilen Sie Ihr Wissen, Ihre Fähigkeiten oder Ihre Vision mit der Gemeinschaft. Jedes Angebot wird gemeinsam ins Leben gerufen.
+            {% elif lang == 'pl' %}
+                Podziel się swoją wiedzą, umiejętnościami lub wizją ze społecznością. Każda oferta jest wspólnie realizowana.
+            {% else %}
+                Share your knowledge, skills, or vision with the community. Every offering is brought into being collectively.
             {% endif %}
-
-            <div class="form-actions">
-                <a href="/dashboard" class="btn btn-secondary">{% if lang == 'de' %}Abbrechen{% elif lang == 'pl' %}Anuluj{% else %}Cancel{% endif %}</a>
-                <button type="submit" class="btn btn-primary">
-                    {% if lang == 'de' %}Angebot erstellen{% elif lang == 'pl' %}Utwórz ofertę{% else %}Create Offering{% endif %}
-                </button>
-            </div>
-        </form>
+        </p>
     </div>
 </section>
 
-<script>
-// Calculate threshold in real-time
-document.addEventListener('DOMContentLoaded', function() {
-    const costInputs = document.querySelectorAll('.cost-input');
-    const thresholdDisplay = document.getElementById('threshold-total');
-    
-    function updateThreshold() {
-        let total = 0;
-        costInputs.forEach(input => {
-            total += parseFloat(input.value) || 0;
-        });
-        thresholdDisplay.textContent = total.toFixed(2);
+<!-- How It Works -->
+<section class="section">
+    <div class="container">
+        <div class="create-offering-content">
+            
+            <div class="info-card">
+                <h2>
+                    {% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% else %}How It Works{% endif %}
+                </h2>
+                
+                <div class="steps-list">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj się{% else %}Register{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    Erstellen Sie ein Konto, um Angebote zu erstellen und zu verwalten.
+                                {% elif lang == 'pl' %}
+                                    Utwórz konto, aby tworzyć i zarządzać ofertami.
+                                {% else %}
+                                    Create an account to create and manage offerings.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Genehmigung erhalten{% elif lang == 'pl' %}Uzyskaj zatwierdzenie{% else %}Get Approved{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    Nach der Registrierung wird Ihr Konto als "Mitglied" eingerichtet. Ein Administrator wird Ihr Konto auf "Ersteller" hochstufen, damit Sie Angebote erstellen können.
+                                {% elif lang == 'pl' %}
+                                    Po rejestracji Twoje konto będzie ustawione jako "Członek". Administrator podniesie Twoje konto do rangi "Twórca", abyś mógł tworzyć oferty.
+                                {% else %}
+                                    After registration, your account will be set as "Member". An administrator will upgrade your account to "Creator" status so you can create offerings.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Angebot beschreiben{% elif lang == 'pl' %}Opisz ofertę{% else %}Describe Your Offering{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    Erklären Sie transparent, was Sie anbieten: Titel, Beschreibung, Kosten (Honorar, Materialien, Verpflegung, Raummiete), Termine und maximale Teilnehmerzahl.
+                                {% elif lang == 'pl' %}
+                                    Opisz przejrzyście, co oferujesz: tytuł, opis, koszty (honorarium, materiały, wyżywienie, wynajem sali), terminy i maksymalną liczbę uczestników.
+                                {% else %}
+                                    Transparently describe what you're offering: title, description, costs (facilitator fee, materials, meals, venue), dates, and maximum participants.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Gemeinschaft finanziert{% elif lang == 'pl' %}Społeczność finansuje{% else %}Community Funds{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    Die Gemeinschaft trägt anonym bei – Euro, Zeitspenden oder UBECrc-Token. Niemand weiß, wer was beigetragen hat.
+                                {% elif lang == 'pl' %}
+                                    Społeczność anonimowo wpłaca – euro, darowizny czasu lub tokeny UBECrc. Nikt nie wie, kto ile wpłacił.
+                                {% else %}
+                                    The community contributes anonymously – Euros, time donations, or UBECrc tokens. No one knows who contributed what.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <span class="step-number">5</span>
+                        <div class="step-content">
+                            <h3>{% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}</h3>
+                            <p>
+                                {% if lang == 'de' %}
+                                    Wenn die Schwelle erreicht ist, findet das Angebot statt. Überschüsse gehen in den Regenerationsfonds, Fehlbeträge werden daraus gedeckt.
+                                {% elif lang == 'pl' %}
+                                    Gdy próg zostanie osiągnięty, oferta się realizuje. Nadwyżki trafiają do Funduszu Regeneracji, niedobory są z niego pokrywane.
+                                {% else %}
+                                    When the threshold is met, the offering happens. Surpluses go to the Regeneration Fund, shortfalls are covered from it.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Role Explanation -->
+            <div class="info-card">
+                <h2>
+                    {% if lang == 'de' %}Benutzerrollen{% elif lang == 'pl' %}Role użytkowników{% else %}User Roles{% endif %}
+                </h2>
+                
+                <div class="roles-grid">
+                    <div class="role-item">
+                        <span class="role-icon">👤</span>
+                        <h3>{% if lang == 'de' %}Mitglied{% elif lang == 'pl' %}Członek{% else %}Member{% endif %}</h3>
+                        <p>
+                            {% if lang == 'de' %}
+                                Kann an Angeboten teilnehmen und beitragen. Standardrolle nach der Registrierung.
+                            {% elif lang == 'pl' %}
+                                Może uczestniczyć i wspierać oferty. Domyślna rola po rejestracji.
+                            {% else %}
+                                Can participate in and contribute to offerings. Default role after registration.
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="role-item">
+                        <span class="role-icon">✏️</span>
+                        <h3>{% if lang == 'de' %}Ersteller{% elif lang == 'pl' %}Twórca{% else %}Creator{% endif %}</h3>
+                        <p>
+                            {% if lang == 'de' %}
+                                Kann Angebote erstellen. Angebote müssen von einem Moderator genehmigt werden.
+                            {% elif lang == 'pl' %}
+                                Może tworzyć oferty. Oferty muszą zostać zatwierdzone przez moderatora.
+                            {% else %}
+                                Can create offerings. Offerings must be approved by a moderator.
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="role-item">
+                        <span class="role-icon">🌱</span>
+                        <h3>Facilitator</h3>
+                        <p>
+                            {% if lang == 'de' %}
+                                Vertrauenswürdiger Ersteller. Angebote werden direkt veröffentlicht ohne Genehmigung.
+                            {% elif lang == 'pl' %}
+                                Zaufany twórca. Oferty publikowane bezpośrednio bez zatwierdzenia.
+                            {% else %}
+                                Trusted creator. Offerings are published directly without approval.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Call to Action -->
+            <div class="cta-section">
+                {% if user %}
+                    {% if user.role in ['creator', 'facilitator', 'moderator', 'admin'] %}
+                        <a href="/dashboard/create" class="btn btn-primary btn-large">
+                            {% if lang == 'de' %}Angebot jetzt erstellen{% elif lang == 'pl' %}Utwórz ofertę teraz{% else %}Create Offering Now{% endif %} →
+                        </a>
+                    {% else %}
+                        <div class="cta-message">
+                            <p>
+                                {% if lang == 'de' %}
+                                    Ihr Konto ist als <strong>Mitglied</strong> registriert. Kontaktieren Sie uns, um Ersteller-Rechte zu erhalten.
+                                {% elif lang == 'pl' %}
+                                    Twoje konto jest zarejestrowane jako <strong>Członek</strong>. Skontaktuj się z nami, aby uzyskać uprawnienia twórcy.
+                                {% else %}
+                                    Your account is registered as <strong>Member</strong>. Contact us to receive creator permissions.
+                                {% endif %}
+                            </p>
+                            <a href="mailto:erdpuls@ubec.network" class="btn btn-primary">
+                                {% if lang == 'de' %}Kontakt aufnehmen{% elif lang == 'pl' %}Skontaktuj się{% else %}Contact Us{% endif %}
+                            </a>
+                            <a href="/dashboard" class="btn btn-outline">
+                                {% if lang == 'de' %}Zum Dashboard{% elif lang == 'pl' %}Do panelu{% else %}Go to Dashboard{% endif %}
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="cta-intro">
+                        {% if lang == 'de' %}
+                            Bereit, ein Angebot zu erstellen? Registrieren Sie sich oder melden Sie sich an.
+                        {% elif lang == 'pl' %}
+                            Gotowy, aby utworzyć ofertę? Zarejestruj się lub zaloguj.
+                        {% else %}
+                            Ready to create an offering? Register or log in to get started.
+                        {% endif %}
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="/register" class="btn btn-primary btn-large">
+                            {% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj się{% else %}Register{% endif %}
+                        </a>
+                        <a href="/login" class="btn btn-outline btn-large">
+                            {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj się{% else %}Login{% endif %}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<style>
+.create-offering-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.info-card h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--color-forest);
+    margin-bottom: var(--space-lg);
+}
+
+.steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.step {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-start;
+}
+
+.step-number {
+    width: 36px;
+    height: 36px;
+    background: var(--color-forest);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-content h3 {
+    font-size: 1.1rem;
+    color: var(--color-forest);
+    margin-bottom: 0.25rem;
+}
+
+.step-content p {
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.roles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+}
+
+.role-item {
+    text-align: center;
+    padding: var(--space-md);
+}
+
+.role-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: var(--space-sm);
+}
+
+.role-item h3 {
+    font-size: 1rem;
+    color: var(--color-forest);
+    margin-bottom: 0.5rem;
+}
+
+.role-item p {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.cta-section {
+    text-align: center;
+    padding: var(--space-xl);
+    background: var(--color-cream);
+    border-radius: 12px;
+}
+
+.cta-intro {
+    font-size: 1.1rem;
+    margin-bottom: var(--space-lg);
+    color: var(--color-bark);
+}
+
+.cta-buttons {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cta-message {
+    text-align: center;
+}
+
+.cta-message p {
+    margin-bottom: var(--space-lg);
+    color: var(--color-bark);
+}
+
+.cta-message .btn {
+    margin: 0 0.5rem;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .roles-grid {
+        grid-template-columns: 1fr;
     }
     
-    costInputs.forEach(input => {
-        input.addEventListener('input', updateThreshold);
-    });
-    
-    updateThreshold();
-});
-</script>
+    .cta-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+</style>
 {% endblock %}

@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Systemeinstellungen{% elif lang == 'pl' %}Ustawienia systemu{% else %}System Settings{% endif %} | Erdpuls Admin
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+        
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <h1>
+                    {% if lang == 'de' %}Systemeinstellungen{% elif lang == 'pl' %}Ustawienia systemu{% else %}System Settings{% endif %}
+                </h1>
+                <p class="admin-subtitle">
+                    {% if lang == 'de' %}Wechselkurse und Stundensätze verwalten{% elif lang == 'pl' %}Zarządzaj kursami wymiany i stawkami godzinowymi{% else %}Manage exchange rates and hourly rates{% endif %}
+                </p>
+            </div>
+        </header>
+        
+        {% include "admin/_nav.html" %}
+        
+        <!-- Success Alert -->
+        {% if request.query_params.get('success') %}
+        <div class="alert alert-success">
+            {% if request.query_params.get('success') == 'token_rate_updated' %}
+                {% if lang == 'de' %}Token-Kurs aktualisiert{% elif lang == 'pl' %}Kurs tokenów zaktualizowany{% else %}Token rate updated{% endif %}
+            {% elif request.query_params.get('success') == 'hours_rate_updated' %}
+                {% if lang == 'de' %}Stundensatz aktualisiert{% elif lang == 'pl' %}Stawka godzinowa zaktualizowana{% else %}Hours rate updated{% endif %}
+            {% elif request.query_params.get('success') == 'hours_rate_deleted' %}
+                {% if lang == 'de' %}Stundensatz gelöscht{% elif lang == 'pl' %}Stawka godzinowa usunięta{% else %}Hours rate deleted{% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="settings-grid">
+            
+            <!-- Token Rate -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>🪙 {% if lang == 'de' %}UBECrc Token-Kurs{% elif lang == 'pl' %}Kurs tokenów UBECrc{% else %}UBECrc Token Rate{% endif %}</h2>
+                </div>
+                <div class="admin-card-content">
+                    <form action="/admin/settings/token-rate" method="post" class="admin-form">
+                        <div class="current-rate">
+                            <span class="rate-label">{% if lang == 'de' %}Aktueller Kurs{% elif lang == 'pl' %}Aktualny kurs{% else %}Current Rate{% endif %}:</span>
+                            <span class="rate-value">{{ token_rate.tokens_per_eur if token_rate else '100' }} UBECrc = €1</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tokens_per_eur">{% if lang == 'de' %}Tokens pro Euro{% elif lang == 'pl' %}Tokenów za Euro{% else %}Tokens per Euro{% endif %}</label>
+                            <input type="number" id="tokens_per_eur" name="tokens_per_eur" 
+                                   value="{{ token_rate.tokens_per_eur if token_rate else '100' }}" 
+                                   step="0.01" min="0.01" required>
+                            <small class="form-help">{% if lang == 'de' %}Wie viele Tokens entsprechen €1{% elif lang == 'pl' %}Ile tokenów odpowiada €1{% else %}How many tokens equal €1{% endif %}</small>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Kurs aktualisieren{% elif lang == 'pl' %}Zaktualizuj kurs{% else %}Update Rate{% endif %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Hours Rates -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>⏱️ {% if lang == 'de' %}Stundensätze{% elif lang == 'pl' %}Stawki godzinowe{% else %}Hourly Rates{% endif %}</h2>
+                </div>
+                <div class="admin-card-content">
+                    
+                    <!-- Existing Rates -->
+                    {% if hours_rates %}
+                    <div class="rates-list">
+                        {% for rate in hours_rates %}
+                        <div class="rate-item">
+                            <div class="rate-info">
+                                <strong>{{ rate.category }}</strong>
+                                <span class="rate-amount">€{{ rate.eur_per_hour }}/{% if lang == 'de' %}Stunde{% elif lang == 'pl' %}godz{% else %}hour{% endif %}</span>
+                            </div>
+                            <div class="rate-description">
+                                {{ rate.get_description(lang) if rate.get_description else rate.description or '—' }}
+                            </div>
+                            <form action="/admin/settings/hours-rate/{{ rate.id }}/delete" method="post" 
+                                  onsubmit="return confirm('{% if lang == 'de' %}Wirklich löschen?{% elif lang == 'pl' %}Na pewno usunąć?{% else %}Really delete?{% endif %}');">
+                                <button type="submit" class="btn btn-small btn-outline">{% if lang == 'de' %}Löschen{% elif lang == 'pl' %}Usuń{% else %}Delete{% endif %}</button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <hr style="margin: 1.5rem 0; border-color: var(--color-border);">
+                    {% endif %}
+                    
+                    <!-- Add/Update Rate -->
+                    <h3 style="font-size: 1rem; margin-bottom: 1rem;">
+                        {% if lang == 'de' %}Stundensatz hinzufügen/aktualisieren{% elif lang == 'pl' %}Dodaj/zaktualizuj stawkę{% else %}Add/Update Rate{% endif %}
+                    </h3>
+                    <form action="/admin/settings/hours-rate" method="post" class="admin-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="category">{% if lang == 'de' %}Kategorie{% elif lang == 'pl' %}Kategoria{% else %}Category{% endif %}</label>
+                                <input type="text" id="category" name="category" 
+                                       placeholder="{% if lang == 'de' %}z.B. garden_labor{% elif lang == 'pl' %}np. garden_labor{% else %}e.g. garden_labor{% endif %}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eur_per_hour">€/{% if lang == 'de' %}Stunde{% elif lang == 'pl' %}godz{% else %}hour{% endif %}</label>
+                                <input type="number" id="eur_per_hour" name="eur_per_hour" 
+                                       value="15" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description">{% if lang == 'de' %}Beschreibung (EN){% elif lang == 'pl' %}Opis (EN){% else %}Description (EN){% endif %}</label>
+                            <input type="text" id="description" name="description">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="description_de">{% if lang == 'de' %}Beschreibung (DE){% elif lang == 'pl' %}Opis (DE){% else %}Description (DE){% endif %}</label>
+                                <input type="text" id="description_de" name="description_de">
+                            </div>
+                            <div class="form-group">
+                                <label for="description_pl">{% if lang == 'de' %}Beschreibung (PL){% elif lang == 'pl' %}Opis (PL){% else %}Description (PL){% endif %}</label>
+                                <input type="text" id="description_pl" name="description_pl">
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Speichern{% elif lang == 'pl' %}Zapisz{% else %}Save{% endif %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Fund Overview -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2>🏦 {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}</h2>
+                </div>
+                <div class="admin-card-content">
+                    <div class="fund-balance">
+                        <span class="balance-label">{% if lang == 'de' %}Aktueller Kontostand{% elif lang == 'pl' %}Aktualny stan konta{% else %}Current Balance{% endif %}</span>
+                        <span class="balance-value">€{{ fund_balance|round(2) }}</span>
+                    </div>
+                    <a href="/admin/fund" class="btn btn-outline" style="margin-top: 1rem;">
+                        {% if lang == 'de' %}Fonds verwalten{% elif lang == 'pl' %}Zarządzaj funduszem{% else %}Manage Fund{% endif %} →
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+</section>
+
+{% include "admin/_styles.html" %}
+
+<style>
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.current-rate, .fund-balance {
+    background: var(--color-cream, #f8f6f3);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rate-label, .balance-label {
+    font-size: 0.9rem;
+    color: var(--color-bark, #5a5a5a);
+}
+
+.rate-value, .balance-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-forest, #2d4a3e);
+}
+
+.form-help {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #888);
+    margin-top: 0.25rem;
+}
+
+.rates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rate-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: var(--color-cream, #f8f6f3);
+    border-radius: 8px;
+}
+
+.rate-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+}
+
+.rate-info strong {
+    font-size: 0.9rem;
+}
+
+.rate-amount {
+    font-size: 0.8rem;
+    color: var(--color-moss, #4a7c59);
+    font-weight: 600;
+}
+
+.rate-description {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--color-bark, #5a5a5a);
+}
+
+@media (max-width: 500px) {
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .rate-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+{% endblock %}

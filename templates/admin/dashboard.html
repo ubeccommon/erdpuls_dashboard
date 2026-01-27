@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Admin Dashboard{% elif lang == 'pl' %}Panel Administratora{% else %}Admin Dashboard{% endif %} | Erdpuls
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+        
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <h1>
+                    {% if lang == 'de' %}Admin Dashboard{% elif lang == 'pl' %}Panel Administratora{% else %}Admin Dashboard{% endif %}
+                </h1>
+                <p class="admin-subtitle">
+                    {% if lang == 'de' %}Übersicht und Schnellzugriff{% elif lang == 'pl' %}Przegląd i szybki dostęp{% else %}Overview and quick access{% endif %}
+                </p>
+            </div>
+        </header>
+        
+        <!-- Admin Navigation -->
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav-item active">
+                <span class="nav-icon">📊</span>
+                {% if lang == 'de' %}Dashboard{% elif lang == 'pl' %}Panel{% else %}Dashboard{% endif %}
+            </a>
+            <a href="/admin/users" class="admin-nav-item">
+                <span class="nav-icon">👥</span>
+                {% if lang == 'de' %}Benutzer{% elif lang == 'pl' %}Użytkownicy{% else %}Users{% endif %}
+            </a>
+            <a href="/admin/registrations" class="admin-nav-item">
+                <span class="nav-icon">📝</span>
+                {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}Uczestnicy{% else %}Participants{% endif %}
+            </a>
+            <a href="/admin/contributions" class="admin-nav-item">
+                <span class="nav-icon">💚</span>
+                {% if lang == 'de' %}Unterstützer{% elif lang == 'pl' %}Wspierający{% else %}Supporters{% endif %}
+            </a>
+            <a href="/admin/offerings" class="admin-nav-item">
+                <span class="nav-icon">🌱</span>
+                {% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}
+            </a>
+            <a href="/admin/fund" class="admin-nav-item">
+                <span class="nav-icon">🏦</span>
+                {% if lang == 'de' %}Fonds{% elif lang == 'pl' %}Fundusz{% else %}Fund{% endif %}
+            </a>
+            <a href="/admin/settings" class="admin-nav-item">
+                <span class="nav-icon">⚙️</span>
+                {% if lang == 'de' %}Einstellungen{% elif lang == 'pl' %}Ustawienia{% else %}Settings{% endif %}
+            </a>
+        </nav>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ stats.total_users }}</div>
+                    <div class="stat-label">{% if lang == 'de' %}Benutzer{% elif lang == 'pl' %}Użytkownicy{% else %}Users{% endif %}</div>
+                    <div class="stat-detail">{{ stats.admin_users }} {% if lang == 'de' %}Admins{% elif lang == 'pl' %}Adminów{% else %}admins{% endif %}</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🌱</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ stats.total_offerings }}</div>
+                    <div class="stat-label">{% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}</div>
+                    <div class="stat-detail">{{ stats.open_offerings }} {% if lang == 'de' %}offen{% elif lang == 'pl' %}otwartych{% else %}open{% endif %}</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ stats.total_registrations }}</div>
+                    <div class="stat-label">{% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}Uczestnicy{% else %}Participants{% endif %}</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">💚</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ stats.total_contributions }}</div>
+                    <div class="stat-label">{% if lang == 'de' %}Beiträge{% elif lang == 'pl' %}Wkłady{% else %}Contributions{% endif %}</div>
+                    <div class="stat-detail">€{{ stats.total_contributed|round(0)|int }} {% if lang == 'de' %}gesamt{% elif lang == 'pl' %}łącznie{% else %}total{% endif %}</div>
+                </div>
+            </div>
+            
+            <div class="stat-card highlight">
+                <div class="stat-icon">🏦</div>
+                <div class="stat-content">
+                    <div class="stat-value">€{{ stats.fund_balance|round(2) }}</div>
+                    <div class="stat-label">{% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}</div>
+                </div>
+            </div>
+            
+            <div class="stat-card {% if stats.draft_offerings > 0 %}alert{% endif %}">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ stats.draft_offerings }}</div>
+                    <div class="stat-label">{% if lang == 'de' %}Ausstehend{% elif lang == 'pl' %}Oczekujące{% else %}Pending{% endif %}</div>
+                    <div class="stat-detail">{% if lang == 'de' %}zur Überprüfung{% elif lang == 'pl' %}do przeglądu{% else %}for review{% endif %}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Grid -->
+        <div class="admin-content-grid">
+            
+            <!-- Pending Offerings -->
+            {% if pending_offerings %}
+            <div class="admin-card">
+                <div class="card-header">
+                    <h2>{% if lang == 'de' %}Ausstehende Angebote{% elif lang == 'pl' %}Oczekujące oferty{% else %}Pending Offerings{% endif %}</h2>
+                    <span class="badge badge-warning">{{ pending_offerings|length }}</span>
+                </div>
+                <div class="card-content">
+                    <ul class="pending-list">
+                        {% for offering in pending_offerings %}
+                        <li class="pending-item">
+                            <div class="pending-info">
+                                <strong>{{ offering.get_title(lang) }}</strong>
+                                <span class="pending-meta">
+                                    {% if lang == 'de' %}von{% elif lang == 'pl' %}przez{% else %}by{% endif %} 
+                                    {{ offering.created_by or 'Unknown' }} · 
+                                    {{ offering.created_at.strftime('%d.%m.%Y') }}
+                                </span>
+                            </div>
+                            <a href="/dashboard/offering/{{ offering.id }}" class="btn btn-small">
+                                {% if lang == 'de' %}Prüfen{% elif lang == 'pl' %}Sprawdź{% else %}Review{% endif %}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Recent Registrations -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <h2>{% if lang == 'de' %}Neueste Teilnehmer{% elif lang == 'pl' %}Najnowsi uczestnicy{% else %}Recent Participants{% endif %}</h2>
+                    <a href="/admin/registrations" class="btn btn-small btn-outline">
+                        {% if lang == 'de' %}Alle{% elif lang == 'pl' %}Wszystkie{% else %}View All{% endif %}
+                    </a>
+                </div>
+                <div class="card-content">
+                    {% if recent_registrations %}
+                    <ul class="activity-list">
+                        {% for reg in recent_registrations %}
+                        <li class="activity-item">
+                            <span class="activity-icon">📝</span>
+                            <div class="activity-info">
+                                <strong>{{ reg.name or reg.email }}</strong>
+                                <span class="activity-detail">{{ reg.offering.get_title(lang)[:30] }}...</span>
+                            </div>
+                            <span class="activity-time">{{ reg.registered_at.strftime('%d.%m') }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="empty-state">{% if lang == 'de' %}Noch keine Teilnehmer{% elif lang == 'pl' %}Brak uczestników{% else %}No participants yet{% endif %}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recent Contributions -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <h2>{% if lang == 'de' %}Neueste Beiträge{% elif lang == 'pl' %}Najnowsze wpłaty{% else %}Recent Contributions{% endif %}</h2>
+                    <a href="/admin/contributions" class="btn btn-small btn-outline">
+                        {% if lang == 'de' %}Alle{% elif lang == 'pl' %}Wszystkie{% else %}View All{% endif %}
+                    </a>
+                </div>
+                <div class="card-content">
+                    {% if recent_contributions %}
+                    <ul class="activity-list">
+                        {% for contrib in recent_contributions %}
+                        <li class="activity-item">
+                            <span class="activity-icon">💚</span>
+                            <div class="activity-info">
+                                <strong>€{{ contrib.amount_eur|round(2) }}</strong>
+                                <span class="activity-detail">{{ contrib.offering.get_title(lang)[:30] }}...</span>
+                            </div>
+                            <span class="activity-time">{{ contrib.contributed_at.strftime('%d.%m') }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="empty-state">{% if lang == 'de' %}Noch keine Beiträge{% elif lang == 'pl' %}Brak wpłat{% else %}No contributions yet{% endif %}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+</section>
+
+<style>
+/* Admin Page Styles */
+.admin-page {
+    padding: 2rem 0 4rem;
+    background: var(--color-cream, #f8f6f3);
+    min-height: 100vh;
+}
+
+.admin-header {
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    font-family: var(--font-display, serif);
+    font-size: 2rem;
+    color: var(--color-forest, #2d4a3e);
+    margin: 0 0 0.5rem 0;
+}
+
+.admin-subtitle {
+    color: var(--color-bark, #5a5a5a);
+    margin: 0;
+}
+
+/* Admin Navigation */
+.admin-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.admin-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--color-bark, #5a5a5a);
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.admin-nav-item:hover {
+    background: var(--color-cream, #f8f6f3);
+    color: var(--color-forest, #2d4a3e);
+}
+
+.admin-nav-item.active {
+    background: var(--color-forest, #2d4a3e);
+    color: white;
+}
+
+.nav-icon {
+    font-size: 1.1rem;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.stat-card.highlight {
+    background: linear-gradient(135deg, var(--color-moss, #4a7c59), var(--color-forest, #2d4a3e));
+    color: white;
+}
+
+.stat-card.highlight .stat-label,
+.stat-card.highlight .stat-detail {
+    color: rgba(255,255,255,0.8);
+}
+
+.stat-card.alert {
+    border-left: 4px solid #f59e0b;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--color-bark, #5a5a5a);
+    margin-top: 0.25rem;
+}
+
+.stat-detail {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #888);
+    margin-top: 0.25rem;
+}
+
+/* Admin Content Grid */
+.admin-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.admin-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--color-border, #e8e4df);
+}
+
+.card-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--color-forest, #2d4a3e);
+}
+
+.card-content {
+    padding: 1rem 1.25rem;
+}
+
+/* Activity List */
+.activity-list, .pending-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.activity-item, .pending-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border, #e8e4df);
+}
+
+.activity-item:last-child, .pending-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    font-size: 1.25rem;
+}
+
+.activity-info, .pending-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-info strong, .pending-info strong {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--color-forest, #2d4a3e);
+}
+
+.activity-detail, .pending-meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted, #888);
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #888);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--color-text-muted, #888);
+    padding: 1rem 0;
+}
+
+/* Badge */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-nav {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .admin-nav-item {
+        white-space: nowrap;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .admin-content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
