@@ -2,7 +2,7 @@
 Erdpuls Collective Threshold Model - Authentication
 
 Features:
-- Password hashing and verification
+- Password hashing and verification (bcrypt 5.0.0 compatible)
 - Session management with activity-based timeout
 - Password reset token generation and verification
 
@@ -13,7 +13,7 @@ from typing import Optional
 
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse
-from passlib.context import CryptContext
+import bcrypt
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from sqlalchemy.orm import Session
 
@@ -22,9 +22,6 @@ from .models import User
 from .config import get_settings
 
 settings = get_settings()
-
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Session serializer
 serializer = URLSafeTimedSerializer(settings.secret_key)
@@ -41,15 +38,50 @@ SESSION_INACTIVITY_TIMEOUT = getattr(settings, 'session_inactivity_timeout', 60 
 PASSWORD_RESET_TOKEN_MAX_AGE = 60 * 60
 
 
+# ============================================
+# Password Hashing (bcrypt 5.0.0 compatible)
+# ============================================
+
 def hash_password(password: str) -> str:
-    """Hash a password."""
-    return pwd_context.hash(password)
+    """
+    Hash a password using bcrypt.
+    
+    Args:
+        password: Plain text password
+        
+    Returns:
+        Hashed password string
+    """
+    # Encode password to bytes, truncate to 72 bytes (bcrypt limit)
+    password_bytes = password.encode('utf-8')[:72]
+    salt = bcrypt.gensalt(rounds=12)
+    hashed = bcrypt.hashpw(password_bytes, salt)
+    return hashed.decode('utf-8')
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against its hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+    """
+    Verify a password against its hash.
+    
+    Args:
+        plain_password: Plain text password to verify
+        hashed_password: Stored hash to compare against
+        
+    Returns:
+        True if password matches, False otherwise
+    """
+    try:
+        # Encode both to bytes, truncate password to 72 bytes
+        password_bytes = plain_password.encode('utf-8')[:72]
+        hash_bytes = hashed_password.encode('utf-8')
+        return bcrypt.checkpw(password_bytes, hash_bytes)
+    except Exception:
+        return False
 
+
+# ============================================
+# Session Management
+# ============================================
 
 def create_session_token(user_id: str) -> str:
     """Create a signed session token with activity timestamp."""
