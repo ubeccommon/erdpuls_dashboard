@@ -13,7 +13,7 @@ from sqlalchemy import (
     Column, String, Boolean, Integer, DateTime, Text, 
     Numeric, ForeignKey, UniqueConstraint, func
 )
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship, Session
 import uuid
 
@@ -97,6 +97,9 @@ class Offering(Base):
     description_de = Column(Text)
     description_pl = Column(Text)
     
+    # Delivery language(s) - which language(s) the offering is conducted in
+    delivery_language = Column(ARRAY(String(50)), default=['de'])
+    
     # Threshold and financial breakdown
     threshold_amount = Column(Numeric(10, 2), nullable=False)
     facilitator_cost = Column(Numeric(10, 2), default=0)
@@ -146,6 +149,24 @@ class Offering(Base):
         elif lang == 'pl' and self.description_pl:
             return self.description_pl
         return self.description
+    
+    def get_delivery_language_display(self, lang: str = 'en') -> str:
+        """Get formatted delivery language(s) for display."""
+        lang_names = {
+            'de': {'en': 'German', 'de': 'Deutsch', 'pl': 'Niemiecki'},
+            'en': {'en': 'English', 'de': 'Englisch', 'pl': 'Angielski'},
+            'pl': {'en': 'Polish', 'de': 'Polnisch', 'pl': 'Polski'}
+        }
+        
+        if not self.delivery_language:
+            return lang_names['de'].get(lang, 'German')
+        
+        display_names = []
+        for dl in self.delivery_language:
+            if dl in lang_names:
+                display_names.append(lang_names[dl].get(lang, dl))
+        
+        return ', '.join(display_names) if display_names else lang_names['de'].get(lang, 'German')
     
     def get_total_contributed(self, db: Session) -> Decimal:
         result = db.query(func.coalesce(func.sum(Contribution.amount_eur), 0))\

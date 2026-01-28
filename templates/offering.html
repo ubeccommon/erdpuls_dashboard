@@ -202,6 +202,23 @@
                     </div>
                     {% endif %}
                     
+                    <!-- Delivery Language -->
+                    <div class="date-item">
+                        <span class="date-icon">🗣️</span>
+                        <div>
+                            <span class="date-label">{% if lang == 'de' %}Sprache{% elif lang == 'pl' %}Język{% else %}Language{% endif %}</span>
+                            <span class="date-value">
+                                {% if offering.delivery_language %}
+                                    {% for dl in offering.delivery_language %}
+                                        {%- if dl == 'de' %}Deutsch{% elif dl == 'en' %}English{% elif dl == 'pl' %}Polski{% endif %}{% if not loop.last %}, {% endif -%}
+                                    {% endfor %}
+                                {% else %}
+                                    Deutsch
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
                     <div class="date-item">
                         <span class="date-icon">🙋</span>
                         <div>

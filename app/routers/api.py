@@ -110,6 +110,7 @@ def create_offering(data: OfferingCreate, db: Session = Depends(get_db)):
         description=data.description,
         description_de=data.description_de,
         description_pl=data.description_pl,
+        delivery_language=data.delivery_language or ['de'],
         threshold_amount=data.threshold_amount,
         facilitator_cost=data.facilitator_cost,
         materials_cost=data.materials_cost,
@@ -357,6 +358,7 @@ def _offering_to_response(offering: Offering, lang: str, db: Session) -> Offerin
         id=offering.id,
         title=offering.get_title(lang),
         description=offering.get_description(lang),
+        delivery_language=offering.delivery_language or ['de'],
         threshold_amount=threshold,
         cost_breakdown=CostBreakdown(
             facilitator=float(offering.facilitator_cost or 0),

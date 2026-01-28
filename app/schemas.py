@@ -40,6 +40,7 @@ class OfferingBase(BaseModel):
     description: str
     description_de: Optional[str] = None
     description_pl: Optional[str] = None
+    delivery_language: List[str] = ['de']
     threshold_amount: Decimal
     facilitator_cost: Decimal = Decimal('0')
     materials_cost: Decimal = Decimal('0')
@@ -63,6 +64,7 @@ class OfferingResponse(BaseModel):
     id: str
     title: str
     description: str
+    delivery_language: List[str] = ['de']
     threshold_amount: float
     cost_breakdown: CostBreakdown
     total_contributed: float

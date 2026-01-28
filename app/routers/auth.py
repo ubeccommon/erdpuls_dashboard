@@ -4,7 +4,7 @@ With role-based permissions for offering creation and password reset.
 
 © 2026 Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
 """
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, Depends, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -469,6 +469,7 @@ def create_offering(
     description: str = Form(...),
     description_de: Optional[str] = Form(None),
     description_pl: Optional[str] = Form(None),
+    delivery_language: List[str] = Form(default=['de']),
     facilitator_cost: float = Form(0),
     materials_cost: float = Form(0),
     meals_cost: float = Form(0),
@@ -497,6 +498,12 @@ def create_offering(
     from datetime import datetime
     from decimal import Decimal
     from ..models import Offering
+    
+    # Validate delivery_language
+    valid_languages = {'de', 'en', 'pl'}
+    delivery_language = [lang for lang in delivery_language if lang in valid_languages]
+    if not delivery_language:
+        delivery_language = ['de']  # Default fallback
     
     # Calculate threshold
     threshold = (
@@ -571,6 +578,7 @@ def create_offering(
         description=description,
         description_de=description_de or None,
         description_pl=description_pl or None,
+        delivery_language=delivery_language,
         threshold_amount=threshold,
         facilitator_cost=Decimal(str(facilitator_cost)),
         materials_cost=Decimal(str(materials_cost)),
@@ -745,6 +753,7 @@ def edit_offering(
     description: str = Form(...),
     description_de: Optional[str] = Form(None),
     description_pl: Optional[str] = Form(None),
+    delivery_language: List[str] = Form(default=['de']),
     facilitator_cost: float = Form(0),
     materials_cost: float = Form(0),
     meals_cost: float = Form(0),
@@ -784,6 +793,12 @@ def edit_offering(
     # Check if editable
     if offering.status not in EDITABLE_STATUSES:
         return RedirectResponse(url=f"/dashboard/offering/{offering_id}?error=not_editable", status_code=303)
+    
+    # Validate delivery_language
+    valid_languages = {'de', 'en', 'pl'}
+    delivery_language = [lang for lang in delivery_language if lang in valid_languages]
+    if not delivery_language:
+        delivery_language = ['de']  # Default fallback
     
     # Calculate threshold
     threshold = (
@@ -844,6 +859,7 @@ def edit_offering(
     offering.description = description
     offering.description_de = description_de or None
     offering.description_pl = description_pl or None
+    offering.delivery_language = delivery_language
     offering.threshold_amount = threshold
     offering.facilitator_cost = Decimal(str(facilitator_cost))
     offering.materials_cost = Decimal(str(materials_cost))

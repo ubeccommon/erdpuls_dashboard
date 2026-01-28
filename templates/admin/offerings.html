@@ -49,6 +49,7 @@
                 <thead>
                     <tr>
                         <th>{% if lang == 'de' %}Titel{% elif lang == 'pl' %}Tytuł{% else %}Title{% endif %}</th>
+                        <th>{% if lang == 'de' %}Sprache{% elif lang == 'pl' %}Język{% else %}Language{% endif %}</th>
                         <th>{% if lang == 'de' %}Ersteller{% elif lang == 'pl' %}Twórca{% else %}Creator{% endif %}</th>
                         <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
                         <th>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% else %}Progress{% endif %}</th>
@@ -64,6 +65,15 @@
                             <a href="/offering/{{ offering.id }}" class="offering-link">
                                 <strong>{{ offering.get_title(lang)[:40] }}{% if offering.get_title(lang)|length > 40 %}...{% endif %}</strong>
                             </a>
+                        </td>
+                        <td class="language-cell">
+                            {% if offering.delivery_language %}
+                                {% for dl in offering.delivery_language %}
+                                    <span class="lang-tag lang-{{ dl }}">{{ dl|upper }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="lang-tag lang-de">DE</span>
+                            {% endif %}
                         </td>
                         <td>{{ offering.created_by or '—' }}</td>
                         <td>
@@ -103,7 +113,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7" class="empty-cell">
+                        <td colspan="8" class="empty-cell">
                             {% if lang == 'de' %}Keine Angebote gefunden{% elif lang == 'pl' %}Nie znaleziono ofert{% else %}No offerings found{% endif %}
                         </td>
                     </tr>
@@ -165,6 +175,36 @@
 .progress-text {
     font-size: 0.75rem;
     color: var(--color-text-muted, #888);
+}
+
+/* Language Tags */
+.language-cell {
+    white-space: nowrap;
+}
+
+.lang-tag {
+    display: inline-block;
+    padding: 0.15rem 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 3px;
+    margin-right: 0.25rem;
+    text-transform: uppercase;
+}
+
+.lang-tag.lang-de {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.lang-tag.lang-en {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.lang-tag.lang-pl {
+    background: #fce7f3;
+    color: #9d174d;
 }
 </style>
 {% endblock %}

@@ -66,6 +66,33 @@
                     <label for="description_pl">{% if lang == 'de' %}Beschreibung (Polnisch){% elif lang == 'pl' %}Opis (polski){% else %}Description (Polish){% endif %}</label>
                     <textarea id="description_pl" name="description_pl" rows="5">{{ offering.description_pl or '' }}</textarea>
                 </div>
+                
+                <div class="form-group">
+                    <label>{% if lang == 'de' %}Durchführungssprache{% elif lang == 'pl' %}Język prowadzenia{% else %}Delivery Language{% endif %} *</label>
+                    <p class="field-hint">
+                        {% if lang == 'de' %}
+                            In welcher Sprache wird das Angebot durchgeführt?
+                        {% elif lang == 'pl' %}
+                            W jakim języku będzie prowadzona oferta?
+                        {% else %}
+                            In which language(s) will the offering be conducted?
+                        {% endif %}
+                    </p>
+                    <div class="checkbox-group language-selection">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="delivery_language" value="de" {{ 'checked' if offering.delivery_language and 'de' in offering.delivery_language else ('checked' if not offering.delivery_language else '') }}>
+                            <span>Deutsch</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="delivery_language" value="en" {{ 'checked' if offering.delivery_language and 'en' in offering.delivery_language else '' }}>
+                            <span>English</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="delivery_language" value="pl" {{ 'checked' if offering.delivery_language and 'pl' in offering.delivery_language else '' }}>
+                            <span>Polski</span>
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <div class="form-section">

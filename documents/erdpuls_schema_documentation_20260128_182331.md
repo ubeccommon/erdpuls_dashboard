@@ -8,9 +8,9 @@
 
 | Property | Value |
 |----------|-------|
-| Generated | 2026-01-27T17:43:55.373447 |
+| Generated | 2026-01-28T18:23:31.572955 |
 | Schema | `erdpuls_threshold` |
-| Database Size | 9297 kB |
+| Database Size | 9321 kB |
 | PostgreSQL | PostgreSQL 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1) o... |
 | UUID Extension | ✅ Enabled |
 | Author | Farmer |
@@ -30,7 +30,7 @@
 | Metric | Count |
 |--------|-------|
 | Tables | 9 |
-| Columns | 92 |
+| Columns | 93 |
 | Relationships | 6 |
 | Indexes | 22 |
 | Triggers | 1 |
@@ -74,7 +74,7 @@
 
 ### Regeneration Fund
 
-- **Current Balance:** €0.00
+- **Current Balance:** €150.00
 - **Purpose:** Community reserve from surplus contributions
 
 ## Tables
@@ -106,7 +106,7 @@
 
 > ANONYMOUS contributions - no contributor identification stored!
 
-**Rows:** 22 | **Size:** 64 kB
+**Rows:** 27 | **Size:** 64 kB
 
 | Column | Type | Nullable | Default |
 |--------|------|----------|--------|
@@ -161,7 +161,7 @@
 
 > Workshops, courses, events with threshold-based funding model
 
-**Rows:** 1 | **Size:** 64 kB
+**Rows:** 3 | **Size:** 64 kB
 
 | Column | Type | Nullable | Default |
 |--------|------|----------|--------|
@@ -191,10 +191,12 @@
 | `organizer_name` | varchar(255) | ✓ | - |
 | `organizer_email` | varchar(255) | ✓ | - |
 | `organizer_phone` | varchar(50) | ✓ | - |
+| `delivery_language` | array | ✓ | ARRAY['de'::character varying( |
 
 **Constraints:**
 
 - `offerings_creator_id_fkey` (FOREIGN KEY)
+- `offerings_delivery_language_check` (CHECK)
 - `offerings_pkey` (PRIMARY KEY)
 - `offerings_status_check` (CHECK)
 
@@ -204,7 +206,7 @@
 
 > Community reserve from surplus contributions
 
-**Rows:** 0 | **Size:** 16 kB
+**Rows:** 1 | **Size:** 32 kB
 
 | Column | Type | Nullable | Default |
 |--------|------|----------|--------|
@@ -227,7 +229,7 @@
 
 > Participation intentions (separate from contributions for privacy)
 
-**Rows:** 1 | **Size:** 80 kB
+**Rows:** 5 | **Size:** 80 kB
 
 | Column | Type | Nullable | Default |
 |--------|------|----------|--------|
