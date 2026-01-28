@@ -1,0 +1,69 @@
+/* 
+ * Additional CSS for auth features
+ * Add this to your existing static/css/style.css file
+ * 
+ * © 2026 Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+ */
+
+/* Alert Styles */
+.alert {
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.alert-error {
+    background-color: #fed7d7;
+    color: #c53030;
+    border: 1px solid #fc8181;
+}
+
+.alert-success {
+    background-color: #c6f6d5;
+    color: #276749;
+    border: 1px solid #68d391;
+}
+
+.alert-warning {
+    background-color: #fefcbf;
+    color: #975a16;
+    border: 1px solid #f6e05e;
+}
+
+.alert-info {
+    background-color: #bee3f8;
+    color: #2b6cb0;
+    border: 1px solid #63b3ed;
+}
+
+/* Auth Links */
+.auth-links {
+    text-align: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.auth-links a {
+    color: #2f5233;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+    color: #3d6b42;
+}
+
+.forgot-password {
+    margin: 0;
+}
+
+/* Form Hint */
+.form-hint {
+    display: block;
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 0.25rem;
+}

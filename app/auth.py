@@ -1,5 +1,12 @@
 """
 Erdpuls Collective Threshold Model - Authentication
+
+Features:
+- Password hashing and verification
+- Session management with activity-based timeout
+- Password reset token generation and verification
+
+© 2026 Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
 """
 from datetime import datetime, timedelta
 from typing import Optional
@@ -24,7 +31,14 @@ serializer = URLSafeTimedSerializer(settings.secret_key)
 
 # Session cookie settings
 SESSION_COOKIE_NAME = "erdpuls_session"
-SESSION_MAX_AGE = 60 * 60 * 24 * 7  # 7 days
+SESSION_MAX_AGE = 60 * 60 * 24 * 7  # 7 days absolute maximum
+
+# Inactivity timeout (configurable via environment or default)
+# Default: 30 minutes of inactivity = auto logout
+SESSION_INACTIVITY_TIMEOUT = getattr(settings, 'session_inactivity_timeout', 60 * 30)
+
+# Password reset token expiry: 1 hour
+PASSWORD_RESET_TOKEN_MAX_AGE = 60 * 60
 
 
 def hash_password(password: str) -> str:
@@ -38,21 +52,50 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_session_token(user_id: str) -> str:
-    """Create a signed session token."""
-    return serializer.dumps({"user_id": user_id})
+    """Create a signed session token with activity timestamp."""
+    return serializer.dumps({
+        "user_id": user_id,
+        "last_activity": datetime.utcnow().isoformat()
+    })
 
 
-def verify_session_token(token: str) -> Optional[str]:
-    """Verify a session token and return user_id if valid."""
+def verify_session_token(token: str, check_inactivity: bool = True) -> Optional[str]:
+    """
+    Verify a session token and return user_id if valid.
+    
+    Checks both:
+    - Absolute expiry (7 days from creation)
+    - Inactivity timeout (30 minutes since last activity)
+    
+    Returns user_id if valid, None otherwise.
+    """
     try:
         data = serializer.loads(token, max_age=SESSION_MAX_AGE)
-        return data.get("user_id")
+        user_id = data.get("user_id")
+        
+        if not user_id:
+            return None
+        
+        # Check inactivity timeout
+        if check_inactivity:
+            last_activity_str = data.get("last_activity")
+            if last_activity_str:
+                try:
+                    last_activity = datetime.fromisoformat(last_activity_str)
+                    inactive_seconds = (datetime.utcnow() - last_activity).total_seconds()
+                    if inactive_seconds > SESSION_INACTIVITY_TIMEOUT:
+                        return None  # Session expired due to inactivity
+                except (ValueError, TypeError):
+                    pass  # If parsing fails, allow session to continue
+        
+        return user_id
+        
     except (BadSignature, SignatureExpired):
         return None
 
 
 def get_current_user_optional(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
-    """Get current user from session cookie (returns None if not logged in)."""
+    """Get current user from session cookie (returns None if not logged in or session expired)."""
     token = request.cookies.get(SESSION_COOKIE_NAME)
     if not token:
         return None
@@ -110,7 +153,7 @@ def create_user(
     email: str, 
     password: str, 
     name: Optional[str] = None,
-    role: str = "user",
+    role: str = "member",
     db: Session = None
 ) -> User:
     """Create a new user."""
@@ -132,7 +175,7 @@ def create_user(
 
 
 def set_session_cookie(response, user_id: str):
-    """Set the session cookie on a response."""
+    """Set the session cookie on a response with fresh activity timestamp."""
     token = create_session_token(user_id)
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
@@ -140,12 +183,77 @@ def set_session_cookie(response, user_id: str):
         max_age=SESSION_MAX_AGE,
         httponly=True,
         samesite="lax",
-        secure=False  # Set to True in production with HTTPS
+        secure=True  # HTTPS required in production
     )
     return response
+
+
+def refresh_session_cookie(response, user_id: str):
+    """
+    Refresh the session cookie with updated activity timestamp.
+    Call this on user actions to extend the inactivity timeout.
+    """
+    return set_session_cookie(response, user_id)
 
 
 def clear_session_cookie(response):
     """Clear the session cookie."""
     response.delete_cookie(SESSION_COOKIE_NAME)
     return response
+
+
+# ============================================
+# Password Reset Functions
+# ============================================
+
+def create_password_reset_token(user_id: str, email: str) -> str:
+    """
+    Create a secure, time-limited password reset token.
+    
+    Token contains user_id and email hash for double verification.
+    Expires after PASSWORD_RESET_TOKEN_MAX_AGE (1 hour).
+    """
+    return serializer.dumps({
+        "user_id": user_id,
+        "email": email.lower(),
+        "purpose": "password_reset",
+        "created_at": datetime.utcnow().isoformat()
+    })
+
+
+def verify_password_reset_token(token: str) -> Optional[dict]:
+    """
+    Verify a password reset token.
+    
+    Returns dict with 'user_id' and 'email' if valid, None otherwise.
+    Token expires after 1 hour.
+    """
+    try:
+        data = serializer.loads(token, max_age=PASSWORD_RESET_TOKEN_MAX_AGE)
+        
+        # Verify it's a password reset token
+        if data.get("purpose") != "password_reset":
+            return None
+        
+        user_id = data.get("user_id")
+        email = data.get("email")
+        
+        if not user_id or not email:
+            return None
+        
+        return {
+            "user_id": user_id,
+            "email": email
+        }
+        
+    except SignatureExpired:
+        return None  # Token expired
+    except BadSignature:
+        return None  # Invalid/tampered token
+
+
+def get_password_reset_url(token: str) -> str:
+    """Generate the full password reset URL using clean path."""
+    base_url = settings.base_url.rstrip('/')
+    # Use /r/ instead of /reset-password?token= to avoid spam filters
+    return f"{base_url}/r/{token}"

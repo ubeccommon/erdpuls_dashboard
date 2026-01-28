@@ -1,5 +1,12 @@
 """
 Erdpuls Collective Threshold Model - Email Utilities
+
+Features:
+- Generic email sending via SMTP
+- Contribution confirmation emails (trilingual)
+- Password reset emails (trilingual)
+
+© 2026 Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
 """
 import smtplib
 import logging
@@ -16,7 +23,7 @@ logger = logging.getLogger(__name__)
 def send_email(
     to_email: str,
     subject: str,
-    html_content: str,
+    html_content: Optional[str],
     text_content: Optional[str] = None
 ) -> bool:
     """
@@ -42,7 +49,8 @@ def send_email(
         # Add text and HTML parts
         if text_content:
             msg.attach(MIMEText(text_content, 'plain', 'utf-8'))
-        msg.attach(MIMEText(html_content, 'html', 'utf-8'))
+        if html_content:
+            msg.attach(MIMEText(html_content, 'html', 'utf-8'))
         
         # Connect and send
         # Port 465 uses implicit SSL (SMTP_SSL)
@@ -85,19 +93,19 @@ def send_contribution_confirmation(
     # Build contribution summary
     items = []
     if contribution_data.get('euro'):
-        items.append(f"€{contribution_data['euro']:.2f}")
+        items.append(f"EUR {contribution_data['euro']:.2f}")
     if contribution_data.get('tokens'):
-        items.append(f"{contribution_data['tokens']:.0f} UBECrc (≈ €{contribution_data.get('tokens_eur', 0):.2f})")
+        items.append(f"{contribution_data['tokens']:.0f} UBECrc (approx. EUR {contribution_data.get('tokens_eur', 0):.2f})")
     if contribution_data.get('hours'):
         category = contribution_data.get('hours_category', '').replace('_', ' ').title()
-        items.append(f"{contribution_data['hours']:.1f}h {category} (≈ €{contribution_data.get('hours_eur', 0):.2f})")
+        items.append(f"{contribution_data['hours']:.1f}h {category} (approx. EUR {contribution_data.get('hours_eur', 0):.2f})")
     
     total = float(contribution_data.get('total_eur', 0))
-    contribution_summary = " + ".join(items) if items else f"€{total:.2f}"
+    contribution_summary = " + ".join(items) if items else f"EUR {total:.2f}"
     
     # Localized content
     if lang == 'de':
-        subject = f"Danke für Ihren Beitrag – {offering_title}"
+        subject = f"Danke für Ihren Beitrag - {offering_title}"
         greeting = f"Liebe/r {to_name}," if to_name else "Hallo,"
         thank_you = "Vielen Dank für Ihren Beitrag zum kollektiven Topf!"
         your_contribution = "Ihr Beitrag"
@@ -113,7 +121,7 @@ def send_contribution_confirmation(
         closing = "Gemeinsam wachsen, gemeinsam lernen, gemeinsam regenerieren."
         signature = "Das Erdpuls Müllrose Team"
     elif lang == 'pl':
-        subject = f"Dziękujemy za Twój wkład – {offering_title}"
+        subject = f"Dziękujemy za Twój wkład - {offering_title}"
         greeting = f"Drogi/a {to_name}," if to_name else "Cześć,"
         thank_you = "Dziękujemy za Twój wkład do wspólnego funduszu!"
         your_contribution = "Twój wkład"
@@ -129,7 +137,7 @@ def send_contribution_confirmation(
         closing = "Wspólnie rośniemy, wspólnie się uczymy, wspólnie regenerujemy."
         signature = "Zespół Erdpuls Müllrose"
     else:
-        subject = f"Thank you for your contribution – {offering_title}"
+        subject = f"Thank you for your contribution - {offering_title}"
         greeting = f"Dear {to_name}," if to_name else "Hello,"
         thank_you = "Thank you for your contribution to the collective pot!"
         your_contribution = "Your contribution"
@@ -240,7 +248,7 @@ def send_contribution_confirmation(
 </head>
 <body>
     <div class="header">
-        <div class="logo">🌱</div>
+        <div class="logo">&#127793;</div>
         <h1 class="title">Erdpuls Müllrose</h1>
     </div>
     
@@ -256,12 +264,12 @@ def send_contribution_confirmation(
             </div>
             <div class="contribution-item contribution-total">
                 <span>{total_label}</span>
-                <span>€{total:.2f}</span>
+                <span>EUR {total:.2f}</span>
             </div>
         </div>
         
         <div class="privacy-note">
-            🔒 {privacy_note}
+            &#128274; {privacy_note}
         </div>
         
         <div class="next-steps">
@@ -272,14 +280,14 @@ def send_contribution_confirmation(
         </div>
         
         <center>
-            <a href="{base_url}/offering/{offering_id}" class="cta-button">{view_offering} →</a>
+            <a href="{base_url}/offering/{offering_id}" class="cta-button">{view_offering} &rarr;</a>
         </center>
     </div>
     
     <div class="footer">
         <p class="closing">{closing}</p>
         <p>{signature}<br>
-        <a href="{base_url}">erdpuls.ubec.eu</a></p>
+        <a href="{base_url}">erdpuls.ubec.network</a></p>
     </div>
 </body>
 </html>
@@ -293,9 +301,9 @@ def send_contribution_confirmation(
 
 {your_contribution}: {offering_title}
 {contribution_summary}
-{total_label}: €{total:.2f}
+{total_label}: EUR {total:.2f}
 
-🔒 {privacy_note}
+{privacy_note}
 
 {next_steps}:
 - We'll notify you when the threshold is reached
@@ -307,7 +315,59 @@ View offering: {base_url}/offering/{offering_id}
 {closing}
 
 {signature}
-erdpuls.ubec.eu
+erdpuls.ubec.network
 """
     
     return send_email(to_email, subject, html_content, text_content)
+
+
+def send_password_reset_email(
+    to_email: str,
+    reset_url: str,
+    lang: str = 'en'
+) -> bool:
+    """
+    Send a password reset email - minimal plain text to avoid spam filters.
+    """
+    settings = get_settings()
+    
+    # Localized content - minimal text
+    if lang == 'de':
+        subject = f"Erdpuls Müllrose"
+        body = f"""Hallo,
+
+Hier ist Ihr Link:
+
+{reset_url}
+
+Der Link ist 1 Stunde gültig.
+
+Erdpuls Müllrose
+erdpuls.ubec.network"""
+    elif lang == 'pl':
+        subject = f"Erdpuls Müllrose"
+        body = f"""Cześć,
+
+Oto Twój link:
+
+{reset_url}
+
+Link jest ważny przez 1 godzinę.
+
+Erdpuls Müllrose
+erdpuls.ubec.network"""
+    else:
+        subject = f"Erdpuls Müllrose"
+        body = f"""Hello,
+
+Here is your link:
+
+{reset_url}
+
+This link is valid for 1 hour.
+
+Erdpuls Müllrose
+erdpuls.ubec.network"""
+    
+    # Send plain text only - no HTML
+    return send_email(to_email, subject, None, body)

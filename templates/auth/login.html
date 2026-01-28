@@ -21,6 +21,30 @@
                 </p>
             </div>
 
+            {% if request.query_params.get('success') == 'password_reset' %}
+            <div class="alert alert-success">
+                {% if lang == 'de' %}
+                    Ihr Passwort wurde erfolgreich geändert. Sie können sich jetzt anmelden.
+                {% elif lang == 'pl' %}
+                    Twoje hasło zostało pomyślnie zmienione. Możesz się teraz zalogować.
+                {% else %}
+                    Your password has been successfully changed. You can now log in.
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if request.query_params.get('expired') == '1' %}
+            <div class="alert alert-warning">
+                {% if lang == 'de' %}
+                    Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.
+                {% elif lang == 'pl' %}
+                    Twoja sesja wygasła. Zaloguj się ponownie.
+                {% else %}
+                    Your session has expired. Please log in again.
+                {% endif %}
+            </div>
+            {% endif %}
+
             {% if error %}
             <div class="alert alert-error">
                 {% if error == 'invalid' %}
@@ -50,6 +74,14 @@
                     {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj{% else %}Login{% endif %}
                 </button>
             </form>
+
+            <div class="auth-links">
+                <p class="forgot-password">
+                    <a href="/forgot-password">
+                        {% if lang == 'de' %}Passwort vergessen?{% elif lang == 'pl' %}Zapomniałeś hasła?{% else %}Forgot your password?{% endif %}
+                    </a>
+                </p>
+            </div>
 
             <div class="auth-footer">
                 <p>

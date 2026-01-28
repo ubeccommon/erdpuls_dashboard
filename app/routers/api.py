@@ -1,11 +1,14 @@
 """
 Erdpuls Collective Threshold Model - API Router
+
+© 2026 Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
 """
 from datetime import datetime
 from decimal import Decimal
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from ..database import get_db
@@ -20,8 +23,35 @@ from ..schemas import (
     FundBalance, FundTransaction,
     TokenRateResponse, HoursRateResponse
 )
+from ..auth import get_current_user_optional, refresh_session_cookie
 
 router = APIRouter(prefix="/api", tags=["api"])
+
+
+# ============================================
+# Session Management
+# ============================================
+
+@router.post("/session/refresh")
+def refresh_session(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """
+    Refresh the user's session cookie.
+    Called by the frontend session-timeout.js to extend session on user activity.
+    """
+    user = get_current_user_optional(request, db)
+    
+    if not user:
+        return JSONResponse(
+            status_code=401,
+            content={"detail": "Not authenticated"}
+        )
+    
+    response = JSONResponse(content={"status": "ok", "user_id": str(user.id)})
+    refresh_session_cookie(response, user.id)
+    return response
 
 
 # ============================================
