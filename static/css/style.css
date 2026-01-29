@@ -1459,6 +1459,32 @@ em {
     line-height: 1.4;
 }
 
+/* Character Counter */
+.char-hint {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.char-count {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-sand);
+    margin-left: auto;
+}
+
+.char-count.char-warning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+.char-count.char-ok {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+}
+
 /* Auth Pages */
 .auth-page {
     flex: 1;

@@ -114,7 +114,7 @@ def create_offering(data: OfferingCreate, db: Session = Depends(get_db)):
         threshold_amount=data.threshold_amount,
         facilitator_cost=data.facilitator_cost,
         materials_cost=data.materials_cost,
-        meals_cost=data.meals_cost,
+        catering_cost=data.catering_cost,
         space_cost=data.space_cost,
         sustainability_contribution=data.sustainability_contribution,
         event_date=data.event_date,
@@ -363,7 +363,7 @@ def _offering_to_response(offering: Offering, lang: str, db: Session) -> Offerin
         cost_breakdown=CostBreakdown(
             facilitator=float(offering.facilitator_cost or 0),
             materials=float(offering.materials_cost or 0),
-            meals=float(offering.meals_cost or 0),
+            catering=float(offering.catering_cost or 0),
             space=float(offering.space_cost or 0),
             sustainability=float(offering.sustainability_contribution or 0)
         ),

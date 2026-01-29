@@ -57,7 +57,7 @@
                 </div>
                 
                 <!-- Cost Breakdown -->
-                {% if offering.facilitator_cost or offering.materials_cost or offering.meals_cost or offering.space_cost %}
+                {% if offering.facilitator_cost or offering.materials_cost or offering.catering_cost or offering.space_cost %}
                 <div class="content-section">
                     <h2>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% else %}Cost Breakdown{% endif %}</h2>
                     <div class="cost-breakdown">
@@ -73,10 +73,10 @@
                             <span class="cost-value">€{{ offering.materials_cost }}</span>
                         </div>
                         {% endif %}
-                        {% if offering.meals_cost and offering.meals_cost > 0 %}
+                        {% if offering.catering_cost and offering.catering_cost > 0 %}
                         <div class="cost-item">
-                            <span class="cost-label">{% if lang == 'de' %}Mahlzeiten{% elif lang == 'pl' %}Posiłki{% else %}Meals{% endif %}</span>
-                            <span class="cost-value">€{{ offering.meals_cost }}</span>
+                            <span class="cost-label">{% if lang == 'de' %}Verpflegung{% elif lang == 'pl' %}Wyżywienie{% else %}Catering{% endif %}</span>
+                            <span class="cost-value">€{{ offering.catering_cost }}</span>
                         </div>
                         {% endif %}
                         {% if offering.space_cost and offering.space_cost > 0 %}

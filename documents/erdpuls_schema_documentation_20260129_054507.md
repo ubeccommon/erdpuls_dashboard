@@ -8,9 +8,9 @@
 
 | Property | Value |
 |----------|-------|
-| Generated | 2026-01-28T18:23:31.572955 |
+| Generated | 2026-01-29T05:45:07.086091 |
 | Schema | `erdpuls_threshold` |
-| Database Size | 9321 kB |
+| Database Size | 9329 kB |
 | PostgreSQL | PostgreSQL 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1) o... |
 | UUID Extension | ✅ Enabled |
 | Author | Farmer |
@@ -175,7 +175,7 @@
 | `threshold_amount` | numeric(10,2) | ✗ | - |
 | `facilitator_cost` | numeric(10,2) | ✓ | 0 |
 | `materials_cost` | numeric(10,2) | ✓ | 0 |
-| `meals_cost` | numeric(10,2) | ✓ | 0 |
+| `catering_cost` | numeric(10,2) | ✓ | 0 |
 | `space_cost` | numeric(10,2) | ✓ | 0 |
 | `sustainability_contribution` | numeric(10,2) | ✓ | 0 |
 | `event_date` | timestamp without time zone | ✓ | - |
@@ -195,6 +195,12 @@
 
 **Constraints:**
 
+- `chk_description_de_length` (CHECK)
+- `chk_description_length` (CHECK)
+- `chk_description_pl_length` (CHECK)
+- `chk_title_de_length` (CHECK)
+- `chk_title_length` (CHECK)
+- `chk_title_pl_length` (CHECK)
 - `offerings_creator_id_fkey` (FOREIGN KEY)
 - `offerings_delivery_language_check` (CHECK)
 - `offerings_pkey` (PRIMARY KEY)

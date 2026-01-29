@@ -472,7 +472,7 @@ def create_offering(
     delivery_language: List[str] = Form(default=['de']),
     facilitator_cost: float = Form(0),
     materials_cost: float = Form(0),
-    meals_cost: float = Form(0),
+    catering_cost: float = Form(0),
     space_cost: float = Form(0),
     sustainability_contribution: float = Form(0),
     event_date: Optional[str] = Form(None),
@@ -505,11 +505,41 @@ def create_offering(
     if not delivery_language:
         delivery_language = ['de']  # Default fallback
     
+    # Validate title lengths (security: prevent abuse)
+    TITLE_MIN = 3
+    TITLE_MAX = 255
+    
+    if len(title) < TITLE_MIN:
+        return RedirectResponse(url="/dashboard/create?error=title_too_short", status_code=303)
+    if len(title) > TITLE_MAX:
+        return RedirectResponse(url="/dashboard/create?error=title_too_long", status_code=303)
+    
+    # Validate optional titles only if provided
+    if title_de and (len(title_de) < TITLE_MIN or len(title_de) > TITLE_MAX):
+        return RedirectResponse(url="/dashboard/create?error=title_de_invalid", status_code=303)
+    if title_pl and (len(title_pl) < TITLE_MIN or len(title_pl) > TITLE_MAX):
+        return RedirectResponse(url="/dashboard/create?error=title_pl_invalid", status_code=303)
+    
+    # Validate description lengths (security: prevent abuse)
+    DESC_MIN = 50
+    DESC_MAX = 5000
+    
+    if len(description) < DESC_MIN:
+        return RedirectResponse(url="/dashboard/create?error=description_too_short", status_code=303)
+    if len(description) > DESC_MAX:
+        return RedirectResponse(url="/dashboard/create?error=description_too_long", status_code=303)
+    
+    # Validate optional descriptions only if provided
+    if description_de and (len(description_de) < DESC_MIN or len(description_de) > DESC_MAX):
+        return RedirectResponse(url="/dashboard/create?error=description_de_invalid", status_code=303)
+    if description_pl and (len(description_pl) < DESC_MIN or len(description_pl) > DESC_MAX):
+        return RedirectResponse(url="/dashboard/create?error=description_pl_invalid", status_code=303)
+    
     # Calculate threshold
     threshold = (
         Decimal(str(facilitator_cost)) +
         Decimal(str(materials_cost)) +
-        Decimal(str(meals_cost)) +
+        Decimal(str(catering_cost)) +
         Decimal(str(space_cost)) +
         Decimal(str(sustainability_contribution))
     )
@@ -582,7 +612,7 @@ def create_offering(
         threshold_amount=threshold,
         facilitator_cost=Decimal(str(facilitator_cost)),
         materials_cost=Decimal(str(materials_cost)),
-        meals_cost=Decimal(str(meals_cost)),
+        catering_cost=Decimal(str(catering_cost)),
         space_cost=Decimal(str(space_cost)),
         sustainability_contribution=Decimal(str(sustainability_contribution)),
         event_date=parsed_event_date,
@@ -756,7 +786,7 @@ def edit_offering(
     delivery_language: List[str] = Form(default=['de']),
     facilitator_cost: float = Form(0),
     materials_cost: float = Form(0),
-    meals_cost: float = Form(0),
+    catering_cost: float = Form(0),
     space_cost: float = Form(0),
     sustainability_contribution: float = Form(0),
     event_date: Optional[str] = Form(None),
@@ -800,11 +830,41 @@ def edit_offering(
     if not delivery_language:
         delivery_language = ['de']  # Default fallback
     
+    # Validate title lengths (security: prevent abuse)
+    TITLE_MIN = 3
+    TITLE_MAX = 255
+    
+    if len(title) < TITLE_MIN:
+        return RedirectResponse(url=f"/dashboard/offering/{offering_id}/edit?error=title_too_short", status_code=303)
+    if len(title) > TITLE_MAX:
+        return RedirectResponse(url=f"/dashboard/offering/{offering_id}/edit?error=title_too_long", status_code=303)
+    
+    # Validate optional titles only if provided
+    if title_de and (len(title_de) < TITLE_MIN or len(title_de) > TITLE_MAX):
+        return RedirectResponse(url=f"/dashboard/offering/{offering_id}/edit?error=title_de_invalid", status_code=303)
+    if title_pl and (len(title_pl) < TITLE_MIN or len(title_pl) > TITLE_MAX):
+        return RedirectResponse(url=f"/dashboard/offering/{offering_id}/edit?error=title_pl_invalid", status_code=303)
+    
+    # Validate description lengths (security: prevent abuse)
+    DESC_MIN = 50
+    DESC_MAX = 5000
+    
+    if len(description) < DESC_MIN:
+        return RedirectResponse(url=f"/dashboard/offering/{offering_id}/edit?error=description_too_short", status_code=303)
+    if len(description) > DESC_MAX:
+        return RedirectResponse(url=f"/dashboard/offering/{offering_id}/edit?error=description_too_long", status_code=303)
+    
+    # Validate optional descriptions only if provided
+    if description_de and (len(description_de) < DESC_MIN or len(description_de) > DESC_MAX):
+        return RedirectResponse(url=f"/dashboard/offering/{offering_id}/edit?error=description_de_invalid", status_code=303)
+    if description_pl and (len(description_pl) < DESC_MIN or len(description_pl) > DESC_MAX):
+        return RedirectResponse(url=f"/dashboard/offering/{offering_id}/edit?error=description_pl_invalid", status_code=303)
+    
     # Calculate threshold
     threshold = (
         Decimal(str(facilitator_cost)) +
         Decimal(str(materials_cost)) +
-        Decimal(str(meals_cost)) +
+        Decimal(str(catering_cost)) +
         Decimal(str(space_cost)) +
         Decimal(str(sustainability_contribution))
     )
@@ -863,7 +923,7 @@ def edit_offering(
     offering.threshold_amount = threshold
     offering.facilitator_cost = Decimal(str(facilitator_cost))
     offering.materials_cost = Decimal(str(materials_cost))
-    offering.meals_cost = Decimal(str(meals_cost))
+    offering.catering_cost = Decimal(str(catering_cost))
     offering.space_cost = Decimal(str(space_cost))
     offering.sustainability_contribution = Decimal(str(sustainability_contribution))
     offering.event_date = parsed_event_date

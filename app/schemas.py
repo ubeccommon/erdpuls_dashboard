@@ -27,24 +27,24 @@ class CostBreakdown(BaseModel):
     """Cost breakdown for offering transparency"""
     facilitator: float = 0
     materials: float = 0
-    meals: float = 0
+    catering: float = 0
     space: float = 0
     sustainability: float = 0
 
 
 class OfferingBase(BaseModel):
     """Base schema for offerings"""
-    title: str
-    title_de: Optional[str] = None
-    title_pl: Optional[str] = None
-    description: str
-    description_de: Optional[str] = None
-    description_pl: Optional[str] = None
+    title: str = Field(..., min_length=3, max_length=255)
+    title_de: Optional[str] = Field(None, min_length=3, max_length=255)
+    title_pl: Optional[str] = Field(None, min_length=3, max_length=255)
+    description: str = Field(..., min_length=50, max_length=5000)
+    description_de: Optional[str] = Field(None, min_length=50, max_length=5000)
+    description_pl: Optional[str] = Field(None, min_length=50, max_length=5000)
     delivery_language: List[str] = ['de']
     threshold_amount: Decimal
     facilitator_cost: Decimal = Decimal('0')
     materials_cost: Decimal = Decimal('0')
-    meals_cost: Decimal = Decimal('0')
+    catering_cost: Decimal = Decimal('0')
     space_cost: Decimal = Decimal('0')
     sustainability_contribution: Decimal = Decimal('0')
     event_date: Optional[datetime] = None

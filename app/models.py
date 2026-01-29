@@ -104,7 +104,7 @@ class Offering(Base):
     threshold_amount = Column(Numeric(10, 2), nullable=False)
     facilitator_cost = Column(Numeric(10, 2), default=0)
     materials_cost = Column(Numeric(10, 2), default=0)
-    meals_cost = Column(Numeric(10, 2), default=0)
+    catering_cost = Column(Numeric(10, 2), default=0)
     space_cost = Column(Numeric(10, 2), default=0)
     sustainability_contribution = Column(Numeric(10, 2), default=0)
     

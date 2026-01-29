@@ -45,33 +45,53 @@
                 
                 <div class="form-group">
                     <label for="title">{% if lang == 'de' %}Titel (Englisch){% elif lang == 'pl' %}Tytuł (angielski){% else %}Title (English){% endif %} *</label>
-                    <input type="text" id="title" name="title" required>
+                    <input type="text" id="title" name="title" required minlength="3" maxlength="255">
+                    <span class="field-hint char-hint">
+                        <span class="char-count" data-for="title">0</span> / 255 
+                        ({% if lang == 'de' %}min. 3{% elif lang == 'pl' %}min. 3{% else %}min. 3{% endif %})
+                    </span>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="title_de">{% if lang == 'de' %}Titel (Deutsch){% elif lang == 'pl' %}Tytuł (niemiecki){% else %}Title (German){% endif %}</label>
-                        <input type="text" id="title_de" name="title_de">
+                        <input type="text" id="title_de" name="title_de" minlength="3" maxlength="255">
+                        <span class="field-hint char-hint">
+                            <span class="char-count" data-for="title_de">0</span> / 255
+                        </span>
                     </div>
                     <div class="form-group">
                         <label for="title_pl">{% if lang == 'de' %}Titel (Polnisch){% elif lang == 'pl' %}Tytuł (polski){% else %}Title (Polish){% endif %}</label>
-                        <input type="text" id="title_pl" name="title_pl">
+                        <input type="text" id="title_pl" name="title_pl" minlength="3" maxlength="255">
+                        <span class="field-hint char-hint">
+                            <span class="char-count" data-for="title_pl">0</span> / 255
+                        </span>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="description">{% if lang == 'de' %}Beschreibung (Englisch){% elif lang == 'pl' %}Opis (angielski){% else %}Description (English){% endif %} *</label>
-                    <textarea id="description" name="description" rows="5" required></textarea>
+                    <textarea id="description" name="description" rows="5" required minlength="50" maxlength="5000"></textarea>
+                    <span class="field-hint char-hint">
+                        <span class="char-count" data-for="description">0</span> / 5,000 
+                        ({% if lang == 'de' %}min. 50{% elif lang == 'pl' %}min. 50{% else %}min. 50{% endif %})
+                    </span>
                 </div>
                 
                 <div class="form-group">
                     <label for="description_de">{% if lang == 'de' %}Beschreibung (Deutsch){% elif lang == 'pl' %}Opis (niemiecki){% else %}Description (German){% endif %}</label>
-                    <textarea id="description_de" name="description_de" rows="5"></textarea>
+                    <textarea id="description_de" name="description_de" rows="5" minlength="50" maxlength="5000"></textarea>
+                    <span class="field-hint char-hint">
+                        <span class="char-count" data-for="description_de">0</span> / 5,000
+                    </span>
                 </div>
                 
                 <div class="form-group">
                     <label for="description_pl">{% if lang == 'de' %}Beschreibung (Polnisch){% elif lang == 'pl' %}Opis (polski){% else %}Description (Polish){% endif %}</label>
-                    <textarea id="description_pl" name="description_pl" rows="5"></textarea>
+                    <textarea id="description_pl" name="description_pl" rows="5" minlength="50" maxlength="5000"></textarea>
+                    <span class="field-hint char-hint">
+                        <span class="char-count" data-for="description_pl">0</span> / 5,000
+                    </span>
                 </div>
                 
                 <div class="form-group">
@@ -126,8 +146,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="meals_cost">{% if lang == 'de' %}Mahlzeiten (€){% elif lang == 'pl' %}Posiłki (€){% else %}Meals (€){% endif %}</label>
-                        <input type="number" id="meals_cost" name="meals_cost" value="0" min="0" step="0.01" class="cost-input">
+                        <label for="catering_cost">{% if lang == 'de' %}Verpflegung (€){% elif lang == 'pl' %}Wyżywienie (€){% else %}Catering (€){% endif %}</label>
+                        <input type="number" id="catering_cost" name="catering_cost" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
@@ -245,6 +265,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     updateThreshold();
+    
+    // Character counter for textareas and inputs with maxlength
+    document.querySelectorAll('textarea[maxlength], input[type="text"][maxlength]').forEach(field => {
+        const countSpan = document.querySelector(`.char-count[data-for="${field.id}"]`);
+        if (countSpan) {
+            function updateCount() {
+                const count = field.value.length;
+                const min = field.getAttribute('minlength') || 0;
+                countSpan.textContent = count.toLocaleString();
+                
+                // Visual feedback
+                if (count > 0 && count < min) {
+                    countSpan.classList.add('char-warning');
+                    countSpan.classList.remove('char-ok');
+                } else if (count >= min) {
+                    countSpan.classList.remove('char-warning');
+                    countSpan.classList.add('char-ok');
+                } else {
+                    countSpan.classList.remove('char-warning', 'char-ok');
+                }
+            }
+            
+            field.addEventListener('input', updateCount);
+            updateCount();
+        }
+    });
 });
 </script>
 {% endblock %}
