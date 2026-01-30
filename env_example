@@ -1,0 +1,24 @@
+# Erdpuls Collective Threshold Model - Environment Configuration
+# Copy to /var/www/erdpuls-threshold/.env and update values
+
+# Database (ubec_erdpuls database, erdpuls_threshold schema)
+DATABASE_URL=postgresql://ubecpuls:*********@localhost:5432/ubec_erdpuls
+
+# Security
+SECRET_KEY=CHANGE_THIS_generate_with_python3_-c_"import_secrets;print(secrets.token_hex(32))"
+
+# Debug mode (set to false in production)
+DEBUG=false
+
+# Base URL for email links
+BASE_URL=https://erdpuls.ubec.network
+
+# SMTP settings for port 465 (SSL):
+SMTP_HOST=mail.ubec.network
+SMTP_PORT=465
+SMTP_USER=erdpuls@ubec.network
+SMTP_PASSWORD=**********
+SMTP_USE_TLS=false
+SMTP_FROM_EMAIL=erdpuls@ubec.network
+SMTP_FROM_NAME=Erdpuls Müllrose
+
