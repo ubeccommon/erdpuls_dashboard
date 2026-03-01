@@ -83,21 +83,30 @@
                             <div class="rate-description">
                                 {{ rate.get_description(lang) if rate.get_description else rate.description or '—' }}
                             </div>
-                            <form action="/admin/settings/hours-rate/{{ rate.id }}/delete" method="post" 
-                                  onsubmit="return confirm('{% if lang == 'de' %}Wirklich löschen?{% elif lang == 'pl' %}Na pewno usunąć?{% else %}Really delete?{% endif %}');">
-                                <button type="submit" class="btn btn-small btn-outline">{% if lang == 'de' %}Löschen{% elif lang == 'pl' %}Usuń{% else %}Delete{% endif %}</button>
-                            </form>
+                            <div class="rate-actions">
+                                <!-- Update Button -->
+                                <button type="button" class="btn btn-small btn-outline" 
+                                        onclick="populateEditForm('{{ rate.category }}', '{{ rate.eur_per_hour }}', '{{ rate.description or '' }}', '{{ rate.description_de or '' }}', '{{ rate.description_pl or '' }}')">
+                                    {% if lang == 'de' %}Bearbeiten{% elif lang == 'pl' %}Edytuj{% else %}Edit{% endif %}
+                                </button>
+                                <!-- Delete Button -->
+                                <form action="/admin/settings/hours-rate/{{ rate.id }}/delete" method="post" 
+                                      onsubmit="return confirm('{% if lang == 'de' %}Wirklich löschen?{% elif lang == 'pl' %}Na pewno usunąć?{% else %}Really delete?{% endif %}');"
+                                      style="margin-top: 0.5rem;">
+                                    <button type="submit" class="btn btn-small btn-outline btn-danger">{% if lang == 'de' %}Löschen{% elif lang == 'pl' %}Usuń{% else %}Delete{% endif %}</button>
+                                </form>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
                     <hr style="margin: 1.5rem 0; border-color: var(--color-border);">
                     {% endif %}
                     
-                    <!-- Add/Update Rate -->
+                    <!-- Add Rate -->
                     <h3 style="font-size: 1rem; margin-bottom: 1rem;">
-                        {% if lang == 'de' %}Stundensatz hinzufügen/aktualisieren{% elif lang == 'pl' %}Dodaj/zaktualizuj stawkę{% else %}Add/Update Rate{% endif %}
+                        {% if lang == 'de' %}Stundensatz hinzufügen{% elif lang == 'pl' %}Dodaj stawkę{% else %}Add Rate{% endif %}
                     </h3>
-                    <form action="/admin/settings/hours-rate" method="post" class="admin-form">
+                    <form action="/admin/settings/hours-rate" method="post" class="admin-form" id="hoursRateForm">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="category">{% if lang == 'de' %}Kategorie{% elif lang == 'pl' %}Kategoria{% else %}Category{% endif %}</label>
@@ -129,27 +138,28 @@
                         
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Speichern{% elif lang == 'pl' %}Zapisz{% else %}Save{% endif %}</button>
+                            <button type="button" class="btn btn-outline" id="clearFormBtn" style="display: none;" onclick="clearForm()">
+                                {% if lang == 'de' %}Abbrechen{% elif lang == 'pl' %}Anuluj{% else %}Cancel{% endif %}
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
             
-            <!-- Fund Overview -->
-            <div class="admin-card">
-                <div class="admin-card-header">
-                    <h2>🏦 {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}</h2>
-                </div>
-                <div class="admin-card-content">
-                    <div class="fund-balance">
-                        <span class="balance-label">{% if lang == 'de' %}Aktueller Kontostand{% elif lang == 'pl' %}Aktualny stan konta{% else %}Current Balance{% endif %}</span>
-                        <span class="balance-value">€{{ fund_balance|round(2) }}</span>
-                    </div>
-                    <a href="/admin/fund" class="btn btn-outline" style="margin-top: 1rem;">
-                        {% if lang == 'de' %}Fonds verwalten{% elif lang == 'pl' %}Zarządzaj funduszem{% else %}Manage Fund{% endif %} →
-                    </a>
-                </div>
+        </div>
+        
+        <!-- Regeneration Fund Card -->
+        <div class="admin-card" style="max-width: 500px;">
+            <div class="admin-card-header">
+                <h2>🏦 {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}</h2>
             </div>
-            
+            <div class="admin-card-content">
+                <div class="fund-balance">
+                    <span class="balance-label">{% if lang == 'de' %}Aktueller Kontostand{% elif lang == 'pl' %}Aktualny stan{% else %}Current Balance{% endif %}</span>
+                    <span class="balance-value">€{{ "%.2f"|format(fund_balance|float) }}</span>
+                </div>
+                <a href="/admin/fund" class="btn btn-outline">{% if lang == 'de' %}Fonds verwalten{% elif lang == 'pl' %}Zarządzaj funduszem{% else %}Manage Fund{% endif %} →</a>
+            </div>
         </div>
         
     </div>
@@ -200,7 +210,7 @@
 
 .rate-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
     padding: 0.75rem;
     background: var(--color-cream, #f8f6f3);
@@ -229,6 +239,28 @@
     color: var(--color-bark, #5a5a5a);
 }
 
+.rate-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 80px;
+}
+
+.rate-actions .btn {
+    width: 100%;
+    text-align: center;
+}
+
+.btn-danger {
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+.btn-danger:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+}
+
 @media (max-width: 500px) {
     .settings-grid {
         grid-template-columns: 1fr;
@@ -238,6 +270,50 @@
         flex-direction: column;
         align-items: flex-start;
     }
+    
+    .rate-actions {
+        flex-direction: row;
+        gap: 0.5rem;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    
+    .rate-actions .btn {
+        flex: 1;
+    }
+    
+    .rate-actions form {
+        flex: 1;
+        margin-top: 0 !important;
+    }
 }
 </style>
+
+<script>
+function populateEditForm(category, eurPerHour, descEn, descDe, descPl) {
+    document.getElementById('category').value = category;
+    document.getElementById('eur_per_hour').value = eurPerHour;
+    document.getElementById('description').value = descEn;
+    document.getElementById('description_de').value = descDe;
+    document.getElementById('description_pl').value = descPl;
+    
+    // Show cancel button
+    document.getElementById('clearFormBtn').style.display = 'inline-block';
+    
+    // Scroll to form
+    document.getElementById('hoursRateForm').scrollIntoView({ behavior: 'smooth' });
+    
+    // Focus on rate field (category is usually not changed)
+    document.getElementById('eur_per_hour').focus();
+}
+
+function clearForm() {
+    document.getElementById('category').value = '';
+    document.getElementById('eur_per_hour').value = '15';
+    document.getElementById('description').value = '';
+    document.getElementById('description_de').value = '';
+    document.getElementById('description_pl').value = '';
+    document.getElementById('clearFormBtn').style.display = 'none';
+}
+</script>
 {% endblock %}

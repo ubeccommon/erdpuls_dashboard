@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if lang == 'de' %}OER-Bibliothek{% elif lang == 'pl' %}Biblioteka OER{% else %}OER Library{% endif %}
+  — Erdpuls Müllrose
+{% endblock %}
+
+{% block content %}
+<section class="library-page">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h1>
+        {% if lang == 'de' %}Lernmaterialien (OER)
+        {% elif lang == 'pl' %}Materiały edukacyjne (OER)
+        {% else %}Learning Resources (OER)
+        {% endif %}
+      </h1>
+      <p class="page-subtitle">
+        {% if lang == 'de' %}
+          Open Educational Resources aus dem Erdpuls-Projekt — frei verfügbar unter CC BY-NC-SA 4.0.
+        {% elif lang == 'pl' %}
+          Otwarte zasoby edukacyjne projektu Erdpuls — dostępne na licencji CC BY-NC-SA 4.0.
+        {% else %}
+          Open Educational Resources from the Erdpuls project — freely available under CC BY-NC-SA 4.0.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Language filter -->
+    <div class="library-filters">
+      <a href="/library" class="filter-btn {% if not lang_filter %}active{% endif %}">
+        {% if lang == 'de' %}Alle{% elif lang == 'pl' %}Wszystkie{% else %}All{% endif %}
+      </a>
+      <a href="/library?lang_filter=en" class="filter-btn {% if lang_filter == 'en' %}active{% endif %}">English</a>
+      <a href="/library?lang_filter=de" class="filter-btn {% if lang_filter == 'de' %}active{% endif %}">Deutsch</a>
+      <a href="/library?lang_filter=pl" class="filter-btn {% if lang_filter == 'pl' %}active{% endif %}">Polski</a>
+    </div>
+
+    <!-- Error state -->
+    {% if error %}
+    <div class="notice notice-warning">
+      <p>
+        {% if lang == 'de' %}Materialien konnten nicht geladen werden. Bitte versuchen Sie es später erneut.
+        {% elif lang == 'pl' %}Nie można załadować materiałów. Spróbuj ponownie później.
+        {% else %}Could not load resources. Please try again later.
+        {% endif %}
+        <br><small>{{ error }}</small>
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- Empty state -->
+    {% if not collections and not error %}
+    <div class="empty-state">
+      <p>
+        {% if lang == 'de' %}Keine Materialien gefunden.
+        {% elif lang == 'pl' %}Nie znaleziono materiałów.
+        {% else %}No resources found.
+        {% endif %}
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- Collections -->
+    {% for collection_key, resources in collections.items() %}
+    <div class="collection-section">
+
+      <!-- Collection header -->
+      <div class="collection-header">
+        <h2 class="collection-title">
+          {% set label = collection_labels.get(collection_key, {}) %}
+          {% if lang == 'de' %}{{ label.get('de', collection_key) }}
+          {% elif lang == 'pl' %}{{ label.get('pl', collection_key) }}
+          {% else %}{{ label.get('en', collection_key) }}
+          {% endif %}
+        </h2>
+        <span class="collection-count">{{ resources | length }}
+          {% if lang == 'de' %}Dokumente{% elif lang == 'pl' %}dokumenty{% else %}documents{% endif %}
+        </span>
+      </div>
+
+      <!-- Resource cards -->
+      <div class="resource-grid">
+        {% for res in resources %}
+        <div class="resource-card">
+          <div class="resource-card-header">
+            <span class="lang-tag lang-{{ res.lang }}">{{ res.lang | upper }}</span>
+            <span class="format-tag">MD</span>
+            {% if res.pdf_path %}<span class="format-tag format-pdf">PDF</span>{% endif %}
+          </div>
+
+          <h3 class="resource-title">
+            <a href="/library/resource?path={{ res.path | urlencode }}">
+              {{ res.title or res.stem }}
+            </a>
+          </h3>
+
+          {% if res.description %}
+          <p class="resource-description">{{ res.description }}</p>
+          {% endif %}
+
+          <div class="resource-actions">
+            <a href="/library/resource?path={{ res.path | urlencode }}" class="btn btn-primary btn-sm">
+              {% if lang == 'de' %}Lesen{% elif lang == 'pl' %}Czytaj{% else %}Read{% endif %}
+            </a>
+            <a href="{{ res.raw_md_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">MD ↓</a>
+            {% if res.pdf_url %}
+            <a href="{{ res.pdf_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">PDF ↓</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- OER Attribution footer -->
+    <div class="oer-attribution">
+      <p>
+        {% if lang == 'de' %}
+          Das Material steht als Open Educational Resource (OER) zur Verfügung und ist lizenziert unter
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
+        {% elif lang == 'pl' %}
+          Materiał jest dostępny jako Otwarte Zasoby Edukacyjne (OER) i objęty licencją
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
+        {% else %}
+          This material is available as an Open Educational Resource (OER) licensed under
+          <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
+        {% endif %}
+        <br>© Michel Garand | Erdpuls Müllrose
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<style>
+.library-page { padding: 2rem 0 4rem; background: var(--color-cream, #f8f6f3); min-height: 80vh; }
+.page-header { margin-bottom: 2rem; }
+.page-header h1 { font-family: var(--font-display, serif); font-size: 2rem; color: var(--color-forest, #2d4a3e); margin: 0 0 0.5rem; }
+.page-subtitle { color: var(--color-bark, #5a5a5a); max-width: 640px; margin: 0; }
+
+.library-filters { display: flex; gap: 0.5rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+.filter-btn { padding: 0.4rem 1rem; border-radius: 20px; border: 2px solid var(--color-sage, #7aab8a); color: var(--color-forest, #2d4a3e); text-decoration: none; font-size: 0.9rem; transition: all 0.2s; }
+.filter-btn:hover, .filter-btn.active { background: var(--color-forest, #2d4a3e); color: white; border-color: var(--color-forest, #2d4a3e); }
+
+/* Collections */
+.collection-section { margin-bottom: 3rem; }
+.collection-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--color-sage, #7aab8a); }
+.collection-title { font-family: var(--font-display, serif); font-size: 1.4rem; color: var(--color-forest, #2d4a3e); margin: 0; }
+.collection-count { font-size: 0.85rem; color: var(--color-bark, #5a5a5a); }
+
+/* Resource cards */
+.resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+.resource-card { background: white; border-radius: 12px; padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 0.6rem; border: 2px solid transparent; transition: border-color 0.2s; }
+.resource-card:hover { border-color: var(--color-sage, #7aab8a); }
+
+.resource-card-header { display: flex; gap: 0.4rem; }
+.lang-tag { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 600; background: var(--color-moss, #4a7c59); color: white; }
+.lang-tag.lang-de { background: #3d6b8c; }
+.lang-tag.lang-pl { background: #8c3d3d; }
+.format-tag { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem; background: #e8f0ed; color: var(--color-forest, #2d4a3e); }
+.format-pdf { background: #fde8e8; color: #c0392b; }
+
+.resource-title { font-family: var(--font-display, serif); font-size: 1rem; color: var(--color-forest, #2d4a3e); margin: 0; line-height: 1.3; }
+.resource-title a { text-decoration: none; color: inherit; }
+.resource-title a:hover { text-decoration: underline; }
+.resource-description { font-size: 0.875rem; color: var(--color-bark, #5a5a5a); line-height: 1.5; margin: 0; flex-grow: 1; }
+.resource-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem; }
+.btn-sm { padding: 0.3rem 0.75rem; font-size: 0.82rem; }
+
+.notice-warning { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 6px; margin-bottom: 1.5rem; }
+.empty-state { text-align: center; padding: 4rem; color: var(--color-bark, #5a5a5a); }
+
+.oer-attribution { border-top: 1px solid #ddd; padding-top: 1.5rem; margin-top: 1rem; font-size: 0.85rem; color: var(--color-bark, #5a5a5a); }
+.oer-attribution a { color: var(--color-moss, #4a7c59); }
+</style>
+{% endblock %}

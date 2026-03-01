@@ -1,5 +1,11 @@
 """
 Erdpuls Collective Threshold Model - FastAPI Application
+
+Routers:
+- api_router   : JSON API endpoints (/api/...)
+- web_router   : HTML page routes including OER Library (/library, /library/resource)
+- auth_router  : Authentication routes (/login, /register, /logout)
+- admin_router : Admin panel routes (/admin/...)
 """
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -34,7 +40,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Include routers
 app.include_router(api_router)
-app.include_router(web_router)
+app.include_router(web_router)   # includes /library and /library/resource (OER)
 app.include_router(auth_router)
 app.include_router(admin_router.router)
 

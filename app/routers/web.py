@@ -1,14 +1,19 @@
 """
 Erdpuls Collective Threshold Model - Web Routes
-Updated with Participation Pathways Architecture
+Updated with Participation Pathways Architecture and OER Library
 
 Three engagement pathways:
 1. /offering/{id}/participate - Participate Only
-2. /offering/{id}/contribute?pathway=support_only - Support Only  
+2. /offering/{id}/contribute?pathway=support_only - Support Only
 3. /offering/{id}/contribute?pathway=support_and_participate - Support & Participate
+
+OER Library routes:
+4. /library                        - Resource index grouped by collection
+5. /library/resource?path=...      - Single resource detail (rendered Markdown)
 """
 from datetime import datetime
 from decimal import Decimal
+import asyncio
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -20,6 +25,7 @@ from ..models import (
     TokenRate, HoursRate, EngagementType, RegistrationType
 )
 from ..email import send_contribution_confirmation
+from ..services.oer_library import get_collections, get_resource_detail, _COLLECTION_LABELS
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -677,6 +683,77 @@ def contribute_confirm(
             "user": user,
             "offering": offering,
             "contribution": contribution
+        }
+    )
+
+
+# ============================================
+# OER LIBRARY
+# ============================================
+
+@router.get("/library", response_class=HTMLResponse)
+def oer_library(
+    request: Request,
+    lang_filter: str = None,
+    db: Session = Depends(get_db)
+):
+    """
+    OER Library index — resources grouped by collection.
+    lang_filter: 'en', 'de', 'pl', or None for all languages.
+    """
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+
+    try:
+        collections = asyncio.run(get_collections(lang_filter=lang_filter))
+        error = None
+    except Exception as e:
+        collections = {}
+        error = str(e)
+
+    return templates.TemplateResponse(
+        "library/index.html",
+        {
+            "request":           request,
+            "lang":              lang,
+            "user":              user,
+            "collections":       collections,
+            "collection_labels": _COLLECTION_LABELS,
+            "lang_filter":       lang_filter,
+            "error":             error,
+        }
+    )
+
+
+@router.get("/library/resource", response_class=HTMLResponse)
+def oer_resource_detail(
+    request: Request,
+    path: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Single OER resource rendered from Markdown.
+    Usage: /library/resource?path=Pattern_Language_of_Place/oer/docs/EN/04_teachers_guide_EN.md
+    """
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+
+    # Path sanitisation — prevent directory traversal
+    if ".." in path or path.startswith("/"):
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+    try:
+        resource = asyncio.run(get_resource_detail(path))
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Resource not found: {e}")
+
+    return templates.TemplateResponse(
+        "library/detail.html",
+        {
+            "request":  request,
+            "lang":     lang,
+            "user":     user,
+            "resource": resource,
         }
     )
 

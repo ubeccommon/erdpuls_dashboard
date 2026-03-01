@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}{{ resource.title }} — Erdpuls OER{% endblock %}
+
+{% block content %}
+<section class="resource-detail-page">
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a href="/library">
+        {% if lang == 'de' %}← Bibliothek{% elif lang == 'pl' %}← Biblioteka{% else %}← Library{% endif %}
+      </a>
+    </nav>
+
+    <!-- Resource header -->
+    <header class="resource-header">
+      <div class="resource-meta">
+        <span class="lang-tag lang-{{ resource.lang }}">{{ resource.lang | upper }}</span>
+        <span class="format-tag">OER</span>
+      </div>
+      <h1>{{ resource.title }}</h1>
+
+      <!-- Download actions -->
+      <div class="resource-downloads">
+        <a href="{{ resource.raw_md_url }}" target="_blank" rel="noopener" class="btn btn-outline">
+          Markdown ↓
+        </a>
+        <a href="{{ resource.pdf_url }}" target="_blank" rel="noopener" class="btn btn-outline">
+          PDF ↓
+        </a>
+        <a href="{{ resource.github_pages_url }}" target="_blank" rel="noopener" class="btn btn-outline">
+          {% if lang == 'de' %}Original-Seite ↗{% elif lang == 'pl' %}Strona oryginalna ↗{% else %}Original page ↗{% endif %}
+        </a>
+      </div>
+    </header>
+
+    <!-- Rendered Markdown content -->
+    <article class="resource-content prose">
+      {{ resource.html_content | safe }}
+    </article>
+
+    <!-- Attribution block (required by CC BY-NC-SA 4.0) -->
+    <footer class="resource-attribution">
+      <div class="attribution-box">
+        <span class="cc-icon">🅭</span>
+        <p>
+          {{ resource.attribution }}
+          <br>
+          {% if lang == 'de' %}
+            Das Material steht als Open Educational Resource (OER) zur Verfügung und ist lizenziert unter
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">
+              Creative Commons Namensnennung – Nicht-kommerziell – Weitergabe unter gleichen Bedingungen 4.0 International (CC BY-NC-SA 4.0)
+            </a>.
+          {% elif lang == 'pl' %}
+            Materiał jest dostępny jako OER i objęty licencją
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
+          {% else %}
+            This material is available as an Open Educational Resource (OER) and licensed under
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">
+              Creative Commons Attribution – NonCommercial – ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+            </a>.
+          {% endif %}
+        </p>
+      </div>
+    </footer>
+
+  </div>
+</section>
+
+<style>
+.resource-detail-page { padding: 2rem 0 5rem; background: var(--color-cream, #f8f6f3); min-height: 80vh; }
+
+.breadcrumb { margin-bottom: 1.5rem; }
+.breadcrumb a { color: var(--color-moss, #4a7c59); text-decoration: none; font-size: 0.9rem; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+.resource-header { margin-bottom: 2.5rem; }
+.resource-header h1 { font-family: var(--font-display, serif); font-size: 2rem; color: var(--color-forest, #2d4a3e); margin: 0.75rem 0; }
+.resource-meta { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; }
+.lang-tag { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background: var(--color-moss, #4a7c59); color: white; }
+.format-tag { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; background: #e8f0ed; color: var(--color-forest, #2d4a3e); }
+.resource-downloads { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+
+/* Prose / rendered Markdown styles */
+.resource-content.prose {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  max-width: 72ch;
+  line-height: 1.75;
+  color: var(--color-text, #333);
+}
+.prose h1, .prose h2, .prose h3 { font-family: var(--font-display, serif); color: var(--color-forest, #2d4a3e); margin-top: 2rem; }
+.prose h1 { font-size: 1.8rem; }
+.prose h2 { font-size: 1.4rem; }
+.prose h3 { font-size: 1.15rem; }
+.prose p { margin: 1rem 0; }
+.prose ul, .prose ol { padding-left: 1.5rem; margin: 1rem 0; }
+.prose li { margin: 0.4rem 0; }
+.prose blockquote { border-left: 4px solid var(--color-sage, #7aab8a); margin: 1.5rem 0; padding: 0.5rem 1.5rem; color: var(--color-bark, #5a5a5a); font-style: italic; }
+.prose table { border-collapse: collapse; width: 100%; margin: 1.5rem 0; font-size: 0.9rem; }
+.prose th, .prose td { border: 1px solid #ddd; padding: 0.6rem 0.9rem; text-align: left; }
+.prose th { background: var(--color-cream, #f8f6f3); font-weight: 600; }
+.prose code { background: #f0f0f0; border-radius: 3px; padding: 0.15rem 0.4rem; font-size: 0.9em; }
+.prose pre { background: #1e1e1e; color: #d4d4d4; padding: 1.25rem; border-radius: 8px; overflow-x: auto; }
+.prose pre code { background: transparent; padding: 0; }
+.prose a { color: var(--color-moss, #4a7c59); }
+.prose img { max-width: 100%; border-radius: 6px; }
+
+/* Attribution */
+.resource-attribution { margin-top: 2.5rem; }
+.attribution-box { background: #f0f7f2; border: 1px solid #c8e0d0; border-radius: 8px; padding: 1.25rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; font-size: 0.85rem; color: var(--color-bark, #5a5a5a); }
+.cc-icon { font-size: 1.5rem; flex-shrink: 0; }
+.attribution-box a { color: var(--color-moss, #4a7c59); }
+.attribution-box p { margin: 0; line-height: 1.6; }
+</style>
+{% endblock %}
