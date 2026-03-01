@@ -81,6 +81,43 @@
         </span>
       </div>
 
+      <!-- Featured card injected for Learning_Pathways collection -->
+      {% if collection_key == 'Learning_Pathways' %}
+      <div class="featured-card">
+        <div class="featured-card-inner">
+          <div class="featured-label">
+            {% if lang == 'de' %}Interaktiv{% elif lang == 'pl' %}Interaktywny{% else %}Interactive{% endif %}
+          </div>
+          <h2 class="featured-title">
+            {% if lang == 'de' %}Lernpfad-Karten
+            {% elif lang == 'pl' %}Mapy Ścieżek Uczenia
+            {% else %}Learning Pathway Maps
+            {% endif %}
+          </h2>
+          <p class="featured-description">
+            {% if lang == 'de' %}
+              Fünf Zielgruppen-Pfade, die die Werte-Handlungs-Lücke überbrücken — mit Token-Ökonomie-Integration und 4A-Tiefe.
+            {% elif lang == 'pl' %}
+              Pięć ścieżek dla grup docelowych, łączących lukę między wartościami a działaniem — z integracją ekonomii tokenów.
+            {% else %}
+              Five target-group pathways bridging the Values-Action Gap — with 4A-pathway depth and token economy integration.
+            {% endif %}
+          </p>
+          <div class="featured-langs">
+            <span class="lang-tag lang-en">EN</span>
+            <span class="lang-tag lang-de">DE</span>
+            <span class="lang-tag" style="background:#aaa">PL soon</span>
+          </div>
+          <a href="/library/pathways" class="btn btn-primary">
+            {% if lang == 'de' %}Karten erkunden →
+            {% elif lang == 'pl' %}Przeglądaj mapy →
+            {% else %}Explore Maps →
+            {% endif %}
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
       <!-- Resource cards -->
       <div class="resource-grid">
         {% for res in resources %}
@@ -173,6 +210,15 @@
 
 .notice-warning { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 6px; margin-bottom: 1.5rem; }
 .empty-state { text-align: center; padding: 4rem; color: var(--color-bark, #5a5a5a); }
+
+/* Featured card */
+.featured-card { margin-bottom: 2.5rem; }
+.featured-card-inner { background: #e8f2ec; border: 2px solid #c2dece; border-radius: 14px; padding: 2rem 2.5rem; color: var(--color-forest, #2d4a3e); display: flex; flex-direction: column; gap: 0.75rem; max-width: 680px; }
+.featured-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-moss, #4a7c59); }
+.featured-title { font-family: var(--font-display, serif); font-size: 1.6rem; margin: 0; color: var(--color-forest, #2d4a3e); }
+.featured-description { font-size: 0.95rem; line-height: 1.6; color: var(--color-bark, #5a5a5a); margin: 0; }
+.featured-langs { display: flex; gap: 0.4rem; }
+.featured-langs .lang-tag { opacity: 1; }
 
 .oer-attribution { border-top: 1px solid #ddd; padding-top: 1.5rem; margin-top: 1rem; font-size: 0.85rem; color: var(--color-bark, #5a5a5a); }
 .oer-attribution a { color: var(--color-moss, #4a7c59); }

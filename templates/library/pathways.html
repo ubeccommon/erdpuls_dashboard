@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% else %}Learning Pathway Maps{% endif %}
+  — Erdpuls Müllrose
+{% endblock %}
+
+{% block content %}
+<div class="pathways-page">
+
+  <!-- Slim toolbar: back link, lang switcher, open in new tab -->
+  <div class="pathways-toolbar">
+    <a href="/library" class="toolbar-back">
+      {% if lang == 'de' %}← Bibliothek{% elif lang == 'pl' %}← Biblioteka{% else %}← Library{% endif %}
+    </a>
+
+    <div class="toolbar-center">
+      <span class="toolbar-title">
+        {% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% else %}Learning Pathway Maps{% endif %}
+      </span>
+      <span class="toolbar-attribution">
+        © Michel Garand |
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>
+      </span>
+    </div>
+
+    <div class="toolbar-right">
+      <div class="lang-tabs">
+        <a href="/library/pathways?lang_override=en"
+           class="lang-tab {% if effective_lang == 'en' %}active{% endif %}">EN</a>
+        <a href="/library/pathways?lang_override=de"
+           class="lang-tab {% if effective_lang == 'de' %}active{% endif %}">DE</a>
+        {% if pl_available %}
+        <a href="/library/pathways?lang_override=pl"
+           class="lang-tab {% if effective_lang == 'pl' %}active{% endif %}">PL</a>
+        {% endif %}
+      </div>
+      <a href="{{ embed_url }}" target="_blank" rel="noopener" class="toolbar-external">↗</a>
+    </div>
+  </div>
+
+  <!-- Iframe fills everything below toolbar -->
+  {% if available %}
+  <iframe
+    src="{{ embed_url }}"
+    class="pathways-frame"
+    title="{% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% else %}Learning Pathway Maps{% endif %}"
+    loading="lazy"
+    allowfullscreen
+  ></iframe>
+  {% else %}
+  <div class="pathways-unavailable">
+    <p>
+      {% if lang == 'de' %}
+        Die deutsche Version ist noch in Vorbereitung.
+        <a href="/library/pathways?lang_override=en">Englische Version anzeigen →</a>
+      {% elif lang == 'pl' %}
+        Polska wersja jest jeszcze w przygotowaniu.
+        <a href="/library/pathways?lang_override=en">Pokaż wersję angielską →</a>
+      {% else %}
+        This language version is not yet available.
+        <a href="/library/pathways?lang_override=en">View English version →</a>
+      {% endif %}
+    </p>
+  </div>
+  {% endif %}
+
+</div>
+
+<style>
+.pathways-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+  background: #fff;
+}
+
+.pathways-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 1.5rem;
+  background: var(--color-cream, #f8f6f3);
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+  gap: 1rem;
+  min-height: 42px;
+}
+
+.toolbar-back {
+  color: var(--color-moss, #4a7c59);
+  text-decoration: none;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.toolbar-back:hover { text-decoration: underline; }
+
+.toolbar-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+}
+.toolbar-title {
+  font-family: var(--font-display, serif);
+  font-size: 0.95rem;
+  color: var(--color-forest, #2d4a3e);
+  font-weight: 500;
+}
+.toolbar-attribution {
+  font-size: 0.7rem;
+  color: var(--color-bark, #5a5a5a);
+}
+.toolbar-attribution a { color: var(--color-moss, #4a7c59); }
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.lang-tabs {
+  display: flex;
+  gap: 0.2rem;
+  background: white;
+  border-radius: 5px;
+  padding: 0.2rem;
+  border: 1px solid #ddd;
+}
+.lang-tab {
+  padding: 0.2rem 0.55rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-bark, #5a5a5a);
+  transition: all 0.15s;
+}
+.lang-tab:hover { background: var(--color-cream, #f8f6f3); }
+.lang-tab.active { background: var(--color-forest, #2d4a3e); color: white; }
+
+.toolbar-external {
+  font-size: 1rem;
+  color: var(--color-moss, #4a7c59);
+  text-decoration: none;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background: white;
+  line-height: 1;
+}
+.toolbar-external:hover { background: var(--color-cream, #f8f6f3); }
+
+.pathways-frame {
+  flex: 1;
+  width: 100%;
+  border: none;
+  display: block;
+}
+
+.pathways-unavailable {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-bark, #5a5a5a);
+}
+.pathways-unavailable a { color: var(--color-moss, #4a7c59); }
+</style>
+{% endblock %}

@@ -39,7 +39,7 @@
                 </a>
                 <div class="nav-dropdown">
                     <button class="nav-dropdown-toggle">
-                        {% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% else %}How It Works{% endif %}
+                        {% if lang == 'de' %}Grundlagen{% elif lang == 'pl' %}Podstawy{% else %}Approach{% endif %}
                         <span class="dropdown-arrow">▾</span>
                     </button>
                     <div class="nav-dropdown-menu">
@@ -55,13 +55,16 @@
                         <a href="/model/tokens">
                             {% if lang == 'de' %}Token-Ökonomie (UBECrc){% elif lang == 'pl' %}Ekonomia Tokenów (UBECrc){% else %}Token Economy (UBECrc){% endif %}
                         </a>
+                        <a href="/fund">
+                            {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}
+                        </a>
+                        <a href="/library/pathways">
+                            {% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% else %}Learning Pathway Maps{% endif %}
+                        </a>
                     </div>
                 </div>
-                <a href="/fund">
-                    {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz{% else %}Fund{% endif %}
-                </a>
                 <a href="/library">
-                    {% if lang == 'de' %}Lernmaterialien{% elif lang == 'pl' %}Materiały{% else %}Resources{% endif %}
+                    {% if lang == 'de' %}Bibliothek{% elif lang == 'pl' %}Biblioteka{% else %}Library{% endif %}
                 </a>
             </nav>
             
@@ -139,7 +142,7 @@
                         <li><a href="/offerings">{% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}</a></li>
                         <li><a href="/about">{% if lang == 'de' %}Philosophie{% elif lang == 'pl' %}Filozofia{% else %}Philosophy{% endif %}</a></li>
                         <li><a href="/fund">{% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz{% else %}Regeneration Fund{% endif %}</a></li>
-                        <li><a href="/library">{% if lang == 'de' %}Lernmaterialien (OER){% elif lang == 'pl' %}Materiały (OER){% else %}Resources (OER){% endif %}</a></li>
+                        <li><a href="/library">{% if lang == 'de' %}Bibliothek{% elif lang == 'pl' %}Biblioteka{% else %}Library{% endif %}</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">

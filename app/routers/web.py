@@ -8,12 +8,11 @@ Three engagement pathways:
 3. /offering/{id}/contribute?pathway=support_and_participate - Support & Participate
 
 OER Library routes:
-4. /library                        - Resource index grouped by collection
-5. /library/resource?path=...      - Single resource detail (rendered Markdown)
+4. /library                    - Resource index grouped by collection
+5. /library/resource?path=...  - Single resource detail (rendered Markdown)
 """
 from datetime import datetime
 from decimal import Decimal
-import asyncio
 from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -692,7 +691,7 @@ def contribute_confirm(
 # ============================================
 
 @router.get("/library", response_class=HTMLResponse)
-def oer_library(
+async def oer_library(
     request: Request,
     lang_filter: str = None,
     db: Session = Depends(get_db)
@@ -705,7 +704,7 @@ def oer_library(
     user = get_current_user_optional(request, db)
 
     try:
-        collections = asyncio.run(get_collections(lang_filter=lang_filter))
+        collections = await get_collections(lang_filter=lang_filter)
         error = None
     except Exception as e:
         collections = {}
@@ -726,7 +725,7 @@ def oer_library(
 
 
 @router.get("/library/resource", response_class=HTMLResponse)
-def oer_resource_detail(
+async def oer_resource_detail(
     request: Request,
     path: str,
     db: Session = Depends(get_db)
@@ -743,7 +742,7 @@ def oer_resource_detail(
         raise HTTPException(status_code=400, detail="Invalid path")
 
     try:
-        resource = asyncio.run(get_resource_detail(path))
+        resource = await get_resource_detail(path)
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Resource not found: {e}")
 
@@ -754,6 +753,52 @@ def oer_resource_detail(
             "lang":     lang,
             "user":     user,
             "resource": resource,
+        }
+    )
+
+
+# ── Learning Pathway Maps ─────────────────────────────────────────────────────
+
+# GitHub Pages URLs for each language version
+_PATHWAY_URLS = {
+    "en": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/EN/Erdpuls_Learning_Pathway_Maps_EN.html",
+    "de": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/DE/Erdpuls_Learning_Pathway_Maps_DE.html",
+    # PL not yet published — will be enabled once available
+    # "pl": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/PL/Erdpuls_Learning_Pathway_Maps_PL.html",
+}
+
+@router.get("/library/pathways", response_class=HTMLResponse)
+async def oer_pathway_maps(
+    request: Request,
+    lang_override: str = None,
+    db: Session = Depends(get_db)
+):
+    """
+    Full-page iframe embed of the Learning Pathway Maps.
+    Serves the language version matching the active lang cookie,
+    with an optional lang_override query param for manual switching.
+    """
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+
+    # Determine which language to display the map in
+    effective_lang = lang_override if lang_override in _PATHWAY_URLS else lang
+    if effective_lang not in _PATHWAY_URLS:
+        effective_lang = "en"   # fallback to English
+
+    embed_url = _PATHWAY_URLS.get(effective_lang)
+    available = embed_url is not None
+
+    return templates.TemplateResponse(
+        "library/pathways.html",
+        {
+            "request":        request,
+            "lang":           lang,
+            "user":           user,
+            "effective_lang": effective_lang,
+            "embed_url":      embed_url or _PATHWAY_URLS["en"],
+            "available":      available,
+            "pl_available":   "pl" in _PATHWAY_URLS,
         }
     )
 
