@@ -17,11 +17,12 @@ NOT from filename suffixes.
 https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
 """
 
-import base64
+import os
 import re
 from datetime import datetime, timedelta
 from typing import Optional
 
+import asyncio
 import httpx
 import markdown
 
@@ -35,8 +36,10 @@ PAGES_BASE    = f"https://{GITHUB_ORG}.github.io"
 
 CACHE_TTL_MINUTES = 30
 
-# Set via app/config.py + environment for 5 000 req/hr instead of 60 req/hr.
-GITHUB_TOKEN: Optional[str] = None
+# Read from environment — set via systemd service file:
+# Environment="GITHUB_TOKEN=ghp_yourtoken"
+# Raises limit from 60 to 5,000 req/hour.
+GITHUB_TOKEN: Optional[str] = os.environ.get("GITHUB_TOKEN")
 
 # ── Paths that are content (indexed) vs tooling (excluded) ───────────────────
 # Only Markdown files under these path prefixes are included.
@@ -171,17 +174,21 @@ async def _fetch_tree() -> list[dict]:
 
 
 async def _fetch_raw(path: str) -> str:
-    """Fetch and decode a single file's content from GitHub (cached)."""
+    """
+    Fetch raw file content via raw.githubusercontent.com CDN.
+    This endpoint has NO API rate limit — no auth token required.
+    Only _fetch_tree() uses the GitHub API and counts against rate limits.
+    """
     key = f"raw:{GITHUB_REPO}:{path}"
     cached = _cache_get(key)
     if cached is not None:
         return cached
 
-    url = f"{GITHUB_API}/repos/{GITHUB_ORG}/{GITHUB_REPO}/contents/{path}?ref={GITHUB_BRANCH}"
+    url = f"{RAW_BASE}/{path}"
     async with httpx.AsyncClient(timeout=15) as client:
-        r = await client.get(url, headers=_headers())
+        r = await client.get(url)   # no auth needed for public raw content
         r.raise_for_status()
-        raw = base64.b64decode(r.json()["content"]).decode("utf-8")
+        raw = r.text
 
     _cache_set(key, raw)
     return raw
@@ -294,21 +301,27 @@ async def get_resource_list(lang_filter: Optional[str] = None) -> list[dict]:
     return resources
 
 
+async def _enrich_resource(res: dict) -> dict:
+    """Fetch and attach title + description to a single resource dict."""
+    try:
+        raw = await _fetch_raw(res["path"])
+        res["title"] = _extract_title(raw, res["stem"])
+        res["description"] = _extract_description(raw)
+    except Exception:
+        res["title"] = res["stem"]
+        res["description"] = ""
+    return res
+
+
 async def get_resource_list_with_previews(lang_filter: Optional[str] = None) -> list[dict]:
     """
-    Like get_resource_list but enriches each resource with title + description
-    fetched from GitHub. Results are individually cached.
+    Like get_resource_list but enriches each resource with title + description.
+    All file fetches run concurrently via asyncio.gather — fast even for large repos.
+    Individual results are cached, so subsequent page loads are instant.
     """
     resources = await get_resource_list(lang_filter)
-    for res in resources:
-        try:
-            raw = await _fetch_raw(res["path"])
-            res["title"] = _extract_title(raw, res["stem"])
-            res["description"] = _extract_description(raw)
-        except Exception:
-            res["title"] = res["stem"]
-            res["description"] = ""
-    return resources
+    enriched = await asyncio.gather(*[_enrich_resource(res) for res in resources])
+    return list(enriched)
 
 
 async def get_resource_detail(path: str) -> dict:
