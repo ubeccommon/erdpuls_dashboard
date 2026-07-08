@@ -1,106 +1,78 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}">
+<html lang="{{ lang }}" data-ubec-service="erdpuls">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Erdpuls{% endblock %} | Erdpuls Müllrose</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="/static/css/style.css?v=20">
-    
-    <!-- Favicon -->
+    <title>{% block title %}Erdpuls{% endblock %} · Erdpuls by UBEC</title>
+
+    <!-- Fonts — Bunny Fonts (GDPR-compliant, EU-hosted). Never Google Fonts. -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=dm-serif-display:400,400i|dm-sans:300,400,500,600|jetbrains-mono:400,500&display=swap" rel="stylesheet">
+
+    <!-- Shared UBEC design system + nav -->
+    <link rel="stylesheet" href="https://design.ubec.network/v1/ubec-design-system.css">
+    <link rel="stylesheet" href="https://design.ubec.network/v1/nav-styles.css">
+
+    <!-- App page styles (layout for offerings, cards, forms, etc.) -->
+    <link rel="stylesheet" href="/static/css/style.css?v=21">
+    <link rel="stylesheet" href="/static/css/auth-additions.css">
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
-    
+
+    <style>
+      /* Use the app's own login + /set-lang switcher, not the CDN nav's. */
+      #ubec-nav .ubec-nav__login,
+      #ubec-nav .ubec-nav__lang-switcher { display: none !important; }
+
+      /* Fixed shared nav → offset content by its height. */
+      body { padding-top: var(--nav-height, 64px); }
+
+      /* Slim app strip beneath the shared bar: app language + app auth. */
+      .app-subnav {
+        display: flex; align-items: center; justify-content: flex-end; gap: 1rem;
+        padding: 0.4rem 1.25rem; background: var(--color-linen);
+        border-bottom: 1px solid var(--color-sand); font-family: var(--font-body);
+      }
+      .app-subnav .lang-switcher { display: flex; gap: 0.35rem; }
+      .app-subnav .lang-switcher a {
+        font-size: 0.8rem; padding: 0.15rem 0.45rem; border-radius: 6px;
+        color: var(--color-clay); text-decoration: none;
+      }
+      .app-subnav .lang-switcher a.active { color: #fff; background: var(--color-commons); }
+      .app-subnav .auth-nav { display: flex; gap: 0.5rem; align-items: center; }
+      @media (max-width: 768px) { .app-subnav { padding: 0.4rem 0.75rem; } }
+    </style>
+
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Header -->
-    <header class="site-header" id="header">
-        <div class="header-container container">
-            <a href="/" class="logo">
-                <span class="logo-icon">🌱</span>
-                <div class="logo-content">
-                    <span class="logo-text">Erdpuls Müllrose</span>
-                    <span class="logo-subtitle">Center for Sustainability Literacy, Citizen Science and Reciprocal Economics</span>
-                </div>
-            </a>
-            
-            <nav class="main-nav">
-                <a href="/about">
-                    {% if lang == 'de' %}Über uns{% elif lang == 'pl' %}O nas{% else %}About{% endif %}
-                </a>
-                <a href="/offerings">
-                    {% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}
-                </a>
-                <div class="nav-dropdown">
-                    <button class="nav-dropdown-toggle">
-                        {% if lang == 'de' %}Grundlagen{% elif lang == 'pl' %}Podstawy{% else %}Approach{% endif %}
-                        <span class="dropdown-arrow">▾</span>
-                    </button>
-                    <div class="nav-dropdown-menu">
-                        <a href="/model/reciprocity">
-                            {% if lang == 'de' %}Reziproke Ökonomie{% elif lang == 'pl' %}Ekonomia Wzajemności{% else %}Reciprocal Economics{% endif %}
-                        </a>
-                        <a href="/model/threshold">
-                            {% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% else %}Collective Threshold Model{% endif %}
-                        </a>
-                        <a href="/model/pathways">
-                            {% if lang == 'de' %}Vier Wege{% elif lang == 'pl' %}Cztery Ścieżki{% else %}Four Pathways{% endif %}
-                        </a>
-                        <a href="/model/tokens">
-                            {% if lang == 'de' %}Token-Ökonomie (UBECrc){% elif lang == 'pl' %}Ekonomia Tokenów (UBECrc){% else %}Token Economy (UBECrc){% endif %}
-                        </a>
-                        <a href="/fund">
-                            {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}
-                        </a>
-                        <a href="/library/pathways">
-                            {% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% else %}Learning Pathway Maps{% endif %}
-                        </a>
-                    </div>
-                </div>
-                <a href="/library">
-                    {% if lang == 'de' %}Bibliothek{% elif lang == 'pl' %}Biblioteka{% else %}Library{% endif %}
-                </a>
-            </nav>
-            
-            <div class="header-right">
-                <div class="lang-switcher">
-                    <a href="/set-lang/en" class="{% if lang == 'en' %}active{% endif %}">EN</a>
-                    <a href="/set-lang/de" class="{% if lang == 'de' %}active{% endif %}">DE</a>
-                    <a href="/set-lang/pl" class="{% if lang == 'pl' %}active{% endif %}">PL</a>
-                </div>
-                <div class="auth-nav">
-                    {% if user %}
-                        <a href="/dashboard" class="btn btn-small">
-                            {% if user.is_admin %}👑{% else %}👤{% endif %}
-                            {{ user.name or user.email.split('@')[0] }}
-                        </a>
-                        <a href="/logout" class="btn btn-small btn-outline">
-                            {% if lang == 'de' %}Abmelden{% elif lang == 'pl' %}Wyloguj{% else %}Logout{% endif %}
-                        </a>
-                    {% else %}
-                        <a href="/login" class="btn btn-small btn-primary">
-                            {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj{% else %}Login{% endif %}
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <!-- Mobile menu toggle -->
-            <button class="mobile-menu-toggle" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </header>
+    <!-- Shared UBEC ecosystem bar (identity + services); filled by ubec-nav.js -->
+    <nav id="ubec-nav" aria-label="UBEC navigation"></nav>
 
-    <!-- Flash Messages (if passed in context) -->
+    <!-- App-local controls: real language switch (/set-lang) + real auth -->
+    <div class="app-subnav">
+        <div class="lang-switcher">
+            <a href="/set-lang/en" class="{% if lang == 'en' %}active{% endif %}">EN</a>
+            <a href="/set-lang/de" class="{% if lang == 'de' %}active{% endif %}">DE</a>
+            <a href="/set-lang/pl" class="{% if lang == 'pl' %}active{% endif %}">PL</a>
+        </div>
+        <div class="auth-nav">
+            {% if user %}
+                <a href="/dashboard" class="btn btn-small">
+                    {% if user.is_admin %}👑{% else %}👤{% endif %}
+                    {{ user.name or user.email.split('@')[0] }}
+                </a>
+                <a href="/logout" class="btn btn-small btn-outline">
+                    {% if lang == 'de' %}Abmelden{% elif lang == 'pl' %}Wyloguj{% else %}Logout{% endif %}
+                </a>
+            {% else %}
+                <a href="/login" class="btn btn-small btn-primary">
+                    {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj{% else %}Login{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
     {% if flash_messages %}
         <div class="flash-container container">
             {% for category, message in flash_messages %}
@@ -112,28 +84,22 @@
         </div>
     {% endif %}
 
-    <!-- Main Content -->
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-container container">
             <div class="footer-grid">
                 <div class="footer-brand">
                     <div class="footer-logo">
                         <span class="footer-logo-icon">🌱</span>
-                        <span class="footer-logo-text">Erdpuls Müllrose</span>
+                        <span class="footer-logo-text">Erdpuls by UBEC</span>
                     </div>
                     <p class="footer-tagline">
-                        {% if lang == 'de' %}
-                            Center for Sustainability Literacy, Citizen Science and Reciprocal Economics
-                        {% elif lang == 'pl' %}
-                            Center for Sustainability Literacy, Citizen Science and Reciprocal Economics
-                        {% else %}
-                            Center for Sustainability Literacy, Citizen Science and Reciprocal Economics
-                        {% endif %}
+                        {% if lang == 'de' %}Teil der Ubuntu Bioregional Economic Commons DAO.
+                        {% elif lang == 'pl' %}Część Ubuntu Bioregional Economic Commons DAO.
+                        {% else %}Part of the Ubuntu Bioregional Economic Commons DAO.{% endif %}
                     </p>
                 </div>
                 <div class="footer-column">
@@ -150,14 +116,14 @@
                     <ul class="footer-links">
                         <li><a href="/offerings">{% if lang == 'de' %}Beitragen{% elif lang == 'pl' %}Wspieraj{% else %}Contribute{% endif %}</a></li>
                         <li><a href="/register">{% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj{% else %}Register{% endif %}</a></li>
-                        <li><a href="https://liberapay.com/erdpuls" target="_blank">Liberapay</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h4>{% if lang == 'de' %}Kontakt{% elif lang == 'pl' %}Kontakt{% else %}Connect{% endif %}</h4>
+                    <h4>{% if lang == 'de' %}Ökosystem{% elif lang == 'pl' %}Ekosystem{% else %}Ecosystem{% endif %}</h4>
                     <ul class="footer-links">
-                        <li><a href="/cdn-cgi/l/email-protection#e98c9b8d999c859aa99c8b8c8ac7878c9d9e869b82">Email</a></li>
-                        <li><a href="https://github.com/ubeccommon" target="_blank">GitHub</a></li>
+                        <li><a href="https://ubec.network">UBEC DAO</a></li>
+                        <li><a href="https://living-labs.ubec.network">Living Labs</a></li>
+                        <li><a href="https://iot.ubec.network">Hub</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -170,11 +136,14 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <span>© 2026 Michel Garand · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
-                <span class="footer-location">Müllrose, Brandenburg · Naturpark Schlaubetal</span>
+                <span>© 2024–2026 Michel Garand · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> · GNU AGPL v3.0</span>
+                <span class="footer-attrib">Developed with Claude (Anthropic PBC)</span>
             </div>
         </div>
     </footer>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/static/js/main.js"></script>
-    <!-- Session timeout handler 
+    <script src="/static/js/main.js"></script>
+    <script src="https://design.ubec.network/v1/ubec-nav.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
