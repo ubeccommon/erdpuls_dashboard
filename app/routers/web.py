@@ -247,7 +247,7 @@ def model_reciprocity(request: Request, db: Session = Depends(get_db)):
 @router.get("/set-lang/{lang}")
 def set_language(lang: str, request: Request):
     """Set language preference via cookie"""
-    if lang not in ['en', 'de', 'pl']:
+    if lang not in ['en', 'de', 'pl', 'uk']:
         lang = 'en'
     
     referer = request.headers.get('referer', '/')
