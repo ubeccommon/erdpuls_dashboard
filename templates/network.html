@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}{% if lang == 'de' %}UBEC Erdpuls{% elif lang == 'pl' %}UBEC Erdpuls{% else %}UBEC Erdpuls{% endif %}{% endblock %}
+
+{% block head %}
+<style>
+  .net-hero { padding: 4rem 1.5rem 3rem; text-align: center; background:
+    linear-gradient(160deg, var(--color-commons-light) 0%, var(--color-peach-light) 60%, var(--color-ochre-light) 100%); }
+  .net-hero__eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--color-commons); margin-bottom: 1rem; }
+  .net-hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--color-bark); margin-bottom: 1rem; }
+  .net-hero p { max-width: 640px; margin: 0 auto; color: var(--color-clay); font-size: 1.08rem; line-height: 1.7; }
+
+  .net-section { max-width: 1100px; margin: 0 auto; padding: 3.5rem 1.5rem; }
+  .net-section__label { display:block; text-align:center; font-family: var(--font-mono); font-size:0.72rem;
+    letter-spacing:0.1em; text-transform:uppercase; color: var(--color-commons); margin-bottom:0.6rem; }
+  .net-section__title { text-align:center; font-family: var(--font-display); font-size: clamp(1.5rem,3vw,2rem);
+    color: var(--color-bark); margin-bottom: 2.5rem; }
+
+  .initiatives { display:grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 1.5rem; }
+  .initiative { background: var(--color-parchment); border:1px solid var(--color-sand); border-radius:14px;
+    padding:1.75rem; display:flex; flex-direction:column; text-decoration:none; transition: transform .2s, box-shadow .2s; }
+  .initiative:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(90,138,106,.18); color: inherit; }
+  .initiative__badge { align-self:flex-start; font-family: var(--font-mono); font-size:0.68rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:#fff; background: var(--color-commons); padding:0.2rem 0.6rem; border-radius:20px; margin-bottom:0.9rem; }
+  .initiative__name { font-family: var(--font-display); font-size:1.4rem; color: var(--color-bark); margin-bottom:0.3rem; }
+  .initiative__loc { font-size:0.85rem; color: var(--color-commons-dark); margin-bottom:0.9rem; }
+  .initiative__desc { font-size:0.95rem; color: var(--color-clay); line-height:1.6; flex:1; }
+  .initiative__go { margin-top:1.1rem; font-weight:600; color: var(--color-commons); font-size:0.9rem; }
+
+  .initiative--soon { border-style:dashed; background: var(--color-linen); cursor: default; }
+  .initiative--soon:hover { transform:none; box-shadow:none; }
+  .initiative--soon .initiative__badge { background: var(--color-clay); }
+  .initiative--soon .initiative__name { color: var(--color-clay); }
+
+  .net-cta { background: var(--color-commons-dark); color: var(--color-parchment); text-align:center;
+    padding: 3.5rem 1.5rem; }
+  .net-cta h2 { font-family: var(--font-display); font-size: clamp(1.5rem,3vw,2rem); color: var(--color-parchment); margin-bottom:0.8rem; }
+  .net-cta p { max-width: 520px; margin:0 auto 1.8rem; color: rgba(251,246,238,.85); }
+  .net-cta .btn-primary { background: var(--color-parchment); color: var(--color-commons-dark); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="net-hero">
+  <p class="net-hero__eyebrow">{% if lang == 'de' %}Offenes Living-Lab-Protokoll{% elif lang == 'pl' %}Otwarty Protokół Living Lab{% else %}Open Living Lab Protocol{% endif %}</p>
+  <h1>UBEC Erdpuls</h1>
+  <p>
+    {% if lang == 'de' %}
+      Erdpuls ist das offene Living-Lab-Protokoll von UBEC — ein replizierbares Muster, in dem Bodenbeobachtung, IoT-Sensorik, die 13 Fragen und UBECrc-Reziprozität auf realem Grund zusammenkommen. Jede Erdpuls-Initiative ist eine ortsbezogene Umsetzung, getragen von ihrer eigenen Gemeinschaft. Müllrose ist die erste.
+    {% elif lang == 'pl' %}
+      Erdpuls to otwarty protokół living lab UBEC — powtarzalny wzorzec, w którym obserwacja gleby, czujniki IoT, 13 Pytań i wzajemność UBECrc spotykają się na realnej ziemi. Każda inicjatywa Erdpuls to wdrożenie oparte na miejscu, prowadzone przez własną społeczność. Müllrose jest pierwszą.
+    {% else %}
+      Erdpuls is UBEC's open living lab protocol — a replicable pattern where soil observation, IoT sensing, the 13 Questions, and UBECrc reciprocity come together on real ground. Each Erdpuls initiative is a place-based implementation, run by its own community. Müllrose is the first.
+    {% endif %}
+  </p>
+</section>
+
+<section class="net-section">
+  <span class="net-section__label">{% if lang == 'de' %}Das Netzwerk{% elif lang == 'pl' %}Sieć{% else %}The Network{% endif %}</span>
+  <h2 class="net-section__title">{% if lang == 'de' %}Ortsbezogene Erdpuls-Initiativen{% elif lang == 'pl' %}Inicjatywy Erdpuls oparte na miejscu{% else %}Location-based Erdpuls initiatives{% endif %}</h2>
+
+  <div class="initiatives">
+    <a class="initiative" href="/muellrose">
+      <span class="initiative__badge">{% if lang == 'de' %}Vorzeige · Aktiv{% elif lang == 'pl' %}Flagowa · Aktywna{% else %}Flagship · Active{% endif %}</span>
+      <div class="initiative__name">Erdpuls Müllrose</div>
+      <div class="initiative__loc">Müllrose, Brandenburg · Naturpark Schlaubetal</div>
+      <div class="initiative__desc">
+        {% if lang == 'de' %}Zentrum für Nachhaltigkeitsbildung, Citizen Science und reziproke Ökonomie.
+        {% elif lang == 'pl' %}Centrum edukacji na rzecz zrównoważonego rozwoju, nauki obywatelskiej i ekonomii wzajemności.
+        {% else %}Center for Sustainability Literacy, Citizen Science & Reciprocal Economics.{% endif %}
+      </div>
+      <div class="initiative__go">{% if lang == 'de' %}Initiative ansehen →{% elif lang == 'pl' %}Zobacz inicjatywę →{% else %}View initiative →{% endif %}</div>
+    </a>
+
+    <div class="initiative initiative--soon">
+      <span class="initiative__badge">{% if lang == 'de' %}Bald{% elif lang == 'pl' %}Wkrótce{% else %}Coming soon{% endif %}</span>
+      <div class="initiative__name">{% if lang == 'de' %}Deine Bioregion?{% elif lang == 'pl' %}Twój bioregion?{% else %}Your bioregion?{% endif %}</div>
+      <div class="initiative__desc">
+        {% if lang == 'de' %}Neue Erdpuls-Initiativen entstehen. Jede Gemeinschaft kann das Protokoll auf ihrem eigenen Grund umsetzen.
+        {% elif lang == 'pl' %}Powstają nowe inicjatywy Erdpuls. Każda społeczność może wdrożyć protokół na własnej ziemi.
+        {% else %}New Erdpuls initiatives are forming. Any community can run the protocol on its own ground.{% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="net-cta">
+  <h2>{% if lang == 'de' %}Bringe Erdpuls auf deinen Grund{% elif lang == 'pl' %}Wprowadź Erdpuls na swoją ziemię{% else %}Bring Erdpuls to your ground{% endif %}</h2>
+  <p>
+    {% if lang == 'de' %}Jede Gemeinschaft, jeder Hof, jede Bioregion kann eine Erdpuls-Initiative starten.
+    {% elif lang == 'pl' %}Każda społeczność, każde gospodarstwo, każdy bioregion może rozpocząć inicjatywę Erdpuls.
+    {% else %}Any community, farm, or bioregion can start an Erdpuls initiative.{% endif %}
+  </p>
+  <a class="btn btn-primary" href="https://living-labs.ubec.network/{{ lang }}/register.html">
+    {% if lang == 'de' %}Initiative starten{% elif lang == 'pl' %}Rozpocznij inicjatywę{% else %}Start an initiative{% endif %}
+  </a>
+</section>
+{% endblock %}

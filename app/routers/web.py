@@ -50,7 +50,20 @@ def get_current_user_optional(request: Request, db: Session):
 
 @router.get("/", response_class=HTMLResponse)
 def home(request: Request, db: Session = Depends(get_db)):
-    """Home page"""
+    """UBEC Erdpuls network landing — general intro + directory of initiatives."""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    response = templates.TemplateResponse(
+        "network.html",
+        {"request": request, "lang": lang, "user": user},
+    )
+    response.set_cookie("lang", lang, max_age=31536000)  # 1 year
+    return response
+
+
+@router.get("/muellrose", response_class=HTMLResponse)
+def muellrose(request: Request, db: Session = Depends(get_db)):
+    """Erdpuls Müllrose — flagship location-based initiative (reference implementation)."""
     lang = get_lang(request)
     user = get_current_user_optional(request, db)
     
