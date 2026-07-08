@@ -51,8 +51,8 @@ The app uses the existing `ubec_erdpuls` database with a new schema `erdpuls_thr
 # Connect to the database
 sudo -u postgres psql -d ubec_erdpuls
 
-# Run the schema script
-\i /var/www/erdpuls-threshold/schema.sql
+# Run the COMPLETE schema (creates all 9 tables incl. users, FKs, indexes, seeds)
+\i /var/www/erdpuls-threshold/db/schema_complete.sql
 
 # Grant permissions (use your app user)
 GRANT USAGE ON SCHEMA erdpuls_threshold TO your_app_user;

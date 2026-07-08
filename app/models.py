@@ -64,7 +64,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     name = Column(String(255))
-    role = Column(String(50), default='user')  # 'user' or 'admin'
+    role = Column(String(50), default='member')  # RBAC: member/creator/facilitator/moderator/admin
     is_active = Column(Boolean, default=True)
     email_verified = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
