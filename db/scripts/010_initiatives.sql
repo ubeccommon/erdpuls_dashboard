@@ -13,8 +13,12 @@
 -- ============================================================================
 
 CREATE SCHEMA IF NOT EXISTS erdpuls_threshold;
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 SET search_path TO erdpuls_threshold;
+-- Install uuid-ossp INTO erdpuls_threshold (search_path is already set), matching
+-- db/schema_complete.sql. Ordering matters: creating the extension before the
+-- SET would land uuid_generate_v4() in public, which the erdpuls_threshold-only
+-- search_path then can't resolve. No-op when the extension already exists.
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS erdpuls_threshold.initiatives (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
