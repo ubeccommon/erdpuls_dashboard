@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Initiativen{% elif lang == 'pl' %}Inicjatywy{% else %}Initiatives{% endif %} | Erdpuls Admin
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <h1>{% if lang == 'de' %}Initiativen{% elif lang == 'pl' %}Inicjatywy{% else %}Initiatives{% endif %}</h1>
+                <p class="admin-subtitle">
+                    {% if lang == 'de' %}Ortsbezogene Erdpuls-Initiativen im Netzwerk-Verzeichnis (/){% elif lang == 'pl' %}Inicjatywy Erdpuls oparte na miejscu w katalogu sieci (/){% else %}Place-based Erdpuls initiatives in the network directory (/){% endif %}
+                </p>
+            </div>
+        </header>
+
+        {% include "admin/_nav.html" %}
+
+        {% if request.query_params.get('success') %}
+        <div class="alert alert-success">
+            {% if request.query_params.get('success') == 'created' %}
+                {% if lang == 'de' %}Initiative erstellt (Ordner angelegt){% elif lang == 'pl' %}Inicjatywa utworzona (folder założony){% else %}Initiative created (folder created){% endif %}
+            {% elif request.query_params.get('success') == 'created_no_folder' %}
+                {% if lang == 'de' %}Initiative erstellt — Datenordner konnte NICHT angelegt werden (Log prüfen){% elif lang == 'pl' %}Inicjatywa utworzona — NIE udało się utworzyć folderu danych (sprawdź log){% else %}Initiative created — data folder could NOT be created (check the log){% endif %}
+            {% elif request.query_params.get('success') == 'deleted' %}
+                {% if lang == 'de' %}Initiative gelöscht{% elif lang == 'pl' %}Inicjatywa usunięta{% else %}Initiative deleted{% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+        {% if request.query_params.get('error') %}
+        <div class="alert alert-error">
+            {% if request.query_params.get('error') == 'flagship_protected' %}
+                {% if lang == 'de' %}Die Vorzeige-Initiative kann nicht gelöscht werden.{% elif lang == 'pl' %}Nie można usunąć inicjatywy flagowej.{% else %}The flagship initiative cannot be deleted.{% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="admin-card">
+            <div class="admin-card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                <h2>{% if lang == 'de' %}Alle Initiativen{% elif lang == 'pl' %}Wszystkie inicjatywy{% else %}All initiatives{% endif %}</h2>
+                <a href="/admin/initiatives/new" class="btn btn-primary btn-small">
+                    + {% if lang == 'de' %}Neue Initiative{% elif lang == 'pl' %}Nowa inicjatywa{% else %}New initiative{% endif %}
+                </a>
+            </div>
+            <div class="admin-card-content">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>{% if lang == 'de' %}Name{% elif lang == 'pl' %}Nazwa{% else %}Name{% endif %}</th>
+                            <th>Slug</th>
+                            <th>{% if lang == 'de' %}Ort{% elif lang == 'pl' %}Miejsce{% else %}Location{% endif %}</th>
+                            <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                            <th>{% if lang == 'de' %}Link{% elif lang == 'pl' %}Link{% else %}Link{% endif %}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for init in initiatives %}
+                        <tr>
+                            <td>
+                                {{ init.name }}
+                                {% if init.flagship %}<span class="badge">{% if lang == 'de' %}Vorzeige{% elif lang == 'pl' %}Flagowa{% else %}Flagship{% endif %}</span>{% endif %}
+                            </td>
+                            <td><code>{{ init.slug }}</code></td>
+                            <td>{{ init.location or '—' }}</td>
+                            <td>{{ init.status }}</td>
+                            <td>{% if init.href %}<a href="{{ init.href }}" target="_blank" rel="noopener">{{ init.href }}</a>{% else %}—{% endif %}</td>
+                            <td>
+                                {% if not init.flagship %}
+                                <form action="/admin/initiatives/{{ init.id }}/delete" method="post"
+                                      onsubmit="return confirm('{% if lang == 'de' %}Diese Initiative löschen?{% elif lang == 'pl' %}Usunąć tę inicjatywę?{% else %}Delete this initiative?{% endif %}');"
+                                      style="margin:0;">
+                                    <button type="submit" class="btn btn-small btn-outline">
+                                        {% if lang == 'de' %}Löschen{% elif lang == 'pl' %}Usuń{% else %}Delete{% endif %}
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

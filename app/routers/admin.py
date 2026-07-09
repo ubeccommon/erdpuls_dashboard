@@ -16,7 +16,10 @@ from sqlalchemy import func, desc
 from ..database import get_db
 from ..models import (
     User, Offering, Registration, Contribution, ContributionContact,
-    RegenerationFund, TokenRate, HoursRate
+    RegenerationFund, TokenRate, HoursRate, Initiative, InitiativeStatus
+)
+from ..initiatives import (
+    get_initiatives, slugify, validate_slug, create_data_dir
 )
 from ..auth import get_current_user_optional
 
@@ -749,5 +752,144 @@ def admin_fund_add(
     
     return RedirectResponse(
         url="/admin/fund?success=added",
+        status_code=303
+    )
+
+
+# ============================================
+# INITIATIVES (network directory)
+# ============================================
+
+@router.get("/initiatives", response_class=HTMLResponse)
+def admin_initiatives(request: Request, db: Session = Depends(get_db)):
+    """List initiatives in the network directory."""
+    lang = get_lang(request)
+    user, redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+
+    initiatives = get_initiatives(db)
+
+    return templates.TemplateResponse(
+        "admin/initiatives.html",
+        {
+            "request": request,
+            "lang": lang,
+            "user": user,
+            "initiatives": initiatives,
+        }
+    )
+
+
+@router.get("/initiatives/new", response_class=HTMLResponse)
+def admin_initiative_new(request: Request, db: Session = Depends(get_db)):
+    """Form to register a new initiative."""
+    lang = get_lang(request)
+    user, redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+
+    return templates.TemplateResponse(
+        "admin/initiative_new.html",
+        {
+            "request": request,
+            "lang": lang,
+            "user": user,
+            "statuses": InitiativeStatus.choices(),
+        }
+    )
+
+
+@router.post("/initiatives")
+def admin_initiative_create(
+    request: Request,
+    name: str = Form(...),
+    slug: str = Form(None),
+    location: str = Form(None),
+    status: str = Form("coming_soon"),
+    url: str = Form(None),
+    blurb_en: str = Form(...),
+    blurb_de: str = Form(None),
+    blurb_pl: str = Form(None),
+    blurb_uk: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    """Create an initiative row and its external data folder."""
+    user, redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+
+    # Derive slug from name when not supplied.
+    slug = slugify(slug) if slug else slugify(name)
+
+    ok, error_key = validate_slug(db, slug)
+    if not ok:
+        return RedirectResponse(
+            url=f"/admin/initiatives/new?error={error_key}",
+            status_code=303
+        )
+
+    if status not in InitiativeStatus.choices():
+        status = InitiativeStatus.COMING_SOON
+
+    url = (url or "").strip() or None
+
+    initiative = Initiative(
+        slug=slug,
+        name=name.strip(),
+        location=(location or "").strip() or None,
+        status=status,
+        flagship=False,
+        has_page=False,          # dashboard-created → card-only or external URL
+        route=None,
+        url=url,
+        blurb_en=blurb_en.strip(),
+        blurb_de=(blurb_de or "").strip() or None,
+        blurb_pl=(blurb_pl or "").strip() or None,
+        blurb_uk=(blurb_uk or "").strip() or None,
+    )
+    db.add(initiative)
+    db.commit()
+
+    # Create the external per-initiative folder (outside the repo tree).
+    # Never let a filesystem hiccup roll back the committed row.
+    folder_ok = True
+    try:
+        create_data_dir(slug=slug, name=initiative.name, status=status)
+    except Exception as e:
+        folder_ok = False
+        logger.warning("initiative folder creation failed for %s: %s", slug, e)
+
+    success = "created" if folder_ok else "created_no_folder"
+    return RedirectResponse(
+        url=f"/admin/initiatives?success={success}",
+        status_code=303
+    )
+
+
+@router.post("/initiatives/{initiative_id}/delete")
+def admin_initiative_delete(
+    initiative_id: str,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Delete an initiative row. Leaves the external data folder untouched."""
+    user, redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+
+    initiative = db.query(Initiative).filter(Initiative.id == initiative_id).first()
+    if initiative and initiative.flagship:
+        # Never delete the flagship reference implementation from the dashboard.
+        return RedirectResponse(
+            url="/admin/initiatives?error=flagship_protected",
+            status_code=303
+        )
+    if initiative:
+        db.delete(initiative)
+        db.commit()
+
+    return RedirectResponse(
+        url="/admin/initiatives?success=deleted",
         status_code=303
     )

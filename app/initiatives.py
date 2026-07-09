@@ -1,114 +1,113 @@
 """
-Erdpuls — initiatives directory (data source).
+Erdpuls — initiatives directory (data access + registration helpers).
 
-Data-driven backing for the network landing (`/`, templates/network.html).
-Each Erdpuls initiative is a place-based implementation of the open living lab
-protocol; Müllrose is the flagship reference implementation, kept at /muellrose.
+Backs the network landing (`/`, templates/network.html) from the
+`erdpuls_threshold.initiatives` table, and supports the admin
+"register an initiative" flow (/admin/initiatives).
 
-This is the lightweight config/data-module step for open thread #3 (make the
-initiatives directory data-driven). When an `initiatives` table or the
-"start an initiative" onboarding flow (open thread #4) is introduced, this
-module is the single seam to replace — routes read initiatives from here.
-
-Separation of concerns, consistent with the app's i18n pattern:
-  * per-initiative CONTENT (name, location, per-language blurb) lives here;
-  * translated card CHROME (badge words, "View initiative →") stays as inline
-    Jinja conditionals in network.html.
+Deploy-model note: dashboard-created per-initiative folders are written to an
+external, gitignored data directory (settings.initiatives_data_dir, e.g.
+/srv/ubec/erdpuls-data/initiatives/<slug>/), NEVER inside the version-controlled
+repo tree. Curated developer docs stay in documents/initiatives/ in the repo.
+This keeps runtime writes entirely out of git (deploy-by-pull safe).
 """
-from dataclasses import dataclass
-from typing import List, Optional
+import os
+import re
+import shutil
+from pathlib import Path
+from typing import List, Optional, Tuple
+
+from sqlalchemy.orm import Session
+
+from .config import get_settings
+from .models import Initiative
 
 SUPPORTED_LANGS = ("en", "de", "pl", "uk")
-FALLBACK_LANG = "en"
 
-# Recognised statuses (drive badge label + card styling in the template).
-STATUS_ACTIVE = "active"
-STATUS_FORMING = "forming"
-STATUS_COMING_SOON = "coming_soon"
-VALID_STATUSES = (STATUS_ACTIVE, STATUS_FORMING, STATUS_COMING_SOON)
+SLUG_RE = re.compile(r"^[a-z0-9-]+$")
 
+# Slugs that would collide with existing/likely app routes — refuse these so a
+# dashboard-created initiative can never shadow a real page.
+RESERVED_SLUGS = {
+    "muellrose", "about", "model", "offering", "offerings", "library", "admin",
+    "login", "logout", "register", "dashboard", "fund", "privacy", "legal",
+    "set-lang", "static", "health", "create-offering", "api", "contribute",
+    "engage", "participate",
+}
 
-@dataclass(frozen=True)
-class Initiative:
-    """One place-based Erdpuls initiative in the network directory."""
-
-    slug: str                        # stable id; internal route is /{slug} when has_page
-    name: str                        # proper name, not translated (e.g. "Erdpuls Müllrose")
-    status: str                      # one of VALID_STATUSES
-    blurb: dict                      # {lang: str}; "en" required, others optional (fall back to en)
-    location: Optional[str] = None   # place line, language-neutral (e.g. "Müllrose, Brandenburg · …")
-    flagship: bool = False           # marks the reference implementation
-    has_page: bool = True            # True → internal page at /{slug} (or a bespoke route)
-    route: Optional[str] = None      # explicit internal path override (e.g. Müllrose → "/muellrose")
-    url: Optional[str] = None        # external URL, used only when has_page is False
-    languages: tuple = SUPPORTED_LANGS  # langs with reviewed copy (informational)
-
-    @property
-    def href(self) -> Optional[str]:
-        """Card link target, or None for a directory-card-only entry."""
-        if self.has_page:
-            return self.route or f"/{self.slug}"
-        return self.url  # may be None → card renders without a link
-
-    def blurb_for(self, lang: str) -> str:
-        """Blurb in `lang`, falling back to English when that language is absent."""
-        return self.blurb.get(lang) or self.blurb.get(FALLBACK_LANG, "")
+# Path to the docs template inside the repo (relative to the app working dir).
+_TEMPLATE_README = Path("documents/initiatives/_TEMPLATE/README.md")
 
 
-# Ordered directory. Flagship first. Extend/replace as initiatives are added.
-_INITIATIVES: List[Initiative] = [
-    Initiative(
-        slug="muellrose",
-        name="Erdpuls Müllrose",
-        location="Müllrose, Brandenburg · Naturpark Schlaubetal",
-        status=STATUS_ACTIVE,
-        flagship=True,
-        has_page=True,
-        route="/muellrose",
-        blurb={
-            "en": "Center for Sustainability Literacy, Citizen Science & Reciprocal Economics.",
-            "de": "Zentrum für Nachhaltigkeitsbildung, Citizen Science und reziproke Ökonomie.",
-            "pl": "Centrum edukacji na rzecz zrównoważonego rozwoju, nauki obywatelskiej i ekonomii wzajemności.",
-            "uk": "Центр екологічної грамотності, громадянської науки та економіки взаємності.",
-        },
-    ),
-    # --- STAGING / DEMO entry -------------------------------------------------
-    # Clearly-labelled placeholder used to validate the data-driven directory
-    # end to end. Directory-card-only (no route). UK blurb intentionally omitted
-    # to exercise the EN fallback. Operator: replace with the real initiative #2.
-    Initiative(
-        slug="staging-demo",
-        name="Erdpuls — Staging Demo",
-        location=None,
-        status=STATUS_COMING_SOON,
-        flagship=False,
-        has_page=False,
-        url=None,
-        languages=("en", "de", "pl"),
-        blurb={
-            "en": "Staging entry (not a real place) — validates the data-driven "
-                  "initiatives directory end to end. Replace with the next real "
-                  "Erdpuls initiative.",
-            "de": "Staging-Eintrag (kein realer Ort) — validiert das "
-                  "datengetriebene Initiativen-Verzeichnis von Anfang bis Ende. "
-                  "Durch die nächste reale Erdpuls-Initiative ersetzen.",
-            "pl": "Wpis testowy (nie jest to prawdziwe miejsce) — weryfikuje "
-                  "katalog inicjatyw oparty na danych od początku do końca. "
-                  "Zastąp kolejną prawdziwą inicjatywą Erdpuls.",
-            # uk intentionally omitted → falls back to EN
-        },
-    ),
-]
+# ── Reads ─────────────────────────────────────────────────────────────────────
+
+def get_initiatives(db: Session) -> List[Initiative]:
+    """Ordered list of initiatives for the network directory (flagship first)."""
+    return (
+        db.query(Initiative)
+        .order_by(Initiative.sort_order, Initiative.name)
+        .all()
+    )
 
 
-def get_initiatives() -> List[Initiative]:
-    """Return the ordered list of initiatives for the network directory."""
-    return list(_INITIATIVES)
-
-
-def get_initiative(slug: str) -> Optional[Initiative]:
+def get_initiative(db: Session, slug: str) -> Optional[Initiative]:
     """Look up a single initiative by slug (None if not found)."""
-    for init in _INITIATIVES:
-        if init.slug == slug:
-            return init
-    return None
+    return db.query(Initiative).filter(Initiative.slug == slug).first()
+
+
+# ── Slug handling / validation ────────────────────────────────────────────────
+
+def slugify(value: str) -> str:
+    """Derive a url-safe slug from arbitrary text."""
+    value = (value or "").strip().lower()
+    # Common transliterations so 'Müllrose' → 'mullrose', not 'mllrose'.
+    value = (value.replace("ü", "u").replace("ö", "o").replace("ä", "a")
+                  .replace("ß", "ss").replace("ø", "o").replace("å", "a"))
+    value = re.sub(r"[^a-z0-9]+", "-", value)
+    return value.strip("-")
+
+
+def validate_slug(db: Session, slug: str) -> Tuple[bool, Optional[str]]:
+    """Return (ok, error_key). error_key is a template-friendly reason on failure."""
+    if not slug or not SLUG_RE.match(slug):
+        return False, "slug_invalid"
+    if slug in RESERVED_SLUGS:
+        return False, "slug_reserved"
+    if get_initiative(db, slug) is not None:
+        return False, "slug_taken"
+    return True, None
+
+
+# ── External data-dir folder creation (deploy-safe) ───────────────────────────
+
+def initiative_data_path(slug: str) -> Path:
+    """Absolute path to an initiative's external data folder (outside the repo)."""
+    base = Path(get_settings().initiatives_data_dir)
+    # slug is validated (SLUG_RE) before this is called; guard anyway.
+    safe = slugify(slug)
+    return base / safe
+
+
+def create_data_dir(slug: str, name: str, status: str) -> Path:
+    """Create the external per-initiative folder from _TEMPLATE (idempotent).
+
+    Writes to settings.initiatives_data_dir/<slug>/, never into the repo tree.
+    Returns the created directory path. Never raises on a benign existing dir.
+    """
+    target = initiative_data_path(slug)
+    target.mkdir(parents=True, exist_ok=True)
+
+    readme = target / "README.md"
+    if not readme.exists():
+        if _TEMPLATE_README.exists():
+            body = _TEMPLATE_README.read_text(encoding="utf-8")
+            body = (body.replace("<Initiative Name>", name)
+                        .replace("<initiative-slug>", slug)
+                        .replace("<place · region · landscape>", "—")
+                        .replace("<planned / active / flagship>", status))
+        else:
+            body = f"# {name}\n\n**Slug:** `{slug}`\n**Status:** {status}\n\n" \
+                   "Place-specific material for this initiative.\n"
+        readme.write_text(body, encoding="utf-8")
+
+    return target

@@ -60,7 +60,7 @@ def home(request: Request, db: Session = Depends(get_db)):
             "request": request,
             "lang": lang,
             "user": user,
-            "initiatives": get_initiatives(),
+            "initiatives": get_initiatives(db),
         },
     )
     response.set_cookie("lang", lang, max_age=31536000)  # 1 year

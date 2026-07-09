@@ -20,6 +20,10 @@
         <span class="nav-icon">🌱</span>
         {% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}
     </a>
+    <a href="/admin/initiatives" class="admin-nav-item {% if '/admin/initiatives' in request.url.path %}active{% endif %}">
+        <span class="nav-icon">🌍</span>
+        {% if lang == 'de' %}Initiativen{% elif lang == 'pl' %}Inicjatywy{% else %}Initiatives{% endif %}
+    </a>
     <a href="/admin/fund" class="admin-nav-item {% if '/admin/fund' in request.url.path %}active{% endif %}">
         <span class="nav-icon">🏦</span>
         {% if lang == 'de' %}Fonds{% elif lang == 'pl' %}Fundusz{% else %}Fund{% endif %}

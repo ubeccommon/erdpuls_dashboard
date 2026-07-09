@@ -2,7 +2,7 @@
 -- Erdpuls Collective Threshold Model — erdpuls_threshold schema (complete init)
 -- ============================================================================
 -- Reconstructed from the authoritative schema documentation
--- (erdpuls_schema_documentation_20260129_054507.md — 9 tables, 93 columns, 6 FKs,
+-- (erdpuls_schema_documentation_20260129_054507.md — 10 tables (9 + initiatives), 6 FKs,
 -- 22 indexes, 1 trigger, custom functions) combined with the repo's db/scripts for
 -- exact CHECK expressions, function bodies, and seed data.
 --
@@ -14,7 +14,7 @@
 --   3. hours_rates.description_de / description_pl
 --
 -- Canonical fresh-install schema. Run ONCE against an empty erdpuls_threshold schema.
--- Verified against PostgreSQL 16: 9 tables / 93 columns / 6 FKs / 22 indexes / 1 trigger.
+-- Verified against PostgreSQL 16: 10 tables / 6 FKs / 24 indexes / 1 trigger (initiatives added 2026-07).
 -- ============================================================================
 
 CREATE SCHEMA IF NOT EXISTS erdpuls_threshold;
@@ -332,6 +332,48 @@ FROM erdpuls_threshold.contributions c
 JOIN erdpuls_threshold.offerings o ON c.offering_id = o.id
 LEFT JOIN erdpuls_threshold.contribution_contacts cc ON c.id = cc.contribution_id
 ORDER BY engaged_at DESC;
+
+-- ============================================================================
+-- initiatives  (network directory of place-based Erdpuls initiatives)
+--   Added 2026-07 for the data-driven network landing (`/`) + the dashboard
+--   "register an initiative" flow. Standalone migration: db/scripts/010_initiatives.sql
+-- ============================================================================
+CREATE TABLE erdpuls_threshold.initiatives (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    slug        VARCHAR(80)  NOT NULL UNIQUE,
+    name        VARCHAR(255) NOT NULL,
+    location    VARCHAR(255),
+    status      VARCHAR(20)  NOT NULL DEFAULT 'coming_soon',
+    flagship    BOOLEAN      NOT NULL DEFAULT FALSE,
+    has_page    BOOLEAN      NOT NULL DEFAULT FALSE,
+    route       VARCHAR(255),
+    url         VARCHAR(255),
+    blurb_en    TEXT NOT NULL,
+    blurb_de    TEXT,
+    blurb_pl    TEXT,
+    blurb_uk    TEXT,
+    sort_order  INTEGER     NOT NULL DEFAULT 100,
+    created_at  TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT initiatives_status_check CHECK (status IN ('active','forming','coming_soon')),
+    CONSTRAINT initiatives_slug_format  CHECK (slug ~ '^[a-z0-9-]+$'),
+    CONSTRAINT initiatives_name_length  CHECK (char_length(name) >= 2 AND char_length(name) <= 255)
+);
+CREATE INDEX idx_initiatives_status ON erdpuls_threshold.initiatives(status);
+CREATE INDEX idx_initiatives_sort   ON erdpuls_threshold.initiatives(sort_order, name);
+
+INSERT INTO erdpuls_threshold.initiatives
+    (slug, name, location, status, flagship, has_page, route,
+     blurb_en, blurb_de, blurb_pl, blurb_uk, sort_order)
+VALUES
+    ('muellrose', 'Erdpuls Müllrose', 'Müllrose, Brandenburg · Naturpark Schlaubetal',
+     'active', TRUE, TRUE, '/muellrose',
+     'Center for Sustainability Literacy, Citizen Science & Reciprocal Economics.',
+     'Zentrum für Nachhaltigkeitsbildung, Citizen Science und reziproke Ökonomie.',
+     'Centrum edukacji na rzecz zrównoważonego rozwoju, nauki obywatelskiej i ekonomii wzajemności.',
+     'Центр екологічної грамотності, громадянської науки та економіки взаємності.',
+     10)
+ON CONFLICT (slug) DO NOTHING;
 
 -- ============================================================================
 -- Grants to the application role (environment-specific — uncomment & set role)

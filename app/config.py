@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     app_name: str = "Erdpuls Collective Threshold"
     debug: bool = False
     base_url: str = "https://erdpuls.ubec.eu"
+
+    # Path (outside the repo) for dashboard-created per-initiative folders.
+    # Deploy-by-pull safe: never write into the version-controlled tree.
+    initiatives_data_dir: str = "/srv/ubec/erdpuls-data/initiatives"
     
     # Database
     database_url: str = "postgresql://erdpuls:erdpuls@localhost:5432/ubec_erdpuls"

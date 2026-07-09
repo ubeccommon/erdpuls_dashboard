@@ -13,6 +13,12 @@ DEBUG=false
 # Base URL for email links
 BASE_URL=https://erdpuls.ubec.network
 
+# Dashboard-created per-initiative folders (MUST be outside the git repo tree).
+# Create it and make sure the app user (ubec) owns it:
+#   mkdir -p /srv/ubec/erdpuls-data/initiatives
+#   chown -R ubec:ubec /srv/ubec/erdpuls-data
+INITIATIVES_DATA_DIR=/srv/ubec/erdpuls-data/initiatives
+
 # SMTP settings for port 465 (SSL):
 SMTP_HOST=mail.ubec.network
 SMTP_PORT=465

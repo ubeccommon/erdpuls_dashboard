@@ -446,3 +446,56 @@ class HoursRate(Base):
             # Fallback default
             return Decimal(str(hours)) * Decimal('10.0')
         return Decimal(str(hours)) * rate.eur_per_hour
+
+
+# ============================================
+# INITIATIVE MODEL
+# ============================================
+
+class InitiativeStatus:
+    """Constants for initiative status."""
+    ACTIVE = 'active'
+    FORMING = 'forming'
+    COMING_SOON = 'coming_soon'
+
+    @classmethod
+    def choices(cls):
+        return [cls.ACTIVE, cls.FORMING, cls.COMING_SOON]
+
+
+class Initiative(Base):
+    """A place-based Erdpuls initiative shown in the network directory (`/`).
+
+    Backs templates/network.html. Müllrose is the seeded flagship (kept at
+    /muellrose); further initiatives are registered via the admin dashboard.
+    """
+    __tablename__ = 'initiatives'
+    __table_args__ = {'schema': SCHEMA}
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=generate_uuid)
+    slug = Column(String(80), unique=True, nullable=False)
+    name = Column(String(255), nullable=False)
+    location = Column(String(255))
+    status = Column(String(20), nullable=False, default='coming_soon')
+    flagship = Column(Boolean, nullable=False, default=False)
+    has_page = Column(Boolean, nullable=False, default=False)
+    route = Column(String(255))   # internal path override (e.g. /muellrose)
+    url = Column(String(255))     # external URL (used when has_page is False)
+    blurb_en = Column(Text, nullable=False)
+    blurb_de = Column(Text)
+    blurb_pl = Column(Text)
+    blurb_uk = Column(Text)
+    sort_order = Column(Integer, nullable=False, default=100)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+    @property
+    def href(self):
+        """Card link target, or None for a directory-card-only entry."""
+        if self.has_page:
+            return self.route or f"/{self.slug}"
+        return self.url  # may be None → card renders without a link
+
+    def blurb_for(self, lang: str = 'en') -> str:
+        """Blurb in `lang`, falling back to English when that language is absent."""
+        return getattr(self, f"blurb_{lang}", None) or self.blurb_en or ''
