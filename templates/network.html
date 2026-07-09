@@ -64,29 +64,30 @@
   <h2 class="net-section__title">{% if lang == 'de' %}Ortsbezogene Erdpuls-Initiativen{% elif lang == 'pl' %}Inicjatywy Erdpuls oparte na miejscu{% elif lang == 'uk' %}Ініціативи Erdpuls, прив’язані до місця{% else %}Location-based Erdpuls initiatives{% endif %}</h2>
 
   <div class="initiatives">
-    <a class="initiative" href="/muellrose">
-      <span class="initiative__badge">{% if lang == 'de' %}Vorzeige · Aktiv{% elif lang == 'pl' %}Flagowa · Aktywna{% elif lang == 'uk' %}Флагман · Активна{% else %}Flagship · Active{% endif %}</span>
-      <div class="initiative__name">Erdpuls Müllrose</div>
-      <div class="initiative__loc">Müllrose, Brandenburg · Naturpark Schlaubetal</div>
-      <div class="initiative__desc">
-        {% if lang == 'de' %}Zentrum für Nachhaltigkeitsbildung, Citizen Science und reziproke Ökonomie.
-        {% elif lang == 'pl' %}Centrum edukacji na rzecz zrównoważonego rozwoju, nauki obywatelskiej i ekonomii wzajemności.
-        {% elif lang == 'uk' %}Центр екологічної грамотності, громадянської науки та економіки взаємності.
-        {% else %}Center for Sustainability Literacy, Citizen Science & Reciprocal Economics.{% endif %}
-      </div>
-      <div class="initiative__go">{% if lang == 'de' %}Initiative ansehen →{% elif lang == 'pl' %}Zobacz inicjatywę →{% elif lang == 'uk' %}Переглянути ініціативу →{% else %}View initiative →{% endif %}</div>
-    </a>
-
-    <div class="initiative initiative--soon">
-      <span class="initiative__badge">{% if lang == 'de' %}Bald{% elif lang == 'pl' %}Wkrótce{% elif lang == 'uk' %}Незабаром{% else %}Coming soon{% endif %}</span>
-      <div class="initiative__name">{% if lang == 'de' %}Deine Bioregion?{% elif lang == 'pl' %}Twój bioregion?{% elif lang == 'uk' %}Твій біорегіон?{% else %}Your bioregion?{% endif %}</div>
-      <div class="initiative__desc">
-        {% if lang == 'de' %}Neue Erdpuls-Initiativen entstehen. Jede Gemeinschaft kann das Protokoll auf ihrem eigenen Grund umsetzen.
-        {% elif lang == 'pl' %}Powstają nowe inicjatywy Erdpuls. Każda społeczność może wdrożyć protokół na własnej ziemi.
-        {% elif lang == 'uk' %}Виникають нові ініціативи Erdpuls. Будь-яка громада може впровадити протокол на власній землі.
-        {% else %}New Erdpuls initiatives are forming. Any community can run the protocol on its own ground.{% endif %}
-      </div>
-    </div>
+    {% for init in initiatives %}
+    {% set is_soon = (init.status == 'coming_soon') %}
+    {% if init.href %}
+    <a class="initiative{% if is_soon %} initiative--soon{% endif %}" href="{{ init.href }}">
+    {% else %}
+    <div class="initiative{% if is_soon %} initiative--soon{% endif %}">
+    {% endif %}
+      <span class="initiative__badge">
+        {%- if init.flagship and init.status == 'active' -%}
+          {% if lang == 'de' %}Vorzeige · Aktiv{% elif lang == 'pl' %}Flagowa · Aktywna{% elif lang == 'uk' %}Флагман · Активна{% else %}Flagship · Active{% endif %}
+        {%- elif init.status == 'active' -%}
+          {% if lang == 'de' %}Aktiv{% elif lang == 'pl' %}Aktywna{% elif lang == 'uk' %}Активна{% else %}Active{% endif %}
+        {%- elif init.status == 'forming' -%}
+          {% if lang == 'de' %}In Entstehung{% elif lang == 'pl' %}W tworzeniu{% elif lang == 'uk' %}Формується{% else %}Forming{% endif %}
+        {%- else -%}
+          {% if lang == 'de' %}Bald{% elif lang == 'pl' %}Wkrótce{% elif lang == 'uk' %}Незабаром{% else %}Coming soon{% endif %}
+        {%- endif -%}
+      </span>
+      <div class="initiative__name">{{ init.name }}</div>
+      {% if init.location %}<div class="initiative__loc">{{ init.location }}</div>{% endif %}
+      <div class="initiative__desc">{{ init.blurb_for(lang) }}</div>
+      {% if init.href %}<div class="initiative__go">{% if lang == 'de' %}Initiative ansehen →{% elif lang == 'pl' %}Zobacz inicjatywę →{% elif lang == 'uk' %}Переглянути ініціативу →{% else %}View initiative →{% endif %}</div>{% endif %}
+    {% if init.href %}</a>{% else %}</div>{% endif %}
+    {% endfor %}
   </div>
 </section>
 

@@ -24,6 +24,7 @@ from ..models import (
     TokenRate, HoursRate, EngagementType, RegistrationType
 )
 from ..email import send_contribution_confirmation
+from ..initiatives import get_initiatives
 from ..services.oer_library import get_collections, get_resource_detail, _COLLECTION_LABELS
 
 router = APIRouter()
@@ -55,7 +56,12 @@ def home(request: Request, db: Session = Depends(get_db)):
     user = get_current_user_optional(request, db)
     response = templates.TemplateResponse(
         "network.html",
-        {"request": request, "lang": lang, "user": user},
+        {
+            "request": request,
+            "lang": lang,
+            "user": user,
+            "initiatives": get_initiatives(),
+        },
     )
     response.set_cookie("lang", lang, max_age=31536000)  # 1 year
     return response
