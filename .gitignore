@@ -42,3 +42,11 @@ npm-debug.log
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Pre-consolidation backups (open thread #8 — remove from disk once satisfied)
+*.pre-consolidation
+
+# Obsolete pre-app static landing pages (the app now owns "/" via network.html;
+# static/ holds only css/ and js/). Prevents `git add -A` from re-grabbing them.
+/static/index.html
+/static/*/index.html
