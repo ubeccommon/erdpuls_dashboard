@@ -486,6 +486,11 @@ class Initiative(Base):
     blurb_pl = Column(Text)
     blurb_uk = Column(Text)
     sort_order = Column(Integer, nullable=False, default=100)
+    # Propose → review → publish: public proposals start unpublished and only
+    # appear on `/` after an admin approves. submitter_* is review context.
+    is_published = Column(Boolean, nullable=False, default=False)
+    submitter_name = Column(String(255))
+    submitter_email = Column(String(255))
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow)
 

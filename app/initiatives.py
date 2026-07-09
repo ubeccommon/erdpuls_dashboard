@@ -42,9 +42,19 @@ _TEMPLATE_README = Path("documents/initiatives/_TEMPLATE/README.md")
 # ── Reads ─────────────────────────────────────────────────────────────────────
 
 def get_initiatives(db: Session) -> List[Initiative]:
-    """Ordered list of initiatives for the network directory (flagship first)."""
+    """All initiatives, published or pending (admin review queue). Flagship first."""
     return (
         db.query(Initiative)
+        .order_by(Initiative.sort_order, Initiative.name)
+        .all()
+    )
+
+
+def get_published_initiatives(db: Session) -> List[Initiative]:
+    """Published initiatives only — the public network directory (`/`)."""
+    return (
+        db.query(Initiative)
+        .filter(Initiative.is_published.is_(True))
         .order_by(Initiative.sort_order, Initiative.name)
         .all()
     )

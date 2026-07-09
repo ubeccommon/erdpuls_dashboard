@@ -16,11 +16,9 @@ from sqlalchemy import func, desc
 from ..database import get_db
 from ..models import (
     User, Offering, Registration, Contribution, ContributionContact,
-    RegenerationFund, TokenRate, HoursRate, Initiative, InitiativeStatus
+    RegenerationFund, TokenRate, HoursRate, Initiative
 )
-from ..initiatives import (
-    get_initiatives, slugify, validate_slug, create_data_dir
-)
+from ..initiatives import get_initiatives, create_data_dir
 from ..auth import get_current_user_optional
 
 logger = logging.getLogger(__name__)
@@ -762,13 +760,18 @@ def admin_fund_add(
 
 @router.get("/initiatives", response_class=HTMLResponse)
 def admin_initiatives(request: Request, db: Session = Depends(get_db)):
-    """List initiatives in the network directory."""
+    """Review queue: pending proposals to approve/reject + published initiatives.
+
+    Initiatives are authored publicly at /initiatives/start; admins review here.
+    """
     lang = get_lang(request)
     user, redirect = require_admin(request, db)
     if redirect:
         return redirect
 
-    initiatives = get_initiatives(db)
+    all_inits = get_initiatives(db)
+    pending = [i for i in all_inits if not i.is_published]
+    published = [i for i in all_inits if i.is_published]
 
     return templates.TemplateResponse(
         "admin/initiatives.html",
@@ -776,95 +779,63 @@ def admin_initiatives(request: Request, db: Session = Depends(get_db)):
             "request": request,
             "lang": lang,
             "user": user,
-            "initiatives": initiatives,
+            "pending": pending,
+            "published": published,
         }
     )
 
 
-@router.get("/initiatives/new", response_class=HTMLResponse)
-def admin_initiative_new(request: Request, db: Session = Depends(get_db)):
-    """Form to register a new initiative."""
-    lang = get_lang(request)
-    user, redirect = require_admin(request, db)
-    if redirect:
-        return redirect
-
-    return templates.TemplateResponse(
-        "admin/initiative_new.html",
-        {
-            "request": request,
-            "lang": lang,
-            "user": user,
-            "statuses": InitiativeStatus.choices(),
-        }
-    )
-
-
-@router.post("/initiatives")
-def admin_initiative_create(
+@router.post("/initiatives/{initiative_id}/publish")
+def admin_initiative_publish(
+    initiative_id: str,
     request: Request,
-    name: str = Form(...),
-    slug: str = Form(None),
-    location: str = Form(None),
-    status: str = Form("coming_soon"),
-    url: str = Form(None),
-    blurb_en: str = Form(...),
-    blurb_de: str = Form(None),
-    blurb_pl: str = Form(None),
-    blurb_uk: str = Form(None),
     db: Session = Depends(get_db)
 ):
-    """Create an initiative row and its external data folder."""
+    """Approve a proposal: publish it (shows on `/`) and create its data folder."""
     user, redirect = require_admin(request, db)
     if redirect:
         return redirect
 
-    # Derive slug from name when not supplied.
-    slug = slugify(slug) if slug else slugify(name)
+    initiative = db.query(Initiative).filter(Initiative.id == initiative_id).first()
+    if not initiative:
+        return RedirectResponse(url="/admin/initiatives?error=not_found", status_code=303)
 
-    ok, error_key = validate_slug(db, slug)
-    if not ok:
-        return RedirectResponse(
-            url=f"/admin/initiatives/new?error={error_key}",
-            status_code=303
-        )
-
-    if status not in InitiativeStatus.choices():
-        status = InitiativeStatus.COMING_SOON
-
-    url = (url or "").strip() or None
-
-    initiative = Initiative(
-        slug=slug,
-        name=name.strip(),
-        location=(location or "").strip() or None,
-        status=status,
-        flagship=False,
-        has_page=False,          # dashboard-created → card-only or external URL
-        route=None,
-        url=url,
-        blurb_en=blurb_en.strip(),
-        blurb_de=(blurb_de or "").strip() or None,
-        blurb_pl=(blurb_pl or "").strip() or None,
-        blurb_uk=(blurb_uk or "").strip() or None,
-    )
-    db.add(initiative)
+    initiative.is_published = True
     db.commit()
 
-    # Create the external per-initiative folder (outside the repo tree).
-    # Never let a filesystem hiccup roll back the committed row.
+    # Create the external per-initiative folder (outside the repo tree) on
+    # approval — not at proposal time — so rejected/spam proposals never write
+    # to the filesystem. A folder hiccup must not undo the publish.
     folder_ok = True
     try:
-        create_data_dir(slug=slug, name=initiative.name, status=status)
+        create_data_dir(slug=initiative.slug, name=initiative.name, status=initiative.status)
     except Exception as e:
         folder_ok = False
-        logger.warning("initiative folder creation failed for %s: %s", slug, e)
+        logger.warning("initiative folder creation failed for %s: %s", initiative.slug, e)
 
-    success = "created" if folder_ok else "created_no_folder"
-    return RedirectResponse(
-        url=f"/admin/initiatives?success={success}",
-        status_code=303
-    )
+    success = "published" if folder_ok else "published_no_folder"
+    return RedirectResponse(url=f"/admin/initiatives?success={success}", status_code=303)
+
+
+@router.post("/initiatives/{initiative_id}/unpublish")
+def admin_initiative_unpublish(
+    initiative_id: str,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Take a published initiative back off the public directory (keeps the row)."""
+    user, redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+
+    initiative = db.query(Initiative).filter(Initiative.id == initiative_id).first()
+    if initiative and initiative.flagship:
+        # Never unpublish the flagship reference implementation from the UI.
+        return RedirectResponse(url="/admin/initiatives?error=flagship_protected", status_code=303)
+    if initiative:
+        initiative.is_published = False
+        db.commit()
+    return RedirectResponse(url="/admin/initiatives?success=unpublished", status_code=303)
 
 
 @router.post("/initiatives/{initiative_id}/delete")

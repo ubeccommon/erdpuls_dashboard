@@ -353,21 +353,27 @@ CREATE TABLE erdpuls_threshold.initiatives (
     blurb_pl    TEXT,
     blurb_uk    TEXT,
     sort_order  INTEGER     NOT NULL DEFAULT 100,
+    -- Propose → review → publish (011_initiatives_review.sql): public proposals
+    -- are created unpublished and only appear on `/` once an admin approves.
+    is_published    BOOLEAN NOT NULL DEFAULT FALSE,
+    submitter_name  VARCHAR(255),
+    submitter_email VARCHAR(255),
     created_at  TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT initiatives_status_check CHECK (status IN ('active','forming','coming_soon')),
     CONSTRAINT initiatives_slug_format  CHECK (slug ~ '^[a-z0-9-]+$'),
     CONSTRAINT initiatives_name_length  CHECK (char_length(name) >= 2 AND char_length(name) <= 255)
 );
-CREATE INDEX idx_initiatives_status ON erdpuls_threshold.initiatives(status);
-CREATE INDEX idx_initiatives_sort   ON erdpuls_threshold.initiatives(sort_order, name);
+CREATE INDEX idx_initiatives_status    ON erdpuls_threshold.initiatives(status);
+CREATE INDEX idx_initiatives_sort      ON erdpuls_threshold.initiatives(sort_order, name);
+CREATE INDEX idx_initiatives_published ON erdpuls_threshold.initiatives(is_published, sort_order, name);
 
 INSERT INTO erdpuls_threshold.initiatives
-    (slug, name, location, status, flagship, has_page, route,
+    (slug, name, location, status, flagship, has_page, route, is_published,
      blurb_en, blurb_de, blurb_pl, blurb_uk, sort_order)
 VALUES
     ('muellrose', 'Erdpuls Müllrose', 'Müllrose, Brandenburg · Naturpark Schlaubetal',
-     'active', TRUE, TRUE, '/muellrose',
+     'active', TRUE, TRUE, '/muellrose', TRUE,
      'Center for Sustainability Literacy, Citizen Science & Reciprocal Economics.',
      'Zentrum für Nachhaltigkeitsbildung, Citizen Science und reziproke Ökonomie.',
      'Centrum edukacji na rzecz zrównoważonego rozwoju, nauki obywatelskiej i ekonomii wzajemności.',

@@ -21,10 +21,11 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import (
     Offering, Registration, Contribution, ContributionContact,
-    TokenRate, HoursRate, EngagementType, RegistrationType
+    TokenRate, HoursRate, EngagementType, RegistrationType,
+    Initiative, InitiativeStatus
 )
 from ..email import send_contribution_confirmation
-from ..initiatives import get_initiatives
+from ..initiatives import get_published_initiatives, slugify, validate_slug
 from ..services.oer_library import get_collections, get_resource_detail, _COLLECTION_LABELS
 
 router = APIRouter()
@@ -60,7 +61,7 @@ def home(request: Request, db: Session = Depends(get_db)):
             "request": request,
             "lang": lang,
             "user": user,
-            "initiatives": get_initiatives(db),
+            "initiatives": get_published_initiatives(db),
         },
     )
     response.set_cookie("lang", lang, max_age=31536000)  # 1 year
@@ -99,6 +100,80 @@ def muellrose(request: Request, db: Session = Depends(get_db)):
     )
     response.set_cookie("lang", lang, max_age=31536000)  # 1 year
     return response
+
+
+# ============================================
+# START AN INITIATIVE (public propose → review → publish)
+# ============================================
+
+@router.get("/initiatives/start", response_class=HTMLResponse)
+def initiative_start(request: Request, db: Session = Depends(get_db)):
+    """Public form: propose a new Erdpuls initiative (created unpublished)."""
+    lang = get_lang(request)
+    user = get_current_user_optional(request, db)
+    return templates.TemplateResponse(
+        "initiatives_start.html",
+        {"request": request, "lang": lang, "user": user},
+    )
+
+
+@router.post("/initiatives/start")
+def initiative_start_submit(
+    request: Request,
+    name: str = Form(...),
+    location: str = Form(None),
+    status: str = Form("coming_soon"),
+    url: str = Form(None),
+    blurb_en: str = Form(...),
+    blurb_de: str = Form(None),
+    blurb_pl: str = Form(None),
+    blurb_uk: str = Form(None),
+    submitter_name: str = Form(None),
+    submitter_email: str = Form(None),
+    website: str = Form(None),   # honeypot — real users never fill this
+    db: Session = Depends(get_db),
+):
+    """Create an UNPUBLISHED proposal. No auth. No filesystem write (that
+    happens on admin approval). Appears on `/` only after review."""
+    lang = get_lang(request)
+
+    # Honeypot: bots fill hidden fields. Pretend success, persist nothing.
+    if website:
+        return RedirectResponse(url="/initiatives/start?success=proposed", status_code=303)
+
+    if not name or not name.strip() or not blurb_en or not blurb_en.strip():
+        return RedirectResponse(url="/initiatives/start?error=missing_fields", status_code=303)
+
+    slug = slugify(name)
+    ok, error_key = validate_slug(db, slug)
+    if not ok:
+        return RedirectResponse(url=f"/initiatives/start?error={error_key}", status_code=303)
+
+    # A proposal can never self-declare 'active'; only forming/coming_soon.
+    if status not in (InitiativeStatus.FORMING, InitiativeStatus.COMING_SOON):
+        status = InitiativeStatus.COMING_SOON
+
+    proposal = Initiative(
+        slug=slug,
+        name=name.strip(),
+        location=(location or "").strip() or None,
+        status=status,
+        flagship=False,
+        has_page=False,
+        route=None,
+        url=(url or "").strip() or None,
+        blurb_en=blurb_en.strip(),
+        blurb_de=(blurb_de or "").strip() or None,
+        blurb_pl=(blurb_pl or "").strip() or None,
+        blurb_uk=(blurb_uk or "").strip() or None,
+        submitter_name=(submitter_name or "").strip() or None,
+        submitter_email=(submitter_email or "").strip() or None,
+        is_published=False,   # pending review
+    )
+    db.add(proposal)
+    db.commit()
+
+    return RedirectResponse(url="/initiatives/start?success=proposed", status_code=303)
 
 
 @router.get("/about", response_class=HTMLResponse)

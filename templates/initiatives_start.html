@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{% if lang == 'de' %}Initiative starten{% elif lang == 'pl' %}Rozpocznij inicjatywę{% elif lang == 'uk' %}Започаткувати ініціативу{% else %}Start an initiative{% endif %}{% endblock %}
+
+{% block head %}
+<style>
+  .start-hero { padding: 3rem 1.5rem 1.5rem; text-align: center; background:
+    linear-gradient(160deg, var(--color-commons-light) 0%, var(--color-peach-light) 100%); }
+  .start-hero h1 { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--color-bark); margin-bottom: 0.8rem; }
+  .start-hero p { max-width: 620px; margin: 0 auto; color: var(--color-clay); line-height: 1.7; }
+  .start-wrap { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .start-form { display: grid; gap: 1.25rem; }
+  .start-form label { display: block; font-family: var(--font-body); font-weight: 600; color: var(--color-bark); margin-bottom: 0.35rem; font-size: 0.95rem; }
+  .start-form .hint { font-weight: 400; color: var(--color-clay); font-size: 0.82rem; }
+  .start-form input[type=text], .start-form input[type=email], .start-form input[type=url],
+  .start-form select, .start-form textarea {
+    width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--color-sand); border-radius: 8px;
+    font-family: var(--font-body); font-size: 0.95rem; background: var(--color-parchment); color: var(--color-bark); }
+  .start-form textarea { min-height: 3.5rem; resize: vertical; }
+  .start-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 620px) { .start-grid2 { grid-template-columns: 1fr; } }
+  .start-note { background: var(--color-linen); border: 1px solid var(--color-sand); border-radius: 10px;
+    padding: 0.9rem 1.1rem; font-size: 0.85rem; color: var(--color-clay); line-height: 1.6; }
+  .start-hp { position: absolute; left: -5000px; width: 1px; height: 1px; overflow: hidden; }
+  .start-alert { max-width: 720px; margin: 1.25rem auto 0; padding: 0.9rem 1.1rem; border-radius: 10px; font-size: 0.95rem; }
+  .start-alert--ok { background: var(--color-commons-light); border: 1px solid var(--color-commons); color: var(--color-commons-dark); }
+  .start-alert--err { background: var(--color-peach-light); border: 1px solid var(--color-peach-deep); color: var(--color-humus); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="start-hero">
+  <h1>{% if lang == 'de' %}Bringe Erdpuls auf deinen Grund{% elif lang == 'pl' %}Wprowadź Erdpuls na swoją ziemię{% elif lang == 'uk' %}Принесіть Erdpuls на свою землю{% else %}Bring Erdpuls to your ground{% endif %}</h1>
+  <p>{% if lang == 'de' %}Schlage eine ortsbezogene Erdpuls-Initiative vor. Vorschläge werden geprüft und erscheinen nach Freigabe im Netzwerk-Verzeichnis.{% elif lang == 'pl' %}Zaproponuj inicjatywę Erdpuls opartą na miejscu. Propozycje są weryfikowane i po zatwierdzeniu pojawiają się w katalogu sieci.{% elif lang == 'uk' %}Запропонуйте ініціативу Erdpuls, прив’язану до місця. Пропозиції проходять перевірку і після схвалення з’являються в каталозі мережі.{% else %}Propose a place-based Erdpuls initiative. Proposals are reviewed and appear in the network directory once approved.{% endif %}</p>
+</section>
+
+{% set s = request.query_params.get('success') %}
+{% if s == 'proposed' %}
+<div class="start-alert start-alert--ok">
+  {% if lang == 'de' %}Danke! Dein Vorschlag wurde eingereicht und wird geprüft.{% elif lang == 'pl' %}Dziękujemy! Twoja propozycja została zgłoszona i czeka na weryfikację.{% elif lang == 'uk' %}Дякуємо! Вашу пропозицію надіслано на розгляд.{% else %}Thank you! Your proposal has been submitted and is awaiting review.{% endif %}
+</div>
+{% endif %}
+{% set e = request.query_params.get('error') %}
+{% if e %}
+<div class="start-alert start-alert--err">
+  {% if e == 'missing_fields' %}{% if lang == 'de' %}Bitte gib mindestens Name und eine englische Beschreibung an.{% elif lang == 'pl' %}Podaj przynajmniej nazwę i opis w języku angielskim.{% elif lang == 'uk' %}Вкажіть принаймні назву та опис англійською.{% else %}Please provide at least a name and an English description.{% endif %}
+  {% elif e == 'slug_taken' %}{% if lang == 'de' %}Es gibt bereits eine Initiative mit diesem Namen.{% elif lang == 'pl' %}Inicjatywa o tej nazwie już istnieje.{% elif lang == 'uk' %}Ініціатива з такою назвою вже існує.{% else %}An initiative with this name already exists.{% endif %}
+  {% elif e == 'slug_reserved' %}{% if lang == 'de' %}Dieser Name ist reserviert. Bitte wähle einen anderen.{% elif lang == 'pl' %}Ta nazwa jest zarezerwowana. Wybierz inną.{% elif lang == 'uk' %}Ця назва зарезервована. Оберіть іншу.{% else %}That name is reserved. Please choose another.{% endif %}
+  {% else %}{% if lang == 'de' %}Der Name ergibt keine gültige Kennung. Bitte anpassen.{% elif lang == 'pl' %}Nazwa nie daje prawidłowego identyfikatora. Zmień ją.{% elif lang == 'uk' %}Назва не утворює дійсний ідентифікатор. Змініть її.{% else %}That name doesn't form a valid identifier. Please adjust it.{% endif %}{% endif %}
+</div>
+{% endif %}
+
+<div class="start-wrap">
+  <form class="start-form" action="/initiatives/start" method="post">
+    <div>
+      <label for="name">{% if lang == 'de' %}Name der Initiative{% elif lang == 'pl' %}Nazwa inicjatywy{% elif lang == 'uk' %}Назва ініціативи{% else %}Initiative name{% endif %} *</label>
+      <input type="text" id="name" name="name" required maxlength="255" placeholder="Erdpuls …">
+    </div>
+
+    <div class="start-grid2">
+      <div>
+        <label for="location">{% if lang == 'de' %}Ort / Region{% elif lang == 'pl' %}Miejsce / region{% elif lang == 'uk' %}Місце / регіон{% else %}Location / region{% endif %}</label>
+        <input type="text" id="location" name="location" maxlength="255">
+      </div>
+      <div>
+        <label for="status">{% if lang == 'de' %}Stand{% elif lang == 'pl' %}Etap{% elif lang == 'uk' %}Стан{% else %}Stage{% endif %}</label>
+        <select id="status" name="status">
+          <option value="coming_soon">{% if lang == 'de' %}Bald{% elif lang == 'pl' %}Wkrótce{% elif lang == 'uk' %}Незабаром{% else %}Coming soon{% endif %}</option>
+          <option value="forming">{% if lang == 'de' %}In Entstehung{% elif lang == 'pl' %}W tworzeniu{% elif lang == 'uk' %}Формується{% else %}Forming{% endif %}</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label for="url">{% if lang == 'de' %}Website (optional){% elif lang == 'pl' %}Strona (opcjonalnie){% elif lang == 'uk' %}Вебсайт (необов’язково){% else %}Website (optional){% endif %}</label>
+      <input type="url" id="url" name="url" placeholder="https://…">
+    </div>
+
+    <div>
+      <label for="blurb_en">{% if lang == 'de' %}Beschreibung — Englisch{% elif lang == 'pl' %}Opis — angielski{% elif lang == 'uk' %}Опис — англійською{% else %}Description — English{% endif %} *
+        <span class="hint">{% if lang == 'de' %}(erforderlich; andere Sprachen weichen darauf zurück){% elif lang == 'pl' %}(wymagane; inne języki korzystają z tego jako rezerwy){% elif lang == 'uk' %}(обов’язково; інші мови беруться звідси за замовчуванням){% else %}(required; other languages fall back to this){% endif %}</span>
+      </label>
+      <textarea id="blurb_en" name="blurb_en" required></textarea>
+    </div>
+    <div class="start-grid2">
+      <div><label for="blurb_de">Deutsch</label><textarea id="blurb_de" name="blurb_de"></textarea></div>
+      <div><label for="blurb_pl">Polski</label><textarea id="blurb_pl" name="blurb_pl"></textarea></div>
+    </div>
+    <div>
+      <label for="blurb_uk">Українська</label><textarea id="blurb_uk" name="blurb_uk"></textarea>
+    </div>
+
+    <div class="start-grid2">
+      <div>
+        <label for="submitter_name">{% if lang == 'de' %}Dein Name (optional){% elif lang == 'pl' %}Twoje imię (opcjonalnie){% elif lang == 'uk' %}Ваше ім’я (необов’язково){% else %}Your name (optional){% endif %}</label>
+        <input type="text" id="submitter_name" name="submitter_name" maxlength="255">
+      </div>
+      <div>
+        <label for="submitter_email">{% if lang == 'de' %}Deine E-Mail (optional){% elif lang == 'pl' %}Twój e-mail (opcjonalnie){% elif lang == 'uk' %}Ваша електронна пошта (необов’язково){% else %}Your email (optional){% endif %}</label>
+        <input type="email" id="submitter_email" name="submitter_email" maxlength="255">
+      </div>
+    </div>
+
+    <!-- honeypot: hidden from humans; bots that fill it are dropped -->
+    <div class="start-hp" aria-hidden="true">
+      <label for="website">Website</label>
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+    </div>
+
+    <div class="start-note">
+      {% if lang == 'de' %}Nach dem Absenden wird dein Vorschlag von einer Betreuer:in geprüft. Erst nach Freigabe erscheint die Initiative unter „/“. Angegebene Kontaktdaten werden nur zur Rückfrage genutzt.{% elif lang == 'pl' %}Po wysłaniu propozycja zostanie sprawdzona przez opiekuna. Inicjatywa pojawi się na „/” dopiero po zatwierdzeniu. Podane dane kontaktowe służą wyłącznie do kontaktu zwrotnego.{% elif lang == 'uk' %}Після надсилання пропозицію перегляне доглядач. Ініціатива з’явиться на «/» лише після схвалення. Контактні дані використовуються лише для зворотного зв’язку.{% else %}After you submit, a steward reviews your proposal. It appears on “/” only once approved. Any contact details are used solely to follow up with you.{% endif %}
+    </div>
+
+    <div>
+      <button type="submit" class="btn btn-primary">
+        {% if lang == 'de' %}Vorschlag einreichen{% elif lang == 'pl' %}Wyślij propozycję{% elif lang == 'uk' %}Надіслати пропозицію{% else %}Submit proposal{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

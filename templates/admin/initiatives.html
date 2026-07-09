@@ -10,40 +10,101 @@
 
         <header class="admin-header">
             <div class="admin-header-content">
-                <h1>{% if lang == 'de' %}Initiativen{% elif lang == 'pl' %}Inicjatywy{% else %}Initiatives{% endif %}</h1>
+                <h1>{% if lang == 'de' %}Initiativen — Prüfung{% elif lang == 'pl' %}Inicjatywy — moderacja{% else %}Initiatives — review{% endif %}</h1>
                 <p class="admin-subtitle">
-                    {% if lang == 'de' %}Ortsbezogene Erdpuls-Initiativen im Netzwerk-Verzeichnis (/){% elif lang == 'pl' %}Inicjatywy Erdpuls oparte na miejscu w katalogu sieci (/){% else %}Place-based Erdpuls initiatives in the network directory (/){% endif %}
+                    {% if lang == 'de' %}Vorschläge werden öffentlich unter /initiatives/start eingereicht und erscheinen erst nach Freigabe auf /{% elif lang == 'pl' %}Propozycje są zgłaszane publicznie w /initiatives/start i pojawiają się na / dopiero po zatwierdzeniu{% else %}Proposals are submitted publicly at /initiatives/start and appear on / only after approval{% endif %}
                 </p>
             </div>
         </header>
 
         {% include "admin/_nav.html" %}
 
-        {% if request.query_params.get('success') %}
+        {% set s = request.query_params.get('success') %}
+        {% if s %}
         <div class="alert alert-success">
-            {% if request.query_params.get('success') == 'created' %}
-                {% if lang == 'de' %}Initiative erstellt (Ordner angelegt){% elif lang == 'pl' %}Inicjatywa utworzona (folder założony){% else %}Initiative created (folder created){% endif %}
-            {% elif request.query_params.get('success') == 'created_no_folder' %}
-                {% if lang == 'de' %}Initiative erstellt — Datenordner konnte NICHT angelegt werden (Log prüfen){% elif lang == 'pl' %}Inicjatywa utworzona — NIE udało się utworzyć folderu danych (sprawdź log){% else %}Initiative created — data folder could NOT be created (check the log){% endif %}
-            {% elif request.query_params.get('success') == 'deleted' %}
+            {% if s == 'published' %}
+                {% if lang == 'de' %}Initiative freigegeben (Ordner angelegt){% elif lang == 'pl' %}Inicjatywa zatwierdzona (folder założony){% else %}Initiative approved & published (folder created){% endif %}
+            {% elif s == 'published_no_folder' %}
+                {% if lang == 'de' %}Freigegeben — Datenordner konnte NICHT angelegt werden (Log prüfen){% elif lang == 'pl' %}Zatwierdzono — NIE udało się utworzyć folderu danych (sprawdź log){% else %}Published — data folder could NOT be created (check the log){% endif %}
+            {% elif s == 'unpublished' %}
+                {% if lang == 'de' %}Initiative zurückgezogen{% elif lang == 'pl' %}Inicjatywa wycofana{% else %}Initiative unpublished{% endif %}
+            {% elif s == 'deleted' %}
                 {% if lang == 'de' %}Initiative gelöscht{% elif lang == 'pl' %}Inicjatywa usunięta{% else %}Initiative deleted{% endif %}
             {% endif %}
         </div>
         {% endif %}
-        {% if request.query_params.get('error') %}
+        {% set e = request.query_params.get('error') %}
+        {% if e %}
         <div class="alert alert-error">
-            {% if request.query_params.get('error') == 'flagship_protected' %}
-                {% if lang == 'de' %}Die Vorzeige-Initiative kann nicht gelöscht werden.{% elif lang == 'pl' %}Nie można usunąć inicjatywy flagowej.{% else %}The flagship initiative cannot be deleted.{% endif %}
+            {% if e == 'flagship_protected' %}
+                {% if lang == 'de' %}Die Vorzeige-Initiative kann nicht geändert werden.{% elif lang == 'pl' %}Nie można zmienić inicjatywy flagowej.{% else %}The flagship initiative cannot be changed.{% endif %}
+            {% elif e == 'not_found' %}
+                {% if lang == 'de' %}Initiative nicht gefunden.{% elif lang == 'pl' %}Nie znaleziono inicjatywy.{% else %}Initiative not found.{% endif %}
             {% endif %}
         </div>
         {% endif %}
 
+        <!-- PENDING REVIEW -->
         <div class="admin-card">
-            <div class="admin-card-header" style="display:flex;justify-content:space-between;align-items:center;">
-                <h2>{% if lang == 'de' %}Alle Initiativen{% elif lang == 'pl' %}Wszystkie inicjatywy{% else %}All initiatives{% endif %}</h2>
-                <a href="/admin/initiatives/new" class="btn btn-primary btn-small">
-                    + {% if lang == 'de' %}Neue Initiative{% elif lang == 'pl' %}Nowa inicjatywa{% else %}New initiative{% endif %}
-                </a>
+            <div class="admin-card-header">
+                <h2>
+                    {% if lang == 'de' %}Zur Prüfung{% elif lang == 'pl' %}Do moderacji{% else %}Pending review{% endif %}
+                    ({{ pending|length }})
+                </h2>
+            </div>
+            <div class="admin-card-content">
+                {% if pending %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>{% if lang == 'de' %}Name{% elif lang == 'pl' %}Nazwa{% else %}Name{% endif %}</th>
+                            <th>Slug</th>
+                            <th>{% if lang == 'de' %}Ort{% elif lang == 'pl' %}Miejsce{% else %}Location{% endif %}</th>
+                            <th>Status</th>
+                            <th>{% if lang == 'de' %}Eingereicht von{% elif lang == 'pl' %}Zgłoszone przez{% else %}Submitted by{% endif %}</th>
+                            <th>{% if lang == 'de' %}Beschreibung (EN){% elif lang == 'pl' %}Opis (EN){% else %}Blurb (EN){% endif %}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for init in pending %}
+                        <tr>
+                            <td>{{ init.name }}</td>
+                            <td><code>{{ init.slug }}</code></td>
+                            <td>{{ init.location or '—' }}</td>
+                            <td>{{ init.status }}</td>
+                            <td>
+                                {{ init.submitter_name or '—' }}
+                                {% if init.submitter_email %}<br><small>{{ init.submitter_email }}</small>{% endif %}
+                            </td>
+                            <td><small>{{ init.blurb_en }}</small></td>
+                            <td style="white-space:nowrap;">
+                                <form action="/admin/initiatives/{{ init.id }}/publish" method="post" style="display:inline;margin:0;">
+                                    <button type="submit" class="btn btn-small btn-primary">
+                                        {% if lang == 'de' %}Freigeben{% elif lang == 'pl' %}Zatwierdź{% else %}Approve{% endif %}
+                                    </button>
+                                </form>
+                                <form action="/admin/initiatives/{{ init.id }}/delete" method="post" style="display:inline;margin:0;"
+                                      onsubmit="return confirm('{% if lang == 'de' %}Diesen Vorschlag ablehnen und löschen?{% elif lang == 'pl' %}Odrzucić i usunąć tę propozycję?{% else %}Reject and delete this proposal?{% endif %}');">
+                                    <button type="submit" class="btn btn-small btn-outline">
+                                        {% if lang == 'de' %}Ablehnen{% elif lang == 'pl' %}Odrzuć{% else %}Reject{% endif %}
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="admin-empty">{% if lang == 'de' %}Keine offenen Vorschläge.{% elif lang == 'pl' %}Brak oczekujących propozycji.{% else %}No pending proposals.{% endif %}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- PUBLISHED -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h2>{% if lang == 'de' %}Veröffentlicht{% elif lang == 'pl' %}Opublikowane{% else %}Published{% endif %} ({{ published|length }})</h2>
             </div>
             <div class="admin-card-content">
                 <table class="admin-table">
@@ -52,13 +113,13 @@
                             <th>{% if lang == 'de' %}Name{% elif lang == 'pl' %}Nazwa{% else %}Name{% endif %}</th>
                             <th>Slug</th>
                             <th>{% if lang == 'de' %}Ort{% elif lang == 'pl' %}Miejsce{% else %}Location{% endif %}</th>
-                            <th>{% if lang == 'de' %}Status{% elif lang == 'pl' %}Status{% else %}Status{% endif %}</th>
+                            <th>Status</th>
                             <th>{% if lang == 'de' %}Link{% elif lang == 'pl' %}Link{% else %}Link{% endif %}</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for init in initiatives %}
+                        {% for init in published %}
                         <tr>
                             <td>
                                 {{ init.name }}
@@ -68,11 +129,15 @@
                             <td>{{ init.location or '—' }}</td>
                             <td>{{ init.status }}</td>
                             <td>{% if init.href %}<a href="{{ init.href }}" target="_blank" rel="noopener">{{ init.href }}</a>{% else %}—{% endif %}</td>
-                            <td>
+                            <td style="white-space:nowrap;">
                                 {% if not init.flagship %}
-                                <form action="/admin/initiatives/{{ init.id }}/delete" method="post"
-                                      onsubmit="return confirm('{% if lang == 'de' %}Diese Initiative löschen?{% elif lang == 'pl' %}Usunąć tę inicjatywę?{% else %}Delete this initiative?{% endif %}');"
-                                      style="margin:0;">
+                                <form action="/admin/initiatives/{{ init.id }}/unpublish" method="post" style="display:inline;margin:0;">
+                                    <button type="submit" class="btn btn-small btn-outline">
+                                        {% if lang == 'de' %}Zurückziehen{% elif lang == 'pl' %}Wycofaj{% else %}Unpublish{% endif %}
+                                    </button>
+                                </form>
+                                <form action="/admin/initiatives/{{ init.id }}/delete" method="post" style="display:inline;margin:0;"
+                                      onsubmit="return confirm('{% if lang == 'de' %}Diese Initiative löschen?{% elif lang == 'pl' %}Usunąć tę inicjatywę?{% else %}Delete this initiative?{% endif %}');">
                                     <button type="submit" class="btn btn-small btn-outline">
                                         {% if lang == 'de' %}Löschen{% elif lang == 'pl' %}Usuń{% else %}Delete{% endif %}
                                     </button>
