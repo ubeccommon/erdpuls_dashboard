@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Erdpuls{% endblock %} | Erdpuls Müllrose</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/static/css/style.css?v=20">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header" id="header">
+        <div class="header-container container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🌱</span>
+                <div class="logo-content">
+                    <span class="logo-text">Erdpuls Müllrose</span>
+                    <span class="logo-subtitle">Center for Sustainability Literacy, Citizen Science and Reciprocal Economics</span>
+                </div>
+            </a>
+            
+            <nav class="main-nav">
+                <a href="/about">
+                    {% if lang == 'de' %}Über uns{% elif lang == 'pl' %}O nas{% else %}About{% endif %}
+                </a>
+                <a href="/offerings">
+                    {% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}
+                </a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle">
+                        {% if lang == 'de' %}Grundlagen{% elif lang == 'pl' %}Podstawy{% else %}Approach{% endif %}
+                        <span class="dropdown-arrow">▾</span>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="/model/reciprocity">
+                            {% if lang == 'de' %}Reziproke Ökonomie{% elif lang == 'pl' %}Ekonomia Wzajemności{% else %}Reciprocal Economics{% endif %}
+                        </a>
+                        <a href="/model/threshold">
+                            {% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% else %}Collective Threshold Model{% endif %}
+                        </a>
+                        <a href="/model/pathways">
+                            {% if lang == 'de' %}Vier Wege{% elif lang == 'pl' %}Cztery Ścieżki{% else %}Four Pathways{% endif %}
+                        </a>
+                        <a href="/model/tokens">
+                            {% if lang == 'de' %}Token-Ökonomie (UBECrc){% elif lang == 'pl' %}Ekonomia Tokenów (UBECrc){% else %}Token Economy (UBECrc){% endif %}
+                        </a>
+                        <a href="/fund">
+                            {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}Regeneration Fund{% endif %}
+                        </a>
+                        <a href="/library/pathways">
+                            {% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% else %}Learning Pathway Maps{% endif %}
+                        </a>
+                    </div>
+                </div>
+                <a href="/library">
+                    {% if lang == 'de' %}Bibliothek{% elif lang == 'pl' %}Biblioteka{% else %}Library{% endif %}
+                </a>
+            </nav>
+            
+            <div class="header-right">
+                <div class="lang-switcher">
+                    <a href="/set-lang/en" class="{% if lang == 'en' %}active{% endif %}">EN</a>
+                    <a href="/set-lang/de" class="{% if lang == 'de' %}active{% endif %}">DE</a>
+                    <a href="/set-lang/pl" class="{% if lang == 'pl' %}active{% endif %}">PL</a>
+                </div>
+                <div class="auth-nav">
+                    {% if user %}
+                        <a href="/dashboard" class="btn btn-small">
+                            {% if user.is_admin %}👑{% else %}👤{% endif %}
+                            {{ user.name or user.email.split('@')[0] }}
+                        </a>
+                        <a href="/logout" class="btn btn-small btn-outline">
+                            {% if lang == 'de' %}Abmelden{% elif lang == 'pl' %}Wyloguj{% else %}Logout{% endif %}
+                        </a>
+                    {% else %}
+                        <a href="/login" class="btn btn-small btn-primary">
+                            {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj{% else %}Login{% endif %}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Mobile menu toggle -->
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Flash Messages (if passed in context) -->
+    {% if flash_messages %}
+        <div class="flash-container container">
+            {% for category, message in flash_messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                    <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="footer-logo-icon">🌱</span>
+                        <span class="footer-logo-text">Erdpuls Müllrose</span>
+                    </div>
+                    <p class="footer-tagline">
+                        {% if lang == 'de' %}
+                            Center for Sustainability Literacy, Citizen Science and Reciprocal Economics
+                        {% elif lang == 'pl' %}
+                            Center for Sustainability Literacy, Citizen Science and Reciprocal Economics
+                        {% else %}
+                            Center for Sustainability Literacy, Citizen Science and Reciprocal Economics
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="footer-column">
+                    <h4>{% if lang == 'de' %}Erkunden{% elif lang == 'pl' %}Odkrywaj{% else %}Explore{% endif %}</h4>
+                    <ul class="footer-links">
+                        <li><a href="/offerings">{% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}</a></li>
+                        <li><a href="/about">{% if lang == 'de' %}Philosophie{% elif lang == 'pl' %}Filozofia{% else %}Philosophy{% endif %}</a></li>
+                        <li><a href="/fund">{% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz{% else %}Regeneration Fund{% endif %}</a></li>
+                        <li><a href="/library">{% if lang == 'de' %}Bibliothek{% elif lang == 'pl' %}Biblioteka{% else %}Library{% endif %}</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>{% if lang == 'de' %}Mitmachen{% elif lang == 'pl' %}Dołącz{% else %}Participate{% endif %}</h4>
+                    <ul class="footer-links">
+                        <li><a href="/offerings">{% if lang == 'de' %}Beitragen{% elif lang == 'pl' %}Wspieraj{% else %}Contribute{% endif %}</a></li>
+                        <li><a href="/register">{% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj{% else %}Register{% endif %}</a></li>
+                        <li><a href="https://liberapay.com/erdpuls" target="_blank">Liberapay</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>{% if lang == 'de' %}Kontakt{% elif lang == 'pl' %}Kontakt{% else %}Connect{% endif %}</h4>
+                    <ul class="footer-links">
+                        <li><a href="/cdn-cgi/l/email-protection#e98c9b8d999c859aa99c8b8c8ac7878c9d9e869b82">Email</a></li>
+                        <li><a href="https://github.com/ubeccommon" target="_blank">GitHub</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>{% if lang == 'de' %}Rechtliches{% elif lang == 'pl' %}Informacje prawne{% else %}Legal{% endif %}</h4>
+                    <ul class="footer-links">
+                        <li><a href="/legal/imprint">{% if lang == 'de' %}Impressum{% elif lang == 'pl' %}Impressum{% else %}Imprint{% endif %}</a></li>
+                        <li><a href="/legal/privacy">{% if lang == 'de' %}Datenschutz{% elif lang == 'pl' %}Prywatność{% else %}Privacy{% endif %}</a></li>
+                        <li><a href="/legal/terms">{% if lang == 'de' %}AGB{% elif lang == 'pl' %}Regulamin{% else %}Terms{% endif %}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 Michel Garand · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+                <span class="footer-location">Müllrose, Brandenburg · Naturpark Schlaubetal</span>
+            </div>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="/static/js/main.js"></script>
+    <!-- Session timeout handler 

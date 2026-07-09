@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="de" data-ubec-service="erdpuls">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Erdpuls by UBEC · Offenes Living-Lab-Protokoll</title>
+  <meta name="description" content="Erdpuls ist die physisch-digitale Integrationsebene des Commons — ein replizierbares offenes Living-Lab-Protokoll, wo Boden auf IoT trifft und Ort auf die 13 Fragen. Jeder Hof, jede Gemeinschaft, jede Bioregion kann es umsetzen.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://erdpuls.ubec.network/de/">
+  <link rel="alternate" hreflang="en" href="https://erdpuls.ubec.network/en/">
+  <link rel="alternate" hreflang="de" href="https://erdpuls.ubec.network/de/">
+  <link rel="alternate" hreflang="pl" href="https://erdpuls.ubec.network/pl/">
+  <link rel="alternate" hreflang="x-default" href="https://erdpuls.ubec.network/en/">
+
+  <!-- Bunny Fonts — DSGVO-konform, EU-gehostet. Niemals Google Fonts. -->
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=dm-serif-display:400,400i|dm-sans:300,400,500,600|jetbrains-mono:400,500&display=swap" rel="stylesheet">
+
+  <!-- Gemeinsames UBEC-Design-System -->
+  <link rel="stylesheet" href="https://design.ubec.network/v1/ubec-design-system.css">
+
+  <!-- Plausible Analytics — cookiefrei, EU-gehostet -->
+  <script defer data-domain="erdpuls.ubec.network" src="https://analytics.ubec.network/js/script.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-air:            #A8D5E8;
+      --color-water:          #5B9E9E;
+      --color-earth:          #C4974A;
+      --color-fire:           #E8834A;
+      --color-commons:        #5A8A6A;
+      --color-commons-dark:   #3D6B52;
+      --color-commons-light:  #EAF4EE;
+      --color-peach:          #F2C9B0;
+      --color-peach-deep:     #D4956A;
+      --color-peach-light:    #FBF0E8;
+      --color-devotion:       #7A9FBA;
+      --color-ochre:          #D4A84B;
+      --color-ochre-light:    #FBF3E0;
+      --color-parchment:      #FBF6EE;
+      --color-linen:          #F2EBE0;
+      --color-sand:           #E5D9CC;
+      --color-clay:           #9E8070;
+      --color-humus:          #5C3D2A;
+      --color-bark:           #3A2418;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', 'Helvetica Neue', sans-serif;
+      --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+      --max-width:     1200px;
+      --content-width: 760px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--color-parchment);
+      color: var(--color-humus);
+      line-height: 1.6;
+      padding-top: 68px;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    main { flex: 1; }
+    h1, h2, h3, h4 { font-family: var(--font-display); color: var(--color-bark); line-height: 1.2; }
+    a { color: var(--color-commons); text-decoration: none; }
+    a:hover { color: var(--color-commons-dark); }
+
+    .hero {
+      background: linear-gradient(160deg,
+        var(--color-commons-light) 0%, var(--color-peach-light) 58%, var(--color-ochre-light) 100%);
+      padding: 5rem 2rem 4.5rem; text-align: center;
+    }
+    .hero__eyebrow { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-commons); margin-bottom: 1.25rem; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.25rem); max-width: 860px; margin: 0 auto 1.25rem; }
+    .hero__subtitle { font-size: 1.15rem; color: var(--color-clay); max-width: 640px; margin: 0 auto 2.5rem; font-weight: 300; }
+    .hero__actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 0.85rem 1.75rem; border-radius: 10px; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .btn--primary { background: var(--color-commons); color: #fff; }
+    .btn--primary:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(90,138,106,0.28); }
+    .btn--ghost { border: 1px solid var(--color-commons); color: var(--color-commons); }
+    .btn--ghost:hover { background: var(--color-commons-light); }
+
+    .section { max-width: var(--max-width); margin: 0 auto; padding: 4.5rem 2rem; }
+    .section__header { text-align: center; max-width: var(--content-width); margin: 0 auto 3rem; }
+    .section__label { display: block; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-commons); margin-bottom: 0.75rem; }
+    .section__title { font-size: clamp(1.6rem, 3vw, 2.25rem); margin-bottom: 0.75rem; }
+    .section__subtitle { color: var(--color-clay); font-size: 1rem; }
+
+    .protocol-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .protocol-card { background: var(--color-parchment); border: 1px solid var(--color-sand); border-radius: 12px; padding: 1.85rem; }
+    .protocol-card__icon { font-size: 1.75rem; margin-bottom: 0.85rem; }
+    .protocol-card h3 { font-size: 1.15rem; margin-bottom: 0.6rem; }
+    .protocol-card p { color: var(--color-clay); font-size: 0.95rem; line-height: 1.7; }
+
+    .questions { background: var(--color-linen); }
+    .questions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; max-width: var(--max-width); margin: 0 auto; }
+    .question { background: var(--color-parchment); border: 1px solid var(--color-sand); border-left: 3px solid var(--color-commons); border-radius: 0 8px 8px 0; padding: 1rem 1.15rem; display: flex; gap: 0.75rem; align-items: baseline; }
+    .question__num { font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-commons); font-weight: 500; }
+    .question__text { font-size: 0.9rem; color: var(--color-humus); line-height: 1.5; }
+
+    .reward { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; align-items: center; }
+    .reward__token { border-radius: 12px; padding: 2rem; text-align: center; background: #EBF4F4; border: 1px solid var(--color-water); }
+    .reward__symbol { font-family: var(--font-mono); font-size: 0.9rem; color: #2E6E6E; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .reward__name { font-family: var(--font-display); font-size: 2rem; color: var(--color-bark); margin-bottom: 0.35rem; }
+    .reward__element { font-size: 0.85rem; color: var(--color-clay); }
+    .reward__body p { color: var(--color-humus); font-size: 1.02rem; line-height: 1.75; margin-bottom: 1rem; }
+
+    .cta { background: var(--color-commons-dark); color: var(--color-parchment); text-align: center; }
+    .cta .section__title { color: var(--color-parchment); }
+    .cta p { color: rgba(251,246,238,0.85); max-width: 560px; margin: 0 auto 2rem; }
+    .cta .btn--primary { background: var(--color-parchment); color: var(--color-commons-dark); }
+    .cta .btn--primary:hover { color: var(--color-commons-dark); }
+    .cta .btn--ghost { border-color: var(--color-parchment); color: var(--color-parchment); }
+    .cta .btn--ghost:hover { background: rgba(251,246,238,0.12); }
+
+    .footer { background: var(--color-bark); color: var(--color-linen); padding: 3.5rem 2rem 2rem; }
+    .footer__inner { max-width: var(--max-width); margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 2.5rem; }
+    .footer__brand-name { font-family: var(--font-display); font-size: 1.35rem; color: var(--color-parchment); margin-bottom: 0.75rem; }
+    .footer__brand-desc { font-size: 0.9rem; color: var(--color-sand); line-height: 1.7; max-width: 340px; }
+    .footer__brand-tagline { font-size: 0.85rem; color: var(--color-peach); font-style: italic; margin-top: 1rem; }
+    .footer__col h4 { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-peach); margin-bottom: 1rem; font-family: var(--font-body); font-weight: 600; }
+    .footer__col ul { list-style: none; }
+    .footer__col li { margin-bottom: 0.6rem; }
+    .footer__col a { color: var(--color-sand); font-size: 0.9rem; }
+    .footer__col a:hover { color: var(--color-parchment); }
+    .footer__bottom { max-width: var(--max-width); margin: 2.5rem auto 0; padding-top: 1.75rem; border-top: 1px solid rgba(229,217,204,0.18); text-align: center; }
+    .footer__bottom p { font-size: 0.8rem; color: var(--color-clay); line-height: 1.8; }
+
+    @media (max-width: 720px) {
+      .footer__inner { grid-template-columns: 1fr; gap: 2rem; }
+      .section { padding: 3.5rem 1.25rem; }
+      .hero { padding: 3.5rem 1.25rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav id="ubec-nav" aria-label="UBEC DAO Navigation"></nav>
+
+  <main id="main-content">
+    <section class="hero">
+      <p class="hero__eyebrow">Erdpuls by UBEC · Offenes Living-Lab-Protokoll</p>
+      <h1>Wo Boden auf IoT trifft und Ort auf die 13 Fragen</h1>
+      <p class="hero__subtitle">
+        Erdpuls ist die physisch-digitale Integrationsebene des Commons — ein replizierbares
+        offenes Living-Lab-Protokoll, das jeder Hof, jede Gemeinschaft und jede Bioregion umsetzen kann.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="https://living-labs.ubec.network/de/register.html">Als Steward registrieren</a>
+        <a class="btn btn--ghost" href="#protocol">Wie das Protokoll funktioniert</a>
+      </div>
+    </section>
+
+    <section class="section" id="protocol" aria-labelledby="protocol-title">
+      <div class="section__header">
+        <span class="section__label">Das Protokoll</span>
+        <h2 class="section__title" id="protocol-title">Ein Living Lab, das sich überall replizieren lässt</h2>
+        <p class="section__subtitle">
+          Erdpuls ist kein Ort — es ist ein Protokoll. Es verbindet phänomenologische Bodenbeobachtung,
+          IoT-Sensorik und regenerative Token-Ökonomie zu einem Muster, das jede Gemeinschaft auf ihrem
+          eigenen Grund umsetzen kann.
+        </p>
+      </div>
+      <div class="protocol-grid">
+        <div class="protocol-card">
+          <div class="protocol-card__icon">🌱</div>
+          <h3>Den Boden beobachten</h3>
+          <p>Stewards arbeiten die 13 Fragen durch — ein goetheanistisches Rahmenwerk direkter sinnlicher Aufmerksamkeit. Beobachtung zuerst, Interpretation danach.</p>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card__icon">📡</div>
+          <h3>Den Ort erfassen</h3>
+          <p>Eine registrierte senseBox überträgt Umweltmesswerte vom Beobachtungsort an den UBEC Hub und verankert die qualitative Beobachtung in kontinuierlichen Daten.</p>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card__icon">💧</div>
+          <h3>Den Wert zurückgeben</h3>
+          <p>Validierte Beobachtungen erhalten UBECrc — den Reziprozitäts-Token — der die Qualität der Aufmerksamkeit festhält, die ein Steward seiner Bioregion widmet.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section questions" id="questions" aria-labelledby="questions-title">
+      <div class="section__header">
+        <span class="section__label">Phänomenologisches Rahmenwerk</span>
+        <h2 class="section__title" id="questions-title">Die 13 Fragen an den Boden</h2>
+        <p class="section__subtitle">
+          Eine gemeinsame Methode der zarten Empirie. Jede Frage lädt zur direkten Beobachtung ein —
+          in den eigenen Worten des Stewards — vor jeder Messung oder Schlussfolgerung.
+        </p>
+      </div>
+      <div class="questions-grid">
+        <div class="question"><span class="question__num">01</span><span class="question__text">Welche Farbe hat der Boden?</span></div>
+        <div class="question"><span class="question__num">02</span><span class="question__text">Wie riecht der Boden?</span></div>
+        <div class="question"><span class="question__num">03</span><span class="question__text">Wie fühlt sich der Boden an?</span></div>
+        <div class="question"><span class="question__num">04</span><span class="question__text">Welches Leben ist im Boden sichtbar?</span></div>
+        <div class="question"><span class="question__num">05</span><span class="question__text">Wie hält der Boden zusammen?</span></div>
+        <div class="question"><span class="question__num">06</span><span class="question__text">Ist der Boden feucht oder trocken?</span></div>
+        <div class="question"><span class="question__num">07</span><span class="question__text">Welche Pflanzen wachsen hier?</span></div>
+        <div class="question"><span class="question__num">08</span><span class="question__text">Gibt es Wurzeln zu sehen?</span></div>
+        <div class="question"><span class="question__num">09</span><span class="question__text">Wie tief ist die Humusschicht?</span></div>
+        <div class="question"><span class="question__num">10</span><span class="question__text">Gibt es Steine im Boden?</span></div>
+        <div class="question"><span class="question__num">11</span><span class="question__text">Wie reagiert der Boden auf Wasser?</span></div>
+        <div class="question"><span class="question__num">12</span><span class="question__text">Welche Geschichte erzählt der Boden?</span></div>
+        <div class="question"><span class="question__num">13</span><span class="question__text">Wie verbindet uns der Boden?</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="iot" aria-labelledby="iot-title">
+      <div class="section__header">
+        <span class="section__label">IoT-Integration</span>
+        <h2 class="section__title" id="iot-title">senseBox-Sensorregistrierung</h2>
+        <p class="section__subtitle">
+          Erdpuls verbindet menschliche Beobachtung mit maschineller Sensorik. Eine einem Living Lab
+          zugeordnete senseBox überträgt Messwerte an den UBEC Hub, wo sie neben dem phänomenologischen
+          Bericht des Stewards stehen.
+        </p>
+      </div>
+      <div class="protocol-grid">
+        <div class="protocol-card">
+          <div class="protocol-card__icon">🔌</div>
+          <h3>Ein Gerät registrieren</h3>
+          <p>Jede senseBox wird einem Living Lab und einem Steward zugeordnet und beginnt, an die Hub-API unter iot.ubec.network zu melden.</p>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card__icon">📈</div>
+          <h3>Kontinuierliche Messwerte</h3>
+          <p>Temperatur, Feuchtigkeit, Bodenfeuchte und mehr fließen als Zeitreihen ein und geben jedem Beobachtungsort eine lebendige Datenspur.</p>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card__icon">🔗</div>
+          <h3>Ein gemeinsamer Datensatz</h3>
+          <p>Sensordaten und die 13 Fragen gehören zur selben Beobachtung — quantitativ und qualitativ, zusammengehalten.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section questions" id="rewards" aria-labelledby="rewards-title">
+      <div class="section__header">
+        <span class="section__label">Regenerative Ökonomie</span>
+        <h2 class="section__title" id="rewards-title">Reziprozität für validierte Beobachtungen</h2>
+      </div>
+      <div class="reward">
+        <div class="reward__token">
+          <div class="reward__symbol">UBECrc</div>
+          <div class="reward__name">Wasser</div>
+          <div class="reward__element">Reziprozität · verdient durch Citizen Science</div>
+        </div>
+        <div class="reward__body">
+          <p>
+            Wenn die Beobachtung eines Stewards validiert wird, gibt der UBEC Hub UBECrc im
+            Stellar-Netzwerk aus. Es ist das Wasser-Element der Token-Ökonomie — Wert, der zu denen
+            zurückfließt, die ihrem Ort sorgfältige Aufmerksamkeit schenken.
+          </p>
+          <p>
+            Die Belohnung ist keine Bezahlung für Daten. Sie hält Reziprozität fest: Das Commons wird
+            stärker durch die Qualität der Aufmerksamkeit, die ihm zurückgegeben wird.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta" aria-labelledby="cta-title">
+      <div class="section__header">
+        <h2 class="section__title" id="cta-title">Bringe das Protokoll auf deinen Grund</h2>
+        <p>
+          Jeder Hof, jede Gemeinschaft und jede Bioregion kann Erdpuls betreiben. Registriere dich als
+          Steward, um mit dem Beobachten zu beginnen, verbinde eine senseBox und tritt einem verteilten
+          Netzwerk regenerativer Citizen Science bei.
+        </p>
+      </div>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="https://living-labs.ubec.network/de/register.html">Als Steward registrieren</a>
+        <a class="btn btn--ghost" href="https://living-labs.ubec.network/de/">Living Labs entdecken</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div>
+        <div class="footer__brand-name">Erdpuls by UBEC</div>
+        <p class="footer__brand-desc">
+          Die physisch-digitale Integrationsebene des Commons — ein replizierbares offenes
+          Living-Lab-Protokoll, wo Boden auf IoT trifft und Ort auf die 13 Fragen. Teil der Ubuntu
+          Bioregional Economic Commons DAO.
+        </p>
+        <p class="footer__brand-tagline">„Ich bin, weil wir sind. Ort. Protokoll. Planet."</p>
+      </div>
+      <div class="footer__col">
+        <h4>Dienste</h4>
+        <ul>
+          <li><a href="https://ubec.network/de/">Portal</a></li>
+          <li><a href="https://living-labs.ubec.network/de/">Living Labs</a></li>
+          <li><a href="https://iot.ubec.network/">Hub</a></li>
+          <li><a href="https://learn.ubec.network/">Learn</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Erdpuls</h4>
+        <ul>
+          <li><a href="#protocol">Das Protokoll</a></li>
+          <li><a href="#questions">13 Fragen</a></li>
+          <li><a href="#iot">senseBox</a></li>
+          <li><a href="https://living-labs.ubec.network/de/register.html">Registrieren</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© 2024–2026 Michel Garand · CC BY-SA 4.0 · GNU AGPL v3.0</p>
+      <p>Entwickelt mit Claude (Anthropic PBC)</p>
+    </div>
+  </footer>
+
+  <script src="https://design.ubec.network/v1/ubec-nav.js"></script>
+</body>
+</html>

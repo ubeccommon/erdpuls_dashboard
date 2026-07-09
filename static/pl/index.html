@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pl" data-ubec-service="erdpuls">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Erdpuls by UBEC · Otwarty Protokół Living Lab</title>
+  <meta name="description" content="Erdpuls to fizyczno-cyfrowa warstwa integracyjna dóbr wspólnych — powtarzalny, otwarty protokół living lab, w którym gleba spotyka IoT, a miejsce spotyka 13 Pytań. Każde gospodarstwo, społeczność czy bioregion może go wdrożyć.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://erdpuls.ubec.network/pl/">
+  <link rel="alternate" hreflang="en" href="https://erdpuls.ubec.network/en/">
+  <link rel="alternate" hreflang="de" href="https://erdpuls.ubec.network/de/">
+  <link rel="alternate" hreflang="pl" href="https://erdpuls.ubec.network/pl/">
+  <link rel="alternate" hreflang="x-default" href="https://erdpuls.ubec.network/en/">
+
+  <!-- Bunny Fonts — zgodne z RODO, hostowane w UE. Nigdy Google Fonts. -->
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=dm-serif-display:400,400i|dm-sans:300,400,500,600|jetbrains-mono:400,500&display=swap" rel="stylesheet">
+
+  <!-- Wspólny system projektowy UBEC -->
+  <link rel="stylesheet" href="https://design.ubec.network/v1/ubec-design-system.css">
+
+  <!-- Plausible Analytics — bez ciasteczek, hostowane w UE -->
+  <script defer data-domain="erdpuls.ubec.network" src="https://analytics.ubec.network/js/script.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-air:            #A8D5E8;
+      --color-water:          #5B9E9E;
+      --color-earth:          #C4974A;
+      --color-fire:           #E8834A;
+      --color-commons:        #5A8A6A;
+      --color-commons-dark:   #3D6B52;
+      --color-commons-light:  #EAF4EE;
+      --color-peach:          #F2C9B0;
+      --color-peach-deep:     #D4956A;
+      --color-peach-light:    #FBF0E8;
+      --color-devotion:       #7A9FBA;
+      --color-ochre:          #D4A84B;
+      --color-ochre-light:    #FBF3E0;
+      --color-parchment:      #FBF6EE;
+      --color-linen:          #F2EBE0;
+      --color-sand:           #E5D9CC;
+      --color-clay:           #9E8070;
+      --color-humus:          #5C3D2A;
+      --color-bark:           #3A2418;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', 'Helvetica Neue', sans-serif;
+      --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+      --max-width:     1200px;
+      --content-width: 760px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--color-parchment);
+      color: var(--color-humus);
+      line-height: 1.6;
+      padding-top: 68px;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    main { flex: 1; }
+    h1, h2, h3, h4 { font-family: var(--font-display); color: var(--color-bark); line-height: 1.2; }
+    a { color: var(--color-commons); text-decoration: none; }
+    a:hover { color: var(--color-commons-dark); }
+
+    .hero {
+      background: linear-gradient(160deg,
+        var(--color-commons-light) 0%, var(--color-peach-light) 58%, var(--color-ochre-light) 100%);
+      padding: 5rem 2rem 4.5rem; text-align: center;
+    }
+    .hero__eyebrow { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-commons); margin-bottom: 1.25rem; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.25rem); max-width: 860px; margin: 0 auto 1.25rem; }
+    .hero__subtitle { font-size: 1.15rem; color: var(--color-clay); max-width: 640px; margin: 0 auto 2.5rem; font-weight: 300; }
+    .hero__actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 0.85rem 1.75rem; border-radius: 10px; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .btn--primary { background: var(--color-commons); color: #fff; }
+    .btn--primary:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(90,138,106,0.28); }
+    .btn--ghost { border: 1px solid var(--color-commons); color: var(--color-commons); }
+    .btn--ghost:hover { background: var(--color-commons-light); }
+
+    .section { max-width: var(--max-width); margin: 0 auto; padding: 4.5rem 2rem; }
+    .section__header { text-align: center; max-width: var(--content-width); margin: 0 auto 3rem; }
+    .section__label { display: block; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-commons); margin-bottom: 0.75rem; }
+    .section__title { font-size: clamp(1.6rem, 3vw, 2.25rem); margin-bottom: 0.75rem; }
+    .section__subtitle { color: var(--color-clay); font-size: 1rem; }
+
+    .protocol-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .protocol-card { background: var(--color-parchment); border: 1px solid var(--color-sand); border-radius: 12px; padding: 1.85rem; }
+    .protocol-card__icon { font-size: 1.75rem; margin-bottom: 0.85rem; }
+    .protocol-card h3 { font-size: 1.15rem; margin-bottom: 0.6rem; }
+    .protocol-card p { color: var(--color-clay); font-size: 0.95rem; line-height: 1.7; }
+
+    .questions { background: var(--color-linen); }
+    .questions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; max-width: var(--max-width); margin: 0 auto; }
+    .question { background: var(--color-parchment); border: 1px solid var(--color-sand); border-left: 3px solid var(--color-commons); border-radius: 0 8px 8px 0; padding: 1rem 1.15rem; display: flex; gap: 0.75rem; align-items: baseline; }
+    .question__num { font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-commons); font-weight: 500; }
+    .question__text { font-size: 0.9rem; color: var(--color-humus); line-height: 1.5; }
+
+    .reward { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; align-items: center; }
+    .reward__token { border-radius: 12px; padding: 2rem; text-align: center; background: #EBF4F4; border: 1px solid var(--color-water); }
+    .reward__symbol { font-family: var(--font-mono); font-size: 0.9rem; color: #2E6E6E; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .reward__name { font-family: var(--font-display); font-size: 2rem; color: var(--color-bark); margin-bottom: 0.35rem; }
+    .reward__element { font-size: 0.85rem; color: var(--color-clay); }
+    .reward__body p { color: var(--color-humus); font-size: 1.02rem; line-height: 1.75; margin-bottom: 1rem; }
+
+    .cta { background: var(--color-commons-dark); color: var(--color-parchment); text-align: center; }
+    .cta .section__title { color: var(--color-parchment); }
+    .cta p { color: rgba(251,246,238,0.85); max-width: 560px; margin: 0 auto 2rem; }
+    .cta .btn--primary { background: var(--color-parchment); color: var(--color-commons-dark); }
+    .cta .btn--primary:hover { color: var(--color-commons-dark); }
+    .cta .btn--ghost { border-color: var(--color-parchment); color: var(--color-parchment); }
+    .cta .btn--ghost:hover { background: rgba(251,246,238,0.12); }
+
+    .footer { background: var(--color-bark); color: var(--color-linen); padding: 3.5rem 2rem 2rem; }
+    .footer__inner { max-width: var(--max-width); margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 2.5rem; }
+    .footer__brand-name { font-family: var(--font-display); font-size: 1.35rem; color: var(--color-parchment); margin-bottom: 0.75rem; }
+    .footer__brand-desc { font-size: 0.9rem; color: var(--color-sand); line-height: 1.7; max-width: 340px; }
+    .footer__brand-tagline { font-size: 0.85rem; color: var(--color-peach); font-style: italic; margin-top: 1rem; }
+    .footer__col h4 { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-peach); margin-bottom: 1rem; font-family: var(--font-body); font-weight: 600; }
+    .footer__col ul { list-style: none; }
+    .footer__col li { margin-bottom: 0.6rem; }
+    .footer__col a { color: var(--color-sand); font-size: 0.9rem; }
+    .footer__col a:hover { color: var(--color-parchment); }
+    .footer__bottom { max-width: var(--max-width); margin: 2.5rem auto 0; padding-top: 1.75rem; border-top: 1px solid rgba(229,217,204,0.18); text-align: center; }
+    .footer__bottom p { font-size: 0.8rem; color: var(--color-clay); line-height: 1.8; }
+
+    @media (max-width: 720px) {
+      .footer__inner { grid-template-columns: 1fr; gap: 2rem; }
+      .section { padding: 3.5rem 1.25rem; }
+      .hero { padding: 3.5rem 1.25rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav id="ubec-nav" aria-label="Nawigacja UBEC DAO"></nav>
+
+  <main id="main-content">
+    <section class="hero">
+      <p class="hero__eyebrow">Erdpuls by UBEC · Otwarty Protokół Living Lab</p>
+      <h1>Gdzie gleba spotyka IoT, a miejsce spotyka 13 Pytań</h1>
+      <p class="hero__subtitle">
+        Erdpuls to fizyczno-cyfrowa warstwa integracyjna dóbr wspólnych — powtarzalny, otwarty
+        protokół living lab, który może wdrożyć każde gospodarstwo, każda społeczność i każdy bioregion.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="https://living-labs.ubec.network/pl/register.html">Zarejestruj się jako steward</a>
+        <a class="btn btn--ghost" href="#protocol">Jak działa protokół</a>
+      </div>
+    </section>
+
+    <section class="section" id="protocol" aria-labelledby="protocol-title">
+      <div class="section__header">
+        <span class="section__label">Protokół</span>
+        <h2 class="section__title" id="protocol-title">Living lab, który można powtórzyć wszędzie</h2>
+        <p class="section__subtitle">
+          Erdpuls nie jest miejscem — jest protokołem. Łączy fenomenologiczną obserwację gleby,
+          czujniki IoT i regeneratywną ekonomię tokenów we wzorzec, który każda społeczność może
+          uruchomić na własnej ziemi.
+        </p>
+      </div>
+      <div class="protocol-grid">
+        <div class="protocol-card">
+          <div class="protocol-card__icon">🌱</div>
+          <h3>Obserwuj glebę</h3>
+          <p>Stewardzi przechodzą przez 13 Pytań — goetheańskie ramy bezpośredniej uwagi zmysłowej. Najpierw obserwacja, potem interpretacja.</p>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card__icon">📡</div>
+          <h3>Odczytuj miejsce</h3>
+          <p>Zarejestrowany senseBox przesyła odczyty środowiskowe z miejsca obserwacji do UBEC Hub, zakotwiczając obserwację jakościową w ciągłych danych.</p>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card__icon">💧</div>
+          <h3>Zwróć wartość</h3>
+          <p>Zweryfikowane obserwacje otrzymują UBECrc — token wzajemności — który zapisuje jakość uwagi, jaką steward poświęca swojemu bioregionowi.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section questions" id="questions" aria-labelledby="questions-title">
+      <div class="section__header">
+        <span class="section__label">Ramy fenomenologiczne</span>
+        <h2 class="section__title" id="questions-title">13 Pytań do gleby</h2>
+        <p class="section__subtitle">
+          Wspólna metoda delikatnego empiryzmu. Każde pytanie zaprasza do bezpośredniej obserwacji —
+          własnymi słowami stewarda — przed jakimkolwiek pomiarem czy wnioskiem.
+        </p>
+      </div>
+      <div class="questions-grid">
+        <div class="question"><span class="question__num">01</span><span class="question__text">Jaki kolor ma gleba?</span></div>
+        <div class="question"><span class="question__num">02</span><span class="question__text">Jak pachnie gleba?</span></div>
+        <div class="question"><span class="question__num">03</span><span class="question__text">Jaka jest struktura gleby?</span></div>
+        <div class="question"><span class="question__num">04</span><span class="question__text">Jakie życie jest widoczne w glebie?</span></div>
+        <div class="question"><span class="question__num">05</span><span class="question__text">Jak trzyma się gleba?</span></div>
+        <div class="question"><span class="question__num">06</span><span class="question__text">Czy gleba jest wilgotna czy sucha?</span></div>
+        <div class="question"><span class="question__num">07</span><span class="question__text">Jakie rośliny tu rosną?</span></div>
+        <div class="question"><span class="question__num">08</span><span class="question__text">Czy widoczne są korzenie?</span></div>
+        <div class="question"><span class="question__num">09</span><span class="question__text">Jak głęboka jest warstwa próchnicy?</span></div>
+        <div class="question"><span class="question__num">10</span><span class="question__text">Czy w glebie są kamienie?</span></div>
+        <div class="question"><span class="question__num">11</span><span class="question__text">Jak gleba reaguje na wodę?</span></div>
+        <div class="question"><span class="question__num">12</span><span class="question__text">Jaką historię opowiada gleba?</span></div>
+        <div class="question"><span class="question__num">13</span><span class="question__text">Jak gleba nas łączy?</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="iot" aria-labelledby="iot-title">
+      <div class="section__header">
+        <span class="section__label">Integracja IoT</span>
+        <h2 class="section__title" id="iot-title">Rejestracja czujnika senseBox</h2>
+        <p class="section__subtitle">
+          Erdpuls łączy obserwację ludzką z odczytem maszynowym. senseBox przypisany do living lab
+          przesyła odczyty do UBEC Hub, gdzie stoją obok fenomenologicznego zapisu stewarda.
+        </p>
+      </div>
+      <div class="protocol-grid">
+        <div class="protocol-card">
+          <div class="protocol-card__icon">🔌</div>
+          <h3>Zarejestruj urządzenie</h3>
+          <p>Każdy senseBox jest przypisany do living lab i stewarda, a następnie zaczyna raportować do API Hub pod adresem iot.ubec.network.</p>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card__icon">📈</div>
+          <h3>Ciągłe odczyty</h3>
+          <p>Temperatura, wilgotność, wilgotność gleby i więcej napływają jako szeregi czasowe, nadając każdemu punktowi obserwacji żywy ślad danych.</p>
+        </div>
+        <div class="protocol-card">
+          <div class="protocol-card__icon">🔗</div>
+          <h3>Jeden wspólny zapis</h3>
+          <p>Dane z czujników i 13 Pytań należą do tej samej obserwacji — ilościowe i jakościowe, utrzymane razem.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section questions" id="rewards" aria-labelledby="rewards-title">
+      <div class="section__header">
+        <span class="section__label">Ekonomia regeneratywna</span>
+        <h2 class="section__title" id="rewards-title">Wzajemność za zweryfikowane obserwacje</h2>
+      </div>
+      <div class="reward">
+        <div class="reward__token">
+          <div class="reward__symbol">UBECrc</div>
+          <div class="reward__name">Woda</div>
+          <div class="reward__element">Wzajemność · zdobywana przez naukę obywatelską</div>
+        </div>
+        <div class="reward__body">
+          <p>
+            Gdy obserwacja stewarda zostaje zweryfikowana, UBEC Hub emituje UBECrc w sieci Stellar.
+            To element wody w ekonomii tokenów — wartość, która wraca do tych, którzy poświęcają
+            swojemu miejscu uważną uwagę.
+          </p>
+          <p>
+            Nagroda nie jest zapłatą za dane. Zapisuje wzajemność: dobra wspólne stają się silniejsze
+            dzięki jakości uwagi, która jest im zwracana.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta" aria-labelledby="cta-title">
+      <div class="section__header">
+        <h2 class="section__title" id="cta-title">Wprowadź protokół na swoją ziemię</h2>
+        <p>
+          Każde gospodarstwo, każda społeczność i każdy bioregion może uruchomić Erdpuls. Zarejestruj
+          się jako steward, aby zacząć obserwować, podłącz senseBox i dołącz do rozproszonej sieci
+          regeneratywnej nauki obywatelskiej.
+        </p>
+      </div>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="https://living-labs.ubec.network/pl/register.html">Zarejestruj się jako steward</a>
+        <a class="btn btn--ghost" href="https://living-labs.ubec.network/pl/">Odkryj Living Labs</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div>
+        <div class="footer__brand-name">Erdpuls by UBEC</div>
+        <p class="footer__brand-desc">
+          Fizyczno-cyfrowa warstwa integracyjna dóbr wspólnych — powtarzalny, otwarty protokół
+          living lab, w którym gleba spotyka IoT, a miejsce spotyka 13 Pytań. Część Ubuntu
+          Bioregional Economic Commons DAO.
+        </p>
+        <p class="footer__brand-tagline">„Jestem, ponieważ jesteśmy. Miejsce. Protokół. Planeta."</p>
+      </div>
+      <div class="footer__col">
+        <h4>Usługi</h4>
+        <ul>
+          <li><a href="https://ubec.network/pl/">Portal</a></li>
+          <li><a href="https://living-labs.ubec.network/pl/">Living Labs</a></li>
+          <li><a href="https://iot.ubec.network/">Hub</a></li>
+          <li><a href="https://learn.ubec.network/">Learn</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Erdpuls</h4>
+        <ul>
+          <li><a href="#protocol">Protokół</a></li>
+          <li><a href="#questions">13 Pytań</a></li>
+          <li><a href="#iot">senseBox</a></li>
+          <li><a href="https://living-labs.ubec.network/pl/register.html">Rejestracja</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© 2024–2026 Michel Garand · CC BY-SA 4.0 · GNU AGPL v3.0</p>
+      <p>Opracowano z Claude (Anthropic PBC)</p>
+    </div>
+  </footer>
+
+  <script src="https://design.ubec.network/v1/ubec-nav.js"></script>
+</body>
+</html>
