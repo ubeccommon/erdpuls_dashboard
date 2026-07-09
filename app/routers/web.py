@@ -25,6 +25,7 @@ from ..models import (
     Initiative, InitiativeStatus
 )
 from ..email import send_contribution_confirmation
+from ..auth import get_current_user_optional
 from ..initiatives import get_published_initiatives, slugify, validate_slug
 from ..services.oer_library import get_collections, get_resource_detail, _COLLECTION_LABELS
 
@@ -35,15 +36,6 @@ templates = Jinja2Templates(directory="templates")
 def get_lang(request: Request) -> str:
     """Get language from cookie or default to 'en'."""
     return request.cookies.get('lang', 'en')
-
-
-def get_current_user_optional(request: Request, db: Session):
-    """Get current user from session if logged in."""
-    from ..models import User
-    user_id = request.cookies.get('user_id')
-    if user_id:
-        return db.query(User).filter(User.id == user_id).first()
-    return None
 
 
 # ============================================
