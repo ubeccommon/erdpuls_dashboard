@@ -1,15 +1,20 @@
-# 🌱 Erdpuls Collective Threshold Model
+# 🌱 UBEC Erdpuls — An Open Living Lab Protocol
 
-**Erdpuls Müllrose – Center for Sustainability Literacy, Citizen Science and Reciprocal Economics**
+**Erdpuls by UBEC · `erdpuls.ubec.network`** — the Erdpuls network application.
+Part of the UBEC Commons (Ubuntu Bioregional Economic Commons) network.
 
-A community-held approach to reciprocal economics, built with FastAPI.
+Erdpuls is an **open living lab protocol** — a replicable pattern for a Living Laboratory and
+Makerspace Garden that any community can adopt on its own ground. Being a protocol rather than
+a place, it can take root anywhere. This repository is the network **application** (built with
+FastAPI): its root is a directory of initiatives, and **Erdpuls Müllrose** is the flagship
+reference implementation that new initiatives are modelled on.
 
 > "The community holds each offering into being."
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Docs: CC BY-NC-SA 4.0](https://img.shields.io/badge/Docs-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![Docs: CC BY-SA 4.0](https://img.shields.io/badge/Docs-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-**Live Platform:** https://erdpuls.ubec.network  
+**Live Platform:** https://erdpuls.ubec.network
 **API Documentation:** https://erdpuls.ubec.network/api/docs
 
 ---
@@ -17,6 +22,7 @@ A community-held approach to reciprocal economics, built with FastAPI.
 ## Table of Contents
 
 - [Overview](#overview)
+- [Network & Flagship](#network--flagship)
 - [The Collective Threshold Model](#the-collective-threshold-model)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
@@ -35,15 +41,44 @@ A community-held approach to reciprocal economics, built with FastAPI.
 
 ## Overview
 
-Erdpuls Müllrose is developing a 3,000 square meter Living Laboratory in Naturpark Schlaubetal, Brandenburg, Germany. The project integrates environmental monitoring technology with sustainability education, addressing the "Values-Action Gap" between environmental awareness and sustainable behavior.
+Erdpuls is an **open living lab protocol**: a Living Laboratory and Makerspace Garden where
+technology and nature collaborate to understand living systems, and where making, growing,
+observing, and repairing converge. It addresses the "Values–Action Gap" between environmental
+awareness and action, is anchored in Ubuntu philosophy ("I am because we are"), and uses a
+four-element token economy on the Stellar network. Because it is a protocol rather than a
+place, any bioregion, farm, school, or community can adopt it on its own ground. The digital
+commons and token economy are already live; the full *physical* campus is the pattern
+communities are now invited to build. The canonical, location-agnostic protocol documents
+(whitepaper, models) live in [`documents/protocol/`](documents/protocol/).
 
-The platform implements the **Collective Threshold Model**, a novel community funding mechanism that combines anonymous contributions with transparent needs.
+This repository is the Erdpuls **network application**. It implements the **Collective
+Threshold Model** — a community funding mechanism combining anonymous contributions with
+transparent needs — and serves the network directory at `/`. **Erdpuls Müllrose** (a 3,000 m²
+living laboratory in Naturpark Schlaubetal, Brandenburg) is *one initiative* within the
+protocol: the flagship reference implementation, served at `/muellrose`. Erdpuls is one module
+of the wider UBEC Commons ecosystem and shares its design system, fonts, and legal framework.
+
+---
+
+## Network & Flagship
+
+Erdpuls is structured as a network tier plus a preserved flagship:
+
+| Route | Renders | Purpose |
+|-------|---------|---------|
+| `/` | `templates/network.html` | **UBEC Erdpuls** network landing — intro + directory of location-based initiatives |
+| `/muellrose` | `templates/index.html` | **Erdpuls Müllrose** — flagship / reference implementation (live offerings, regeneration fund) |
+
+`/muellrose` carries the original single-site behaviour verbatim. New place-based initiatives
+are modelled on Müllrose; the root belongs to the network as a whole, not to any single place.
+The initiatives directory is currently a hardcoded card in `network.html` and is planned to
+become data-driven before a second initiative is added.
 
 ---
 
 ## The Collective Threshold Model
 
-The Collective Threshold Model transforms how we fund community offerings:
+The Collective Threshold Model transforms how community offerings are funded:
 
 1. **Transparent Need** — Each offering publishes exactly what resources it needs
 2. **Register Intention** — People express desire to participate (separate from payment)
@@ -74,53 +109,63 @@ The Collective Threshold Model transforms how we fund community offerings:
 | Component | Technology | Notes |
 |-----------|------------|-------|
 | Backend | FastAPI + SQLAlchemy | Python web framework |
-| Database | PostgreSQL 14+ | Schema: `erdpuls_threshold` |
+| Database | PostgreSQL 16 | Database `ubec_erdpuls`, schema `erdpuls_threshold` |
 | Frontend | Jinja2 templates + vanilla JS | Server-side rendering |
-| Languages | English, German, Polish | Full trilingual support |
-| Server | Ubuntu 22.04 | Systemd service management |
+| Design | Shared UBEC design system (CDN) + Bunny Fonts | `design.ubec.network/v1/`; DM Serif Display / DM Sans / JetBrains Mono |
+| Languages | EN / DE / PL / UK | DE/PL cover the whole app; UK covers the network landing + shell (rest fall back to EN) |
+| Web server | nginx 1.24 | Reverse proxy → uvicorn on `127.0.0.1:8004` |
+| Runtime | systemd (`ubec-erdpuls.service`) | `User=ubec`, `uvicorn app.main:app --port 8004 --workers 2` |
+| Host | Ubuntu (Hetzner, EU) | EU-hosted only; no Cloudflare, no Google Fonts (GDPR) |
 
 ---
 
 ## Project Structure
 
 ```
-erdpuls-threshold/
+erdpuls_dashboard/
 ├── app/
-│   ├── __init__.py           # Package init
-│   ├── main.py               # FastAPI application entry point
-│   ├── config.py             # Pydantic settings (including SMTP)
-│   ├── database.py           # SQLAlchemy setup with schema search_path
-│   ├── models.py             # Database models (User, Offering, Contribution, etc.)
-│   ├── schemas.py            # Pydantic schemas for API validation
-│   ├── auth.py               # Authentication utilities (sessions, password reset)
-│   ├── roles.py              # Role definitions and permissions
-│   ├── email.py              # Trilingual email system
-│   └── routers/
-│       ├── __init__.py       # Router exports
-│       ├── api.py            # JSON API endpoints
-│       ├── web.py            # HTML page routes
-│       ├── auth.py           # Auth routes (login, register, password reset)
-│       └── admin.py          # Admin panel routes
-├── templates/                # Jinja2 templates with EN/DE/PL support
-│   ├── auth/                 # Login, register, password reset
-│   ├── admin/                # Admin panel templates
-│   └── *.html                # Public pages
+│   ├── __init__.py
+│   ├── main.py                     # FastAPI entry point (docs at /api/docs, /api/redoc; /health)
+│   ├── config.py                   # Pydantic settings (DB, SMTP, BASE_URL)
+│   ├── database.py                 # SQLAlchemy setup; sets erdpuls_threshold search_path
+│   ├── models.py                   # ORM models (User, Offering, Contribution, token_rates, …)
+│   ├── schemas.py                  # Pydantic API schemas
+│   ├── auth.py                     # Sessions / auth utilities
+│   ├── auth_routes_password_reset.py
+│   ├── email.py / email_password_reset.py   # Multilingual email
+│   ├── roles.py                    # Role hierarchy & permissions
+│   ├── routers/
+│   │   ├── api.py                  # JSON API (prefix /api)
+│   │   ├── web.py                  # HTML routes (/, /muellrose, /set-lang, …)
+│   │   ├── auth.py                 # Login, register, password reset
+│   │   └── admin.py                # Admin panel
+│   └── services/                   # e.g. oer_library.py (renders markdown OER)
+├── templates/                      # Jinja2, EN/DE/PL/UK inline
+│   ├── base.html                   # Consolidated UBEC shell (design system, Bunny fonts)
+│   ├── network.html                # Network landing (/)
+│   ├── index.html                  # Müllrose flagship (/muellrose)
+│   ├── about.html · offerings.html · contribute*.html · model_*.html
+│   ├── legal_imprint.html · legal_privacy.html · legal_terms.html
+│   ├── auth/ · admin/ · library/
 ├── static/
-│   └── css/                  # Stylesheets
+│   ├── css/                        # style.css, auth-additions.css, …
+│   └── js/
 ├── db/
-│   ├── scripts/              # SQL migrations
-│   │   ├── 006_role_system.sql
-│   │   ├── 006_fix_roles.sql
-│   │   └── delivery_language_migration.sql
-│   └── erdpuls_schema_documentation_generator.py
+│   ├── schema_complete.sql         # ★ canonical fresh-install schema
+│   ├── scripts/                    # historical SQL migrations
+│   └── *_schema_documentation_generator.py
 ├── deploy/
-│   ├── deploy.sh             # Deployment script
-│   ├── DEPLOY.md             # Deployment guide
-│   └── erdpuls-threshold.service  # Systemd service file
-├── schema.sql                # Initial database schema
-├── requirements.txt          # Python dependencies
-├── run.py                    # Development server runner
-└── .env                      # Environment configuration (not in repo)
+│   ├── deploy.sh · DEPLOY.md
+│   ├── erdpuls-threshold.service   # legacy (see Deployment note)
+│   └── caddy-site.conf             # legacy (see Deployment note)
+├── documents/
+│   ├── _project/                   # status reports, schema docs, service README
+│   ├── protocol/                   # OER whitepaper / model / business model (EN/DE/PL/UK)
+│   └── initiatives/                # per-initiative material (_TEMPLATE/, muellrose/)
+├── create_admin.py                 # bootstrap an admin user
+├── run.py                          # dev server runner
+├── requirements.txt
+└── env_example                     # copy to .env
 ```
 
 ---
@@ -129,33 +174,40 @@ erdpuls-threshold/
 
 ### Implemented ✅
 
+- **Network directory + flagship** — `/` lists initiatives; `/muellrose` is the reference implementation
+- **Consolidated UBEC design system** — shared CDN CSS + nav, Bunny Fonts, self-rendered footer
+- **Multilingual UI** — EN/DE/PL fully; UK on the network landing + shell (rest fall back to EN)
 - **User Authentication** — Login, registration, secure sessions
 - **Password Reset** — Secure tokens with 1-hour expiry
 - **Session Timeout** — 30-minute inactivity timeout with warnings
 - **Five-Tier Role System** — Member, Creator, Facilitator, Moderator, Admin
 - **Offerings Management** — CRUD with multilingual support
-- **Delivery Language** — Specify workshop languages (EN/DE/PL)
+- **Delivery Language** — Specify workshop languages
 - **Character Validation** — Defense-in-depth across all layers
 - **Registration Flow** — Intention separate from contribution
 - **Contribution Flow** — Euro, tokens, hours with confirmation
 - **Privacy Model** — Separate contacts table
-- **Trilingual UI** — EN/DE/PL language switching
 - **Admin Dashboard** — User and offering management
 - **Progress Tracking** — Threshold visualization
-- **Regeneration Fund** — Balance tracking for surplus/shortfall
+- **Regeneration Fund** — Balance + transaction tracking for surplus/shortfall
+- **OER Library** — Markdown-rendered open educational resources (`/library`)
 - **Legal Pages** — Impressum, Privacy Policy, Terms of Service
 - **Database Documentation Generator** — Schema documentation tool
 
 ### Planned 📋
 
+- Extend DE/PL/UK translation coverage to every template
+- Data-driven initiatives directory (replace hardcoded card)
+- "Start an initiative" onboarding flow
 - Threshold notification system
-- Contribution status workflow automation
-- Hours scheduling interface
-- UBECrc token blockchain integration
+- Hub SSO (unify nav "Sign in" — Phase 2)
+- UBECrc token blockchain integration (Stellar — Phase 2)
 
 ---
 
 ## API Endpoints
+
+All API routes are served under the `/api` prefix.
 
 ### Offerings
 
@@ -164,6 +216,7 @@ erdpuls-threshold/
 | `/api/offerings` | GET | List all open offerings |
 | `/api/offerings/{id}` | GET | Get offering details |
 | `/api/offerings/{id}/progress` | GET | Funding progress (aggregates only) |
+| `/api/offerings` | POST | Create an offering (role-gated) |
 | `/api/offerings/{id}/register` | POST | Register intention to participate |
 | `/api/offerings/{id}/contribute/euro` | POST | Euro contribution |
 | `/api/offerings/{id}/contribute/token` | POST | Token contribution |
@@ -174,17 +227,23 @@ erdpuls-threshold/
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/fund/balance` | GET | Regeneration Fund balance |
+| `/api/fund/transactions` | GET | Regeneration Fund transactions |
 | `/api/rates/tokens` | GET | Current token exchange rate |
 | `/api/rates/hours` | GET | Hours contribution rates |
 
-### System
+### System & Admin
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
+| `/api/session/refresh` | POST | Refresh session cookie |
+| `/api/admin/offerings/{id}/confirm` | POST | Confirm an offering (admin) |
 | `/api/docs` | GET | Interactive API documentation (Swagger) |
 | `/api/redoc` | GET | ReDoc API documentation |
-| `/api/session/refresh` | POST | Refresh session cookie |
 | `/health` | GET | Health check endpoint |
+
+> Endpoints above were verified against `app/routers/api.py` and `app/main.py`. Always
+> confirm against `https://erdpuls.ubec.network/api/docs` (or `/openapi.json`) before relying
+> on a specific shape.
 
 ---
 
@@ -199,6 +258,9 @@ erdpuls-threshold/
 | `facilitator` | 30 | Trusted creators | Direct publishing without approval |
 | `moderator` | 50 | Community managers | Approve offerings, access admin panel |
 | `admin` | 100 | Full access | Complete system access |
+
+New registrations default to `member` (enforced in `app/models.py` and the
+`users_role_check` constraint).
 
 ### Permission Matrix
 
@@ -220,19 +282,21 @@ erdpuls-threshold/
 Direct monetary contribution in EUR.
 
 ### Token
-UBECrc tokens earned through environmental stewardship (~70 tokens = €1).
+UBECrc tokens earned through environmental stewardship. Default exchange rate: **70 tokens =
+€1** (`token_rates.tokens_per_eur`, seeded at 70.0).
 
 ### Hours
-Pre-arranged work valued by category:
+Pre-arranged work valued by category. Rates below reflect the seed data in
+`db/schema_complete.sql`:
 
 | Category | EUR/Hour | Description |
 |----------|----------|-------------|
-| `garden_labor` | €10 | Weeding, planting, harvesting, composting |
-| `administrative` | €12 | Communication, scheduling, outreach |
-| `skilled_labor` | €20 | Carpentry, electrical, sensor installation |
-| `translation` | €20 | DE/EN/PL translation, documentation |
-| `knowledge_sharing` | €25 | Leading sessions, mentoring, traditional knowledge |
-| `technical_support` | €30 | Data processing, sensor calibration, web development |
+| `garden_labor` | €11.00 | Weeding, planting, harvesting, composting, watering |
+| `administrative` | €12.50 | Communication, scheduling, outreach, event support |
+| `skilled_labor` | €20.00 | Carpentry, electrical, sensor installation, equipment repair |
+| `translation` | €22.50 | DE/EN/PL translation, documentation, content creation |
+| `knowledge_sharing` | €27.50 | Leading a session, mentoring, traditional knowledge transmission |
+| `technical_support` | €30.00 | Data processing, sensor calibration, web development |
 
 ---
 
@@ -241,15 +305,15 @@ Pre-arranged work valued by category:
 ### Prerequisites
 
 - Python 3.10+
-- PostgreSQL 14+
+- PostgreSQL 16 (14+ likely works; production is 16)
 - pip
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd erdpuls-threshold
+git clone https://github.com/ubeccommon/erdpuls_dashboard
+cd erdpuls_dashboard
 
 # Create virtual environment
 python3 -m venv venv
@@ -259,44 +323,49 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Copy environment template
-cp .env.example .env
-# Edit .env with your database credentials
+cp env_example .env
+# Edit .env with your database credentials (see Environment Variables)
 
-# Run the schema (first time only)
-psql -d ubec_erdpuls -f schema.sql
+# Create the database and load the canonical schema (first time only)
+createdb ubec_erdpuls
+psql -d ubec_erdpuls -f db/schema_complete.sql
+
+# Bootstrap an admin user
+python create_admin.py
 
 # Run development server
 python run.py
 ```
 
-Visit http://localhost:8004
-
-API docs at http://localhost:8004/api/docs
+Visit http://localhost:8004 — API docs at http://localhost:8004/api/docs
 
 ---
 
 ## Environment Variables
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root (copy from `env_example`):
 
 ```env
 # Database
-DATABASE_URL=postgresql://user:password@localhost:5432/ubec_erdpuls
+# Use 127.0.0.1 rather than localhost (localhost can resolve to ::1 and hit an auth quirk).
+# Use an alphanumeric password: '%' breaks URL parsing and '$' breaks shell/heredoc handling.
+DATABASE_URL=postgresql://user:password@127.0.0.1:5432/ubec_erdpuls
 
 # Security
 SECRET_KEY=<generated-secret-key>
 DEBUG=false
 
 # Application
+# Must be set explicitly — config.py defaults to a .eu value that is wrong for this deployment.
 BASE_URL=https://erdpuls.ubec.network
 
-# SMTP Configuration
+# SMTP Configuration (port 465 / SSL)
 SMTP_HOST=mail.ubec.network
 SMTP_PORT=465
 SMTP_USER=erdpuls@ubec.network
 SMTP_PASSWORD=<password>
 SMTP_USE_TLS=false
-SMTP_FROM_EMAIL=noreply@ubec.network
+SMTP_FROM_EMAIL=erdpuls@ubec.network
 SMTP_FROM_NAME=Erdpuls Müllrose
 ```
 
@@ -309,52 +378,66 @@ python3 -c "import secrets; print(secrets.token_hex(32))"
 
 ## Deployment
 
-### Systemd Service
+Production runs on Hetzner (`ubec-common`) behind **nginx 1.24**, using a **deploy-by-pull**
+model. The live systemd unit is **`ubec-erdpuls.service`**.
+
+> **Note on `deploy/`:** the bundled `deploy/caddy-site.conf` and
+> `deploy/erdpuls-threshold.service` describe an earlier **Caddy**-based setup and are
+> **legacy**. The live deployment uses nginx and the `ubec-erdpuls.service` unit described
+> here.
+
+### Deploy-by-pull
 
 ```bash
-# Copy service file
-sudo cp deploy/erdpuls-threshold.service /etc/systemd/system/erdpuls_ubec.service
+# On the server, in the live tree:
+cd /srv/ubec/erdpuls
+git pull
+sudo systemctl restart ubec-erdpuls
+```
 
-# Reload systemd
-sudo systemctl daemon-reload
+`.env` and `venv/` are gitignored, so `git pull` never touches secrets or the virtualenv.
 
-# Enable and start service
-sudo systemctl enable erdpuls_ubec
-sudo systemctl start erdpuls_ubec
+### Systemd (live unit)
 
-# Check status
-sudo systemctl status erdpuls_ubec
+```
+[Service]
+User=ubec
+WorkingDirectory=/srv/ubec/erdpuls
+EnvironmentFile=/srv/ubec/erdpuls/.env
+ExecStart=<venv>/bin/uvicorn app.main:app --port 8004 --workers 2
 ```
 
 ### Useful Commands
 
 | Command | Description |
 |---------|-------------|
-| `sudo systemctl status erdpuls_ubec` | Check app status |
-| `sudo systemctl restart erdpuls_ubec` | Restart app |
-| `sudo journalctl -u erdpuls_ubec -f` | View live logs |
-| `sudo journalctl -u erdpuls_ubec -n 100` | View last 100 log lines |
+| `sudo systemctl status ubec-erdpuls` | Check app status |
+| `sudo systemctl restart ubec-erdpuls` | Restart app |
+| `sudo journalctl -u ubec-erdpuls -f` | View live logs |
+| `sudo journalctl -u ubec-erdpuls -n 100` | View last 100 log lines |
 
 ### Architecture
 
 ```
-Internet → Caddy (80/443)
+Internet → nginx (80/443)
               │
-              └── erdpuls.ubec.network → localhost:8004
+              └── erdpuls.ubec.network → 127.0.0.1:8004 (uvicorn, 2 workers)
 ```
 
-See `deploy/DEPLOY.md` for detailed production deployment instructions.
+See `deploy/DEPLOY.md` for the detailed deployment guide.
 
 ---
 
 ## Database Documentation
+
+Canonical fresh-install schema: **`db/schema_complete.sql`** (schema `erdpuls_threshold`).
 
 Generate schema documentation:
 
 ```bash
 cd db/
 python erdpuls_schema_documentation_generator.py \
-  --host localhost \
+  --host 127.0.0.1 \
   --database ubec_erdpuls \
   --user <username> \
   --password <password> \
@@ -369,8 +452,12 @@ Output formats: `markdown`, `json`, `html`
 |--------|-------|
 | Tables | 9 |
 | Columns | 93 |
-| Relationships | 6 |
+| Relationships (FKs) | 6 |
 | Indexes | 22 |
+
+> The schema file contains 10 explicit `CREATE INDEX` statements; the "22 indexes" figure is
+> the live catalogue count, which additionally includes indexes Postgres creates for primary
+> keys and UNIQUE constraints.
 
 ---
 
@@ -380,9 +467,11 @@ Output formats: `markdown`, `json`, `html`
 **GNU Affero General Public License v3.0 (AGPL-3.0)**
 
 ### Documentation
-**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)**
+**Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**
 
-> The material and content are available as Open Educational Resources (OER) and are licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0). To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+> The material and content are available as Open Educational Resources (OER) and are licensed
+> under Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). To view a
+> copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/
 
 ---
 
@@ -396,8 +485,9 @@ Output formats: `markdown`, `json`, `html`
 
 ## Acknowledgments
 
-This project uses the services of Claude and Anthropic PBC.
+This project is being developed with assistance from Claude (Anthropic PBC). All strategic
+decisions, philosophical positions, and project commitments are those of the author.
 
 ---
 
-© Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+© 2024–2026 Michel Garand · CC BY-SA 4.0 · GNU AGPL v3.0
