@@ -4,54 +4,254 @@
 
 {% block head %}
 <style>
-  .init-hero { padding: 3.5rem 1.5rem 2rem; text-align: center;
-    background: linear-gradient(160deg, var(--color-commons-light) 0%, var(--color-peach-light) 100%); }
-  .init-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.72rem;
-    letter-spacing: 0.08em; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 999px;
-    background: var(--color-commons); color: #fff; margin-bottom: 1rem; }
-  .init-badge--soon { background: transparent; color: var(--color-clay); border: 1px dashed var(--color-clay); }
-  .init-hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3rem); color: var(--color-bark); margin-bottom: 0.5rem; }
-  .init-loc { color: var(--color-clay); font-size: 1rem; margin-bottom: 1.25rem; }
-  .init-blurb { max-width: 640px; margin: 0 auto; color: var(--color-humus); line-height: 1.7; font-size: 1.1rem; }
-  .init-actions { margin-top: 1.75rem; display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
-  .init-body { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 3rem; line-height: 1.75; color: var(--color-bark); }
-  .init-body h1, .init-body h2, .init-body h3 { font-family: var(--font-display); color: var(--color-bark); margin: 1.5rem 0 0.6rem; }
-  .init-body p { margin: 0 0 1rem; }
-  .init-back { max-width: 720px; margin: 0 auto 3rem; padding: 0 1.5rem; }
-  .init-back a { color: var(--color-commons-dark); font-size: 0.95rem; text-decoration: none; }
+  /* README body: readable prose within the shared design system */
+  .initiative-readme { max-width: 760px; margin: 0 auto; line-height: 1.8; color: var(--color-bark, #2b2a26); }
+  .initiative-readme h1, .initiative-readme h2, .initiative-readme h3 { font-family: var(--font-display); margin: 1.6rem 0 0.6rem; }
+  .initiative-readme p { margin: 0 0 1rem; }
+  .initiative-readme ul, .initiative-readme ol { margin: 0 0 1rem 1.4rem; }
+  .initiative-readme a { color: var(--color-commons-dark, #2f6b4f); }
 </style>
 {% endblock %}
 
 {% block content %}
-<section class="init-hero">
-  <span class="init-badge{% if initiative.status == 'coming_soon' %} init-badge--soon{% endif %}">
-    {%- if initiative.status == 'active' -%}
-      {% if lang == 'de' %}Aktiv{% elif lang == 'pl' %}Aktywna{% elif lang == 'uk' %}Активна{% else %}Active{% endif %}
-    {%- elif initiative.status == 'forming' -%}
-      {% if lang == 'de' %}In Entstehung{% elif lang == 'pl' %}W tworzeniu{% elif lang == 'uk' %}Формується{% else %}Forming{% endif %}
-    {%- else -%}
-      {% if lang == 'de' %}Bald{% elif lang == 'pl' %}Wkrótce{% elif lang == 'uk' %}Незабаром{% else %}Coming soon{% endif %}
-    {%- endif -%}
-  </span>
-  <h1>{{ initiative.name }}</h1>
-  {% if initiative.location %}<div class="init-loc">{{ initiative.location }}</div>{% endif %}
-  <p class="init-blurb">{{ initiative.blurb_for(lang) }}</p>
-  <div class="init-actions">
-    {% if initiative.url %}
-    <a class="btn btn-primary" href="{{ initiative.url }}" target="_blank" rel="noopener">
-      {% if lang == 'de' %}Website besuchen{% elif lang == 'pl' %}Odwiedź stronę{% elif lang == 'uk' %}Відвідати сайт{% else %}Visit website{% endif %}
-    </a>
-    {% endif %}
-  </div>
+{% set status_label %}
+  {%- if initiative.status == 'active' -%}
+    {% if lang == 'de' %}Aktiv{% elif lang == 'pl' %}Aktywna{% elif lang == 'uk' %}Активна{% else %}Active{% endif %}
+  {%- elif initiative.status == 'forming' -%}
+    {% if lang == 'de' %}In Entstehung{% elif lang == 'pl' %}W tworzeniu{% elif lang == 'uk' %}Формується{% else %}Forming{% endif %}
+  {%- else -%}
+    {% if lang == 'de' %}Bald{% elif lang == 'pl' %}Wkrótce{% elif lang == 'uk' %}Незабаром{% else %}Coming soon{% endif %}
+  {%- endif -%}
+{% endset %}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-bg"></div>
+
+    <div class="container">
+        <blockquote class="hero-quote">
+            <p>
+                {% if lang == 'de' %}„Wir sind aufgerufen, Architekten der Zukunft zu sein, nicht ihre Opfer."
+                {% elif lang == 'pl' %}„Jesteśmy powołani, by być architektami przyszłości, nie jej ofiarami."
+                {% elif lang == 'uk' %}«Ми покликані бути архітекторами майбутнього, а не його жертвами.»
+                {% else %}"We are called to be architects of the future, not its victims."{% endif %}
+            </p>
+            <cite>— Buckminster Fuller</cite>
+        </blockquote>
+    </div>
+
+    <div class="container hero-content">
+        <span class="hero-eyebrow">
+            {% if lang == 'de' %}Eine Erdpuls-Initiative{% elif lang == 'pl' %}Inicjatywa Erdpuls{% elif lang == 'uk' %}Ініціатива Erdpuls{% else %}An Erdpuls Initiative{% endif %}
+            · {{ status_label }}
+        </span>
+        <h1 class="hero-title">{{ initiative.name }}</h1>
+        <p class="hero-tagline">{{ initiative.blurb_for(lang) }}</p>
+        {% if initiative.location %}
+        <p class="hero-subtitle">{{ initiative.location }}</p>
+        {% endif %}
+        <div class="hero-features">
+            {% if initiative.location %}
+            <div class="hero-feature">
+                <span class="feature-icon">📍</span>
+                <span class="feature-text">{{ initiative.location }}</span>
+            </div>
+            {% endif %}
+            <div class="hero-feature">
+                <span class="feature-icon">🌱</span>
+                <span class="feature-text">
+                    {% if lang == 'de' %}Ortsbezogene Umsetzung des offenen Erdpuls-Protokolls{% elif lang == 'pl' %}Lokalne wdrożenie otwartego protokołu Erdpuls{% elif lang == 'uk' %}Місцеве впровадження відкритого протоколу Erdpuls{% else %}A place-based implementation of the open Erdpuls protocol{% endif %}
+                </span>
+            </div>
+            {% if initiative.url %}
+            <div class="hero-feature">
+                <span class="feature-icon">🔗</span>
+                <span class="feature-text"><a href="{{ initiative.url }}" target="_blank" rel="noopener">{{ initiative.url }}</a></span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="hero-decoration">
+        <div class="organic-shape"></div>
+        <div class="organic-shape organic-shape-2"></div>
+    </div>
 </section>
 
+<!-- About this initiative (from its data-folder README) -->
 {% if body_html %}
-<article class="init-body">
-  {{ body_html | safe }}
-</article>
+<section class="section" id="about">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">
+                {% if lang == 'de' %}Über diese Initiative{% elif lang == 'pl' %}O tej inicjatywie{% elif lang == 'uk' %}Про цю ініціативу{% else %}About this initiative{% endif %}
+            </span>
+        </div>
+        <div class="initiative-readme">
+            {{ body_html | safe }}
+        </div>
+    </div>
+</section>
 {% endif %}
 
-<div class="init-back">
-  <a href="/">← {% if lang == 'de' %}Alle Erdpuls-Initiativen{% elif lang == 'pl' %}Wszystkie inicjatywy Erdpuls{% elif lang == 'uk' %}Усі ініціативи Erdpuls{% else %}All Erdpuls initiatives{% endif %}</a>
-</div>
+<!-- Philosophy Section (shared Erdpuls protocol) -->
+<section class="section {% if not body_html %}section-alt{% endif %}" id="philosophy">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">
+                {% if lang == 'de' %}Philosophie{% elif lang == 'pl' %}Filozofia{% elif lang == 'uk' %}Філософія{% else %}Philosophy{% endif %}
+            </span>
+            <h2 class="section-title">
+                {% if lang == 'de' %}Was wäre, wenn Technologie und Natur keine<br>Gegensätze wären, sondern <em>komplementär</em>?
+                {% elif lang == 'pl' %}Co jeśli technologia i natura nie są<br>przeciwieństwami, lecz <em>komplementarne</em>?
+                {% elif lang == 'uk' %}Що, якби технологія та природа були не<br>протилежностями, а <em>взаємодоповненням</em>?
+                {% else %}What if technology and nature are not<br>opposites but <em>complementary</em>?{% endif %}
+            </h2>
+        </div>
+        <div class="philosophy-grid">
+            <article class="card philosophy-card">
+                <div class="card-icon">🌿</div>
+                <h3 class="card-title">{% if lang == 'de' %}Verwurzelung{% elif lang == 'pl' %}Zakorzenienie{% elif lang == 'uk' %}Укоріненість{% else %}Rootedness{% endif %}</h3>
+                <p class="card-text">
+                    {% if lang == 'de' %}Wie eine Pflanze, die sich an ihren Ort bindet, entdecken wir die Kraft des Bleibens, der Zugehörigkeit, der tiefen Beziehung zu einem Ort wieder.
+                    {% elif lang == 'pl' %}Jak roślina związana z miejscem, odkrywamy na nowo siłę pozostawania, przynależności, głębokiej relacji z jednym miejscem.
+                    {% elif lang == 'uk' %}Як рослина, вкорінена в місці, ми знову відкриваємо силу залишатися, належати, мати глибокий зв’язок з одним місцем.
+                    {% else %}Like a plant committed to place, we rediscover the power of staying, of belonging, of deep relationship with one place.{% endif %}
+                </p>
+            </article>
+            <article class="card philosophy-card">
+                <div class="card-icon">🤝</div>
+                <h3 class="card-title">{% if lang == 'de' %}Reziprozität{% elif lang == 'pl' %}Wzajemność{% elif lang == 'uk' %}Взаємність{% else %}Reciprocity{% endif %}</h3>
+                <p class="card-text">
+                    {% if lang == 'de' %}Basierend auf Ubuntu — „Ich bin, weil wir sind" — erkennt unser Wirtschaftsmodell, dass Wert in vielen Richtungen fließt.
+                    {% elif lang == 'pl' %}Czerpiąc z Ubuntu — „Jestem, ponieważ jesteśmy" — nasz model ekonomiczny uznaje, że wartość płynie w wielu kierunkach.
+                    {% elif lang == 'uk' %}Спираючись на Ubuntu — «Я є, бо ми є» — наша економічна модель визнає, що цінність тече в багатьох напрямках.
+                    {% else %}Drawing from Ubuntu — "I am because we are" — our economic model recognizes that value flows in multiple directions.{% endif %}
+                </p>
+            </article>
+            <article class="card philosophy-card">
+                <div class="card-icon">🔄</div>
+                <h3 class="card-title">{% if lang == 'de' %}Symbiose{% elif lang == 'pl' %}Symbioza{% elif lang == 'uk' %}Симбіоз{% else %}Symbiosis{% endif %}</h3>
+                <p class="card-text">
+                    {% if lang == 'de' %}Technologie und Natur bewahren ihre unterschiedlichen Identitäten und unterstützen sich gegenseitig. Digitale Werkzeuge dienen dem ökologischen Bewusstsein.
+                    {% elif lang == 'pl' %}Technologia i natura zachowują swoje odrębne tożsamości, wspierając się nawzajem. Narzędzia cyfrowe służą świadomości ekologicznej.
+                    {% elif lang == 'uk' %}Технологія та природа зберігають свої окремі ідентичності, підтримуючи одна одну. Цифрові інструменти служать екологічній свідомості.
+                    {% else %}Technology and nature maintain their distinct identities while supporting each other. Digital tools serve ecological awareness.{% endif %}
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- Three Streams (shared Erdpuls approach) -->
+<section class="section section-alt" id="approach">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">{% if lang == 'de' %}Unser Ansatz{% elif lang == 'pl' %}Nasze podejście{% elif lang == 'uk' %}Наш підхід{% else %}Our Approach{% endif %}</span>
+            <h2 class="section-title">{% if lang == 'de' %}Drei Ströme, ein Fluss{% elif lang == 'pl' %}Trzy strumienie, jedna rzeka{% elif lang == 'uk' %}Три потоки, одна річка{% else %}Three streams, one river{% endif %}</h2>
+        </div>
+        <div class="streams-grid">
+            <article class="stream-card">
+                <span class="stream-meta">{% if lang == 'de' %}Der Kopf{% elif lang == 'pl' %}Głowa{% elif lang == 'uk' %}Голова{% else %}The Head{% endif %}</span>
+                <h3 class="stream-title">{% if lang == 'de' %}Nachhaltigkeitskompetenz{% elif lang == 'pl' %}Kompetencje zrównoważonego rozwoju{% elif lang == 'uk' %}Грамотність зі сталого розвитку{% else %}Sustainability Literacy{% endif %}</h3>
+                <p class="stream-text">
+                    {% if lang == 'de' %}Rigoroses Verständnis komplexer Systeme, Datenkompetenz und wissenschaftliche Methodik. Sensornetzwerke machen das Unsichtbare sichtbar.
+                    {% elif lang == 'pl' %}Rygorystyczne rozumienie złożonych systemów, umiejętność analizy danych i metoda naukowa. Sieci sensorów czynią niewidzialne widocznym.
+                    {% elif lang == 'uk' %}Ретельне розуміння складних систем, грамотність щодо даних і науковий метод. Сенсорні мережі роблять невидиме видимим.
+                    {% else %}Rigorous understanding of complex systems, data literacy, and the scientific method. Sensor networks make the invisible visible.{% endif %}
+                </p>
+                <span class="stream-icon">🔬</span>
+            </article>
+            <article class="stream-card highlight">
+                <span class="stream-meta">{% if lang == 'de' %}Die Hände{% elif lang == 'pl' %}Ręce{% elif lang == 'uk' %}Руки{% else %}The Hands{% endif %}</span>
+                <h3 class="stream-title">{% if lang == 'de' %}Permakultur-Design{% elif lang == 'pl' %}Projektowanie permakultury{% elif lang == 'uk' %}Дизайн пермакультури{% else %}Permaculture Design{% endif %}</h3>
+                <p class="stream-text">
+                    {% if lang == 'de' %}Praktische Muster aus lebenden Ökosystemen. Regeneratives Design und ganzheitliches Denken durch direktes Handeln im Garten.
+                    {% elif lang == 'pl' %}Praktyczne wzorce z żywych ekosystemów. Regeneracyjne projektowanie i myślenie całościowe poprzez bezpośrednie działanie w ogrodzie.
+                    {% elif lang == 'uk' %}Практичні патерни з живих екосистем. Регенеративний дизайн і цілісне мислення через безпосередню дію в саду.
+                    {% else %}Practical patterns from living ecosystems. Regenerative design and whole-systems thinking applied through direct action in the garden.{% endif %}
+                </p>
+                <span class="stream-icon">🌻</span>
+            </article>
+            <article class="stream-card">
+                <span class="stream-meta">{% if lang == 'de' %}Das Herz{% elif lang == 'pl' %}Serce{% elif lang == 'uk' %}Серце{% else %}The Heart{% endif %}</span>
+                <h3 class="stream-title">{% if lang == 'de' %}Kontemplative Praxis{% elif lang == 'pl' %}Praktyka kontemplacyjna{% elif lang == 'uk' %}Споглядальна практика{% else %}Contemplative Practice{% endif %}</h3>
+                <p class="stream-text">
+                    {% if lang == 'de' %}Tiefe Wahrnehmung durch goetheanistische Wissenschaft und phänomenologische Beobachtung. Lernen, „wie eine Pflanze zu denken".
+                    {% elif lang == 'pl' %}Głęboka percepcja poprzez naukę goetheanistyczną i obserwację fenomenologiczną. Nauka „myślenia jak roślina".
+                    {% elif lang == 'uk' %}Глибоке сприйняття через ґетеанську науку та феноменологічне спостереження. Навчання «мислити як рослина».
+                    {% else %}Deep perception through Goethean science and phenomenological observation. Learning to "think like a plant".{% endif %}
+                </p>
+                <span class="stream-icon">🧘</span>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- Quote (shared) -->
+<section class="quote-section">
+    <div class="quote-container">
+        <blockquote class="quote-text">
+            {% if lang == 'de' %}„Man verändert nie etwas, indem man die bestehende Realität bekämpft. Um etwas zu verändern, baue ein neues Modell, das das bestehende Modell überflüssig macht."
+            {% elif lang == 'pl' %}„Nigdy niczego nie zmienisz, walcząc z istniejącą rzeczywistością. Aby coś zmienić, zbuduj nowy model, który sprawi, że istniejący stanie się przestarzały."
+            {% elif lang == 'uk' %}«Ти ніколи не зміниш нічого, борючись з наявною реальністю. Щоб змінити щось, побудуй нову модель, яка зробить стару застарілою.»
+            {% else %}"You never change things by fighting the existing reality. To change something, build a new model that makes the existing model obsolete."{% endif %}
+        </blockquote>
+        <p class="quote-attribution">
+            <strong>Buckminster Fuller</strong>
+            {% if lang == 'de' %}Designer, Systemtheoretiker{% elif lang == 'pl' %}Projektant, teoretyk systemów{% elif lang == 'uk' %}Дизайнер, теоретик систем{% else %}Designer, Systems Theorist{% endif %}
+        </p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="cta-container">
+        <h2 class="cta-title">{% if lang == 'de' %}Bereit, wie eine Pflanze zu denken?{% elif lang == 'pl' %}Gotowy myśleć jak roślina?{% elif lang == 'uk' %}Готові мислити як рослина?{% else %}Ready to think like a plant?{% endif %}</h2>
+        <p class="cta-text">
+            {% if lang == 'de' %}Jede Gemeinschaft kann das offene Erdpuls-Protokoll auf ihrem eigenen Grund umsetzen. Entdecke das Netzwerk oder das zugrunde liegende Modell.
+            {% elif lang == 'pl' %}Każda społeczność może wdrożyć otwarty protokół Erdpuls na własnej ziemi. Poznaj sieć lub leżący u jej podstaw model.
+            {% elif lang == 'uk' %}Будь-яка громада може впровадити відкритий протокол Erdpuls на власній землі. Досліди мережу або базову модель.
+            {% else %}Any community can run the open Erdpuls protocol on its own ground. Explore the network or the model behind it.{% endif %}
+        </p>
+        <div class="cta-buttons">
+            {% if initiative.url %}
+            <a href="{{ initiative.url }}" target="_blank" rel="noopener" class="btn btn-primary">
+                {% if lang == 'de' %}Website besuchen →{% elif lang == 'pl' %}Odwiedź stronę →{% elif lang == 'uk' %}Відвідати сайт →{% else %}Visit website →{% endif %}
+            </a>
+            {% endif %}
+            <a href="/" class="btn btn-secondary">
+                {% if lang == 'de' %}Alle Initiativen{% elif lang == 'pl' %}Wszystkie inicjatywy{% elif lang == 'uk' %}Усі ініціативи{% else %}All initiatives{% endif %}
+            </a>
+            <a href="/model" class="btn btn-outline">
+                {% if lang == 'de' %}Über unser Modell{% elif lang == 'pl' %}O naszym modelu{% elif lang == 'uk' %}Про нашу модель{% else %}About our model{% endif %}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const header = document.getElementById('header');
+    if (header) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) { header.classList.add('scrolled'); }
+            else { header.classList.remove('scrolled'); }
+        });
+    }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.philosophy-card, .stream-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.6s ease';
+        observer.observe(el);
+    });
+</script>
 {% endblock %}
