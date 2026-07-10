@@ -4,6 +4,13 @@
 {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj{% else %}Login{% endif %}
 {% endblock %}
 
+{% block head %}
+<style>
+  .show-password label { display: inline-flex; align-items: center; gap: .5rem; font-weight: 400; font-size: .9rem; color: var(--color-clay, #6b6459); cursor: pointer; }
+  .show-password input[type="checkbox"] { width: auto; margin: 0; }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="auth-page">
     <div class="container">
@@ -67,7 +74,11 @@
                 
                 <div class="form-group">
                     <label for="password">{% if lang == 'de' %}Passwort{% elif lang == 'pl' %}Hasło{% else %}Password{% endif %}</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="password" required data-pw>
+                </div>
+
+                <div class="form-group show-password">
+                    <label><input type="checkbox" data-toggle-pw> {% if lang == 'de' %}Passwort anzeigen{% elif lang == 'pl' %}Pokaż hasło{% elif lang == 'uk' %}Показати пароль{% else %}Show password{% endif %}</label>
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-full">
@@ -97,4 +108,17 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('[data-toggle-pw]').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      var scope = cb.closest('form') || document;
+      scope.querySelectorAll('[data-pw]').forEach(function (inp) {
+        inp.type = cb.checked ? 'text' : 'password';
+      });
+    });
+  });
+</script>
 {% endblock %}
