@@ -25,6 +25,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..auth import get_current_user_optional
 from ..initiatives import get_initiative, initiative_data_path
+from ..models import Offering
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -64,6 +65,22 @@ def initiative_page(slug: str, request: Request, db: Session = Depends(get_db)):
     user = get_current_user_optional(request, db)
     body_html = _read_initiative_readme(slug)
 
+    # Current network offerings (Collective Threshold Model). Offerings are not
+    # yet scoped per-initiative in the schema, so this is the same global set the
+    # Müllrose reference page shows. Same computed fields the template expects.
+    offerings = (
+        db.query(Offering)
+        .filter(Offering.status.in_(["open", "threshold_met"]))
+        .order_by(Offering.event_date)
+        .limit(3)
+        .all()
+    )
+    for o in offerings:
+        o._total = o.get_total_contributed(db)
+        o._reg_count = o.get_registration_count(db)
+        o._percent = round((float(o._total) / float(o.threshold_amount)) * 100, 1) if o.threshold_amount else 0
+        o._threshold_reached = float(o._total) >= float(o.threshold_amount)
+
     return templates.TemplateResponse(
         "initiative.html",
         {
@@ -72,5 +89,6 @@ def initiative_page(slug: str, request: Request, db: Session = Depends(get_db)):
             "user": user,
             "initiative": initiative,
             "body_html": body_html,
+            "offerings": offerings,
         },
     )

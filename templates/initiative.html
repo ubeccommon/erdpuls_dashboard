@@ -203,6 +203,84 @@
     </div>
 </section>
 
+<!-- Offerings (network-wide current offerings; shared collective threshold model) -->
+<section class="offerings-section" id="offerings">
+    <div class="container">
+        <div class="offerings-header">
+            <div class="section-header">
+                <span class="section-eyebrow">
+                    {% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% elif lang == 'uk' %}Модель колективного порогу{% else %}Collective Threshold Model{% endif %}
+                </span>
+                <h2 class="section-title">
+                    {% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne oferty{% elif lang == 'uk' %}Поточні пропозиції{% else %}Current Offerings{% endif %}
+                </h2>
+            </div>
+            <a href="/fund" class="btn btn-secondary">
+                {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% elif lang == 'uk' %}Фонд регенерації{% else %}Regeneration Fund{% endif %} →
+            </a>
+        </div>
+
+        <div class="offerings-grid">
+            {% if offerings %}
+                {% for offering in offerings %}
+                <article class="offering-card">
+                    <div class="offering-visual">
+                        <span class="offering-visual-icon">🌱</span>
+                    </div>
+                    <div class="offering-content">
+                        <span class="offering-badge">
+                            {% if offering.status == 'open' %}
+                                {% if lang == 'de' %}Offen für Beiträge{% elif lang == 'pl' %}Otwarte na wpłaty{% elif lang == 'uk' %}Відкрито для внесків{% else %}Open for Contributions{% endif %}
+                            {% elif offering.status == 'threshold_met' %}
+                                {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% elif lang == 'uk' %}Поріг досягнуто{% else %}Threshold Met{% endif %}
+                            {% else %}
+                                {{ offering.status|capitalize }}
+                            {% endif %}
+                        </span>
+                        <h3 class="offering-title">{{ offering.get_title(lang) }}</h3>
+                        <p class="offering-desc">{{ offering.get_description(lang)|truncate(150) }}</p>
+
+                        <div class="offering-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill {% if offering._threshold_reached %}threshold-reached{% endif %}"
+                                     style="width: {{ [offering._percent, 100]|min }}%"></div>
+                            </div>
+                            <div class="progress-stats">
+                                <span><strong>€{{ "%.0f"|format(offering._total) }}</strong> {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% elif lang == 'uk' %}з{% else %}of{% endif %} €{{ "%.0f"|format(offering.threshold_amount) }}</span>
+                                <span><strong>{{ "%.0f"|format(offering._percent) }}%</strong> {% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% elif lang == 'uk' %}профінансовано{% else %}funded{% endif %}</span>
+                            </div>
+                        </div>
+
+                        <div class="offering-footer">
+                            <a href="/offering/{{ offering.id }}" class="btn btn-primary">
+                                {% if lang == 'de' %}Teilnehmen{% elif lang == 'pl' %}Weź udział{% elif lang == 'uk' %}Взяти участь{% else %}Participate{% endif %}
+                            </a>
+                            <a href="/offering/{{ offering.id }}/contribute" class="btn btn-secondary">
+                                {% if lang == 'de' %}Beitragen{% elif lang == 'pl' %}Wspieraj{% elif lang == 'uk' %}Зробити внесок{% else %}Contribute{% endif %}
+                            </a>
+                            <a href="/offering/{{ offering.id }}" class="btn btn-outline">
+                                {% if lang == 'de' %}Mehr erfahren{% elif lang == 'pl' %}Dowiedz się więcej{% elif lang == 'uk' %}Дізнатися більше{% else %}Learn More{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            {% else %}
+                <div class="no-offerings">
+                    <div class="no-offerings-icon">🌱</div>
+                    <h3>{% if lang == 'de' %}Demnächst{% elif lang == 'pl' %}Wkrótce{% elif lang == 'uk' %}Незабаром{% else %}Coming Soon{% endif %}</h3>
+                    <p>
+                        {% if lang == 'de' %}Neue Angebote werden vorbereitet. Schauen Sie bald wieder vorbei!
+                        {% elif lang == 'pl' %}Nowe oferty są przygotowywane. Wróć wkrótce!
+                        {% elif lang == 'uk' %}Нові пропозиції готуються. Завітайте згодом!
+                        {% else %}New offerings are being prepared. Check back soon!{% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
 <!-- CTA -->
 <section class="cta-section">
     <div class="cta-container">
@@ -247,7 +325,7 @@
             }
         });
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-    document.querySelectorAll('.philosophy-card, .stream-card').forEach(el => {
+    document.querySelectorAll('.philosophy-card, .stream-card, .offering-card').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
         el.style.transition = 'all 0.6s ease';
