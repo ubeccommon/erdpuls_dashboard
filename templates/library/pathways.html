@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block title %}
-  {% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% else %}Learning Pathway Maps{% endif %}
-  — Erdpuls Müllrose
+  {% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% elif lang == 'uk' %}Карти навчальних шляхів{% else %}Learning Pathway Maps{% endif %}
+  — Erdpuls
 {% endblock %}
 
 {% block content %}
@@ -11,12 +11,12 @@
   <!-- Slim toolbar: back link, lang switcher, open in new tab -->
   <div class="pathways-toolbar">
     <a href="/library" class="toolbar-back">
-      {% if lang == 'de' %}← Bibliothek{% elif lang == 'pl' %}← Biblioteka{% else %}← Library{% endif %}
+      {% if lang == 'de' %}← Bibliothek{% elif lang == 'pl' %}← Biblioteka{% elif lang == 'uk' %}← Бібліотека{% else %}← Library{% endif %}
     </a>
 
     <div class="toolbar-center">
       <span class="toolbar-title">
-        {% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% else %}Learning Pathway Maps{% endif %}
+        {% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% elif lang == 'uk' %}Карти навчальних шляхів{% else %}Learning Pathway Maps{% endif %}
       </span>
       <span class="toolbar-attribution">
         © Michel Garand |
@@ -44,7 +44,7 @@
   <iframe
     src="{{ embed_url }}"
     class="pathways-frame"
-    title="{% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% else %}Learning Pathway Maps{% endif %}"
+    title="{% if lang == 'de' %}Lernpfad-Karten{% elif lang == 'pl' %}Mapy Ścieżek{% elif lang == 'uk' %}Карти навчальних шляхів{% else %}Learning Pathway Maps{% endif %}"
     loading="lazy"
     allowfullscreen
   ></iframe>
@@ -57,7 +57,7 @@
       {% elif lang == 'pl' %}
         Polska wersja jest jeszcze w przygotowaniu.
         <a href="/library/pathways?lang_override=en">Pokaż wersję angielską →</a>
-      {% else %}
+      {% elif lang == 'uk' %}Ця мовна версія ще недоступна. <a href="/library/pathways?lang_override=en">Переглянути англійську версію →</a>{% else %}
         This language version is not yet available.
         <a href="/library/pathways?lang_override=en">View English version →</a>
       {% endif %}

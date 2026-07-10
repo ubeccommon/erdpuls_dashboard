@@ -9,7 +9,7 @@
     <!-- Breadcrumb -->
     <nav class="breadcrumb">
       <a href="/library">
-        {% if lang == 'de' %}← Bibliothek{% elif lang == 'pl' %}← Biblioteka{% else %}← Library{% endif %}
+        {% if lang == 'de' %}← Bibliothek{% elif lang == 'pl' %}← Biblioteka{% elif lang == 'uk' %}← Бібліотека{% else %}← Library{% endif %}
       </a>
     </nav>
 
@@ -30,7 +30,7 @@
           PDF ↓
         </a>
         <a href="{{ resource.github_pages_url }}" target="_blank" rel="noopener" class="btn btn-outline">
-          {% if lang == 'de' %}Original-Seite ↗{% elif lang == 'pl' %}Strona oryginalna ↗{% else %}Original page ↗{% endif %}
+          {% if lang == 'de' %}Original-Seite ↗{% elif lang == 'pl' %}Strona oryginalna ↗{% elif lang == 'uk' %}Оригінальна сторінка ↗{% else %}Original page ↗{% endif %}
         </a>
       </div>
     </header>
@@ -55,7 +55,7 @@
           {% elif lang == 'pl' %}
             Materiał jest dostępny jako OER i objęty licencją
             <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
-          {% else %}
+          {% elif lang == 'uk' %}Цей матеріал доступний як відкритий освітній ресурс (OER) за ліцензією <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">Creative Commons Attribution – NonCommercial – ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>.{% else %}
             This material is available as an Open Educational Resource (OER) and licensed under
             <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">
               Creative Commons Attribution – NonCommercial – ShareAlike 4.0 International (CC BY-NC-SA 4.0)

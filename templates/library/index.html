@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block title %}
-  {% if lang == 'de' %}OER-Bibliothek{% elif lang == 'pl' %}Biblioteka OER{% else %}OER Library{% endif %}
-  — Erdpuls Müllrose
+  {% if lang == 'de' %}OER-Bibliothek{% elif lang == 'pl' %}Biblioteka OER{% elif lang == 'uk' %}Бібліотека OER{% else %}OER Library{% endif %}
+  — Erdpuls
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,7 @@
       <h1>
         {% if lang == 'de' %}Lernmaterialien (OER)
         {% elif lang == 'pl' %}Materiały edukacyjne (OER)
-        {% else %}Learning Resources (OER)
+        {% elif lang == 'uk' %}Навчальні ресурси (OER){% else %}Learning Resources (OER)
         {% endif %}
       </h1>
       <p class="page-subtitle">
@@ -22,7 +22,7 @@
           Open Educational Resources aus dem Erdpuls-Projekt — frei verfügbar unter CC BY-NC-SA 4.0.
         {% elif lang == 'pl' %}
           Otwarte zasoby edukacyjne projektu Erdpuls — dostępne na licencji CC BY-NC-SA 4.0.
-        {% else %}
+        {% elif lang == 'uk' %}Відкриті освітні ресурси проєкту Erdpuls — вільно доступні за ліцензією CC BY-NC-SA 4.0.{% else %}
           Open Educational Resources from the Erdpuls project — freely available under CC BY-NC-SA 4.0.
         {% endif %}
       </p>
@@ -31,7 +31,7 @@
     <!-- Language filter -->
     <div class="library-filters">
       <a href="/library" class="filter-btn {% if not lang_filter %}active{% endif %}">
-        {% if lang == 'de' %}Alle{% elif lang == 'pl' %}Wszystkie{% else %}All{% endif %}
+        {% if lang == 'de' %}Alle{% elif lang == 'pl' %}Wszystkie{% elif lang == 'uk' %}Усі{% else %}All{% endif %}
       </a>
       <a href="/library?lang_filter=en" class="filter-btn {% if lang_filter == 'en' %}active{% endif %}">English</a>
       <a href="/library?lang_filter=de" class="filter-btn {% if lang_filter == 'de' %}active{% endif %}">Deutsch</a>
@@ -44,7 +44,7 @@
       <p>
         {% if lang == 'de' %}Materialien konnten nicht geladen werden. Bitte versuchen Sie es später erneut.
         {% elif lang == 'pl' %}Nie można załadować materiałów. Spróbuj ponownie później.
-        {% else %}Could not load resources. Please try again later.
+        {% elif lang == 'uk' %}Не вдалося завантажити ресурси. Спробуйте пізніше.{% else %}Could not load resources. Please try again later.
         {% endif %}
         <br><small>{{ error }}</small>
       </p>
@@ -57,7 +57,7 @@
       <p>
         {% if lang == 'de' %}Keine Materialien gefunden.
         {% elif lang == 'pl' %}Nie znaleziono materiałów.
-        {% else %}No resources found.
+        {% elif lang == 'uk' %}Ресурсів не знайдено.{% else %}No resources found.
         {% endif %}
       </p>
     </div>
@@ -73,11 +73,11 @@
           {% set label = collection_labels.get(collection_key, {}) %}
           {% if lang == 'de' %}{{ label.get('de', collection_key) }}
           {% elif lang == 'pl' %}{{ label.get('pl', collection_key) }}
-          {% else %}{{ label.get('en', collection_key) }}
+          {% elif lang == 'uk' %}{{ label.get('uk', label.get('en', collection_key)) }}{% else %}{{ label.get('en', collection_key) }}
           {% endif %}
         </h2>
         <span class="collection-count">{{ resources | length }}
-          {% if lang == 'de' %}Dokumente{% elif lang == 'pl' %}dokumenty{% else %}documents{% endif %}
+          {% if lang == 'de' %}Dokumente{% elif lang == 'pl' %}dokumenty{% elif lang == 'uk' %}документи{% else %}documents{% endif %}
         </span>
       </div>
 
@@ -86,12 +86,12 @@
       <div class="featured-card">
         <div class="featured-card-inner">
           <div class="featured-label">
-            {% if lang == 'de' %}Interaktiv{% elif lang == 'pl' %}Interaktywny{% else %}Interactive{% endif %}
+            {% if lang == 'de' %}Interaktiv{% elif lang == 'pl' %}Interaktywny{% elif lang == 'uk' %}Інтерактивні{% else %}Interactive{% endif %}
           </div>
           <h2 class="featured-title">
             {% if lang == 'de' %}Lernpfad-Karten
             {% elif lang == 'pl' %}Mapy Ścieżek Uczenia
-            {% else %}Learning Pathway Maps
+            {% elif lang == 'uk' %}Карти навчальних шляхів{% else %}Learning Pathway Maps
             {% endif %}
           </h2>
           <p class="featured-description">
@@ -99,7 +99,7 @@
               Fünf Zielgruppen-Pfade, die die Werte-Handlungs-Lücke überbrücken — mit Token-Ökonomie-Integration und 4A-Tiefe.
             {% elif lang == 'pl' %}
               Pięć ścieżek dla grup docelowych, łączących lukę między wartościami a działaniem — z integracją ekonomii tokenów.
-            {% else %}
+            {% elif lang == 'uk' %}П’ять шляхів для цільових груп, що долають розрив між цінностями та дією — з глибиною підходу 4A та інтеграцією токенової економіки.{% else %}
               Five target-group pathways bridging the Values-Action Gap — with 4A-pathway depth and token economy integration.
             {% endif %}
           </p>
@@ -111,7 +111,7 @@
           <a href="/library/pathways" class="btn btn-primary">
             {% if lang == 'de' %}Karten erkunden →
             {% elif lang == 'pl' %}Przeglądaj mapy →
-            {% else %}Explore Maps →
+            {% elif lang == 'uk' %}Переглянути карти →{% else %}Explore Maps →
             {% endif %}
           </a>
         </div>
@@ -140,7 +140,7 @@
 
           <div class="resource-actions">
             <a href="/library/resource?path={{ res.path | urlencode }}" class="btn btn-primary btn-sm">
-              {% if lang == 'de' %}Lesen{% elif lang == 'pl' %}Czytaj{% else %}Read{% endif %}
+              {% if lang == 'de' %}Lesen{% elif lang == 'pl' %}Czytaj{% elif lang == 'uk' %}Читати{% else %}Read{% endif %}
             </a>
             <a href="{{ res.raw_md_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">MD ↓</a>
             {% if res.pdf_url %}
@@ -162,11 +162,11 @@
         {% elif lang == 'pl' %}
           Materiał jest dostępny jako Otwarte Zasoby Edukacyjne (OER) i objęty licencją
           <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
-        {% else %}
+        {% elif lang == 'uk' %}Цей матеріал доступний як відкритий освітній ресурс (OER) за ліцензією <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.{% else %}
           This material is available as an Open Educational Resource (OER) licensed under
           <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
         {% endif %}
-        <br>© Michel Garand | Erdpuls Müllrose
+        <br>© Michel Garand | Erdpuls
       </p>
     </div>
 
