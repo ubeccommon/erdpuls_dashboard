@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% else %}Collective Threshold Model{% endif %}
+{% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% elif lang == 'uk' %}Модель колективного порогу{% else %}Collective Threshold Model{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -9,14 +9,14 @@
 <section class="page-hero">
     <div class="container">
         <span class="hero-eyebrow">
-            {% if lang == 'de' %}Reziproke Ökonomie{% elif lang == 'pl' %}Ekonomia Wzajemności{% else %}Reciprocal Economics{% endif %}
+            {% if lang == 'de' %}Reziproke Ökonomie{% elif lang == 'pl' %}Ekonomia Wzajemności{% elif lang == 'uk' %}Економіка взаємності{% else %}Reciprocal Economics{% endif %}
         </span>
         <h1 class="page-title">
             {% if lang == 'de' %}
                 Das Kollektive Schwellenmodell
             {% elif lang == 'pl' %}
                 Model Progu Zbiorowego
-            {% else %}
+            {% elif lang == 'uk' %}Модель колективного порогу{% else %}
                 The Collective Threshold Model
             {% endif %}
         </h1>
@@ -25,7 +25,7 @@
                 Ein gemeinschaftsgetragener Ansatz für reziproke Ökonomie. Die Gemeinschaft hält jedes Angebot gemeinsam ins Sein.
             {% elif lang == 'pl' %}
                 Podejście do ekonomii wzajemności oparte na wspólnocie. Społeczność wspólnie utrzymuje każdą ofertę w istnieniu.
-            {% else %}
+            {% elif lang == 'uk' %}Спільнотний підхід до економіки взаємності. Спільнота разом втілює кожну пропозицію в буття.{% else %}
                 A community-held approach to reciprocal economics. The community holds each offering into being together.
             {% endif %}
         </p>
@@ -40,7 +40,7 @@
                 „Die Schaffung von tausend Wäldern liegt in einer Eichel."
             {% elif lang == 'pl' %}
                 „Stworzenie tysiąca lasów zawiera się w jednym żołędziu."
-            {% else %}
+            {% elif lang == 'uk' %}«Створення тисячі лісів — в одному жолуді.»{% else %}
                 "The creation of a thousand forests is in one acorn."
             {% endif %}
             <cite>— Ralph Waldo Emerson</cite>
@@ -54,14 +54,14 @@
         <div class="content-grid">
             <div class="content-main">
                 <h2>
-                    {% if lang == 'de' %}Die Einsicht: Von der Einzeltransaktion zum kollektiven Halten{% elif lang == 'pl' %}Wgląd: Od indywidualnej transakcji do zbiorowego utrzymania{% else %}The Insight: From Individual Transaction to Collective Holding{% endif %}
+                    {% if lang == 'de' %}Die Einsicht: Von der Einzeltransaktion zum kollektiven Halten{% elif lang == 'pl' %}Wgląd: Od indywidualnej transakcji do zbiorowego utrzymania{% elif lang == 'uk' %}Осяяння: від індивідуальної транзакції до колективного втілення{% else %}The Insight: From Individual Transaction to Collective Holding{% endif %}
                 </h2>
                 <p>
                     {% if lang == 'de' %}
                         Die meisten Preismodelle — selbst progressive wie Staffelpreise — basieren noch immer auf individuellen Transaktionen. Jede Person berechnet, was sie zahlen kann oder sollte. Dies schafft subtile Hierarchien: diejenigen, die den vollen Preis zahlen, diejenigen, die „Unterstützung" erhalten, diejenigen, die „Stipendien" brauchen.
                     {% elif lang == 'pl' %}
                         Większość modeli cenowych — nawet progresywnych, jak skale przesuwne — nadal opiera się na indywidualnych transakcjach. Każda osoba oblicza, ile może lub powinna zapłacić. Tworzy to subtelne hierarchie: ci, którzy płacą pełną cenę, ci, którzy otrzymują „wsparcie", ci, którzy potrzebują „stypendiów".
-                    {% else %}
+                    {% elif lang == 'uk' %}Більшість цінових моделей — навіть прогресивні, як-от гнучкі шкали — усе ще працюють на основі індивідуальної транзакції. Кожен вираховує, скільки може або має заплатити. Це створює приховані ієрархії: ті, хто платить повну ціну, ті, хто отримує «підтримку», ті, хто потребує «стипендій».{% else %}
                         Most pricing models — even progressive ones like sliding scales — still operate on an individual transaction basis. Each person calculates what they can or should pay. This creates subtle hierarchies: those who pay full price, those who receive "support," those who need "scholarships."
                     {% endif %}
                 </p>
@@ -70,7 +70,7 @@
                         Aber was wäre, wenn wir das anders angehen würden? Was wäre, wenn die Gemeinschaft <em>gemeinsam</em> jedes Angebot ins Sein halten würde?
                     {% elif lang == 'pl' %}
                         Ale co jeśli podejdziemy do tego inaczej? Co jeśli społeczność <em>wspólnie</em> utrzymywałaby każdą ofertę w istnieniu?
-                    {% else %}
+                    {% elif lang == 'uk' %}А що, якби ми підійшли до цього інакше? Що, якби спільнота <em>колективно</em> втілювала кожну пропозицію в буття?{% else %}
                         But what if we approached this differently? What if the community <em>collectively</em> held each offering into being?
                     {% endif %}
                 </p>
@@ -84,61 +84,61 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">
-                {% if lang == 'de' %}Der Mechanismus{% elif lang == 'pl' %}Mechanizm{% else %}The Mechanism{% endif %}
+                {% if lang == 'de' %}Der Mechanismus{% elif lang == 'pl' %}Mechanizm{% elif lang == 'uk' %}Механізм{% else %}The Mechanism{% endif %}
             </span>
             <h2 class="section-title">
-                {% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% else %}How It Works{% endif %}
+                {% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% elif lang == 'uk' %}Як це працює{% else %}How It Works{% endif %}
             </h2>
         </div>
         <div class="steps-grid">
             <article class="step-card">
                 <span class="step-number">1</span>
-                <h3>{% if lang == 'de' %}Transparenter Bedarf{% elif lang == 'pl' %}Transparentna potrzeba{% else %}Transparent Need{% endif %}</h3>
+                <h3>{% if lang == 'de' %}Transparenter Bedarf{% elif lang == 'pl' %}Transparentna potrzeba{% elif lang == 'uk' %}Прозора потреба{% else %}Transparent Need{% endif %}</h3>
                 <p>
                     {% if lang == 'de' %}
                         Jedes Angebot hat einen transparenten Bedarf — die Mindestressourcen, die es braucht, um stattzufinden. Dies wird offen veröffentlicht. Jeder kann genau sehen, welche Ressourcen benötigt werden und warum.
                     {% elif lang == 'pl' %}
                         Każda oferta ma transparentną potrzebę — minimalne zasoby wymagane do jej realizacji. Jest to publikowane otwarcie. Każdy może zobaczyć dokładnie, jakie zasoby są potrzebne i dlaczego.
-                    {% else %}
+                    {% elif lang == 'uk' %}Кожна пропозиція має прозору потребу — мінімум ресурсів, потрібних для її здійснення. Це оприлюднюється відкрито. Кожен бачить, які саме ресурси потрібні й чому.{% else %}
                         Each offering has a transparent need — the minimum resources required for it to happen. This is published openly. Everyone can see exactly what resources are needed and why.
                     {% endif %}
                 </p>
             </article>
             <article class="step-card">
                 <span class="step-number">2</span>
-                <h3>{% if lang == 'de' %}Absicht registrieren{% elif lang == 'pl' %}Rejestracja zamiaru{% else %}Register Intention{% endif %}</h3>
+                <h3>{% if lang == 'de' %}Absicht registrieren{% elif lang == 'pl' %}Rejestracja zamiaru{% elif lang == 'uk' %}Зареєструвати намір{% else %}Register Intention{% endif %}</h3>
                 <p>
                     {% if lang == 'de' %}
                         Menschen registrieren ihre Absicht zur Teilnahme. Dies ist getrennt vom Beitrag. Die Registrierung hilft uns, die Nachfrage zu verstehen und die Kapazität zu planen.
                     {% elif lang == 'pl' %}
                         Ludzie rejestrują zamiar uczestnictwa. Jest to oddzielone od wpłaty. Rejestracja pomaga nam zrozumieć zapotrzebowanie i zaplanować pojemność.
-                    {% else %}
+                    {% elif lang == 'uk' %}Люди реєструють свій намір взяти участь. Це відокремлено від внеску. Реєстрація допомагає нам зрозуміти попит і спланувати спроможність.{% else %}
                         People register their intention to participate. This is separate from contribution. Registration helps us understand demand and plan capacity.
                     {% endif %}
                 </p>
             </article>
             <article class="step-card">
                 <span class="step-number">3</span>
-                <h3>{% if lang == 'de' %}Anonymer Beitrag{% elif lang == 'pl' %}Anonimowa wpłata{% else %}Anonymous Contribution{% endif %}</h3>
+                <h3>{% if lang == 'de' %}Anonymer Beitrag{% elif lang == 'pl' %}Anonimowa wpłata{% elif lang == 'uk' %}Анонімний внесок{% else %}Anonymous Contribution{% endif %}</h3>
                 <p>
                     {% if lang == 'de' %}
                         Beitragende geben, was sich für sie richtig anfühlt — anonym. Die Beitragsschnittstelle zeigt nur die aktuelle Gesamtsumme im Verhältnis zur Schwelle, nicht individuelle Beträge.
                     {% elif lang == 'pl' %}
                         Wpłacający dają tyle, ile czują, że jest właściwe — anonimowo. Interfejs wpłat pokazuje tylko bieżącą sumę w stosunku do progu, nie indywidualne kwoty.
-                    {% else %}
+                    {% elif lang == 'uk' %}Учасники дають те, що вважають доречним — анонімно. Інтерфейс внеску показує лише поточну суму відносно порогу, а не окремі суми.{% else %}
                         Contributors give what feels right to them — anonymously. The contribution interface shows only the current total versus the threshold, not individual amounts.
                     {% endif %}
                 </p>
             </article>
             <article class="step-card">
                 <span class="step-number">4</span>
-                <h3>{% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}</h3>
+                <h3>{% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% elif lang == 'uk' %}Поріг досягнуто{% else %}Threshold Met{% endif %}</h3>
                 <p>
                     {% if lang == 'de' %}
                         Wenn die Schwelle erreicht wird, findet das Angebot statt! Überschüsse fließen in den Regenerationsfonds. Und <strong>niemand weiß, wer was beigetragen hat.</strong> Alle nehmen als Gleiche teil.
                     {% elif lang == 'pl' %}
                         Gdy próg zostanie osiągnięty, oferta się realizuje! Nadwyżki trafiają do Funduszu Regeneracji. I <strong>nikt nie wie, kto ile wpłacił.</strong> Wszyscy uczestniczą jako równi.
-                    {% else %}
+                    {% elif lang == 'uk' %}Коли поріг досягнуто, пропозиція відбувається! Надлишок надходить до Фонду регенерації. І <strong>ніхто не знає, хто що вніс.</strong> Усі беруть участь як рівні.{% else %}
                         When the threshold is reached, the offering takes place! Surplus flows to the Regeneration Fund. And <strong>no one knows who contributed what.</strong> Everyone participates as equals.
                     {% endif %}
                 </p>
@@ -152,24 +152,24 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">
-                {% if lang == 'de' %}Philosophische Grundlage{% elif lang == 'pl' %}Podstawa filozoficzna{% else %}Philosophical Foundation{% endif %}
+                {% if lang == 'de' %}Philosophische Grundlage{% elif lang == 'pl' %}Podstawa filozoficzna{% elif lang == 'uk' %}Філософське підґрунтя{% else %}Philosophical Foundation{% endif %}
             </span>
             <h2 class="section-title">
-                {% if lang == 'de' %}Warum Anonymität wichtig ist{% elif lang == 'pl' %}Dlaczego anonimowość ma znaczenie{% else %}Why Anonymity Matters{% endif %}
+                {% if lang == 'de' %}Warum Anonymität wichtig ist{% elif lang == 'pl' %}Dlaczego anonimowość ma znaczenie{% elif lang == 'uk' %}Чому анонімність важлива{% else %}Why Anonymity Matters{% endif %}
             </h2>
         </div>
         <div class="philosophy-grid">
             <article class="card philosophy-card">
                 <div class="card-icon">🌍</div>
                 <h3 class="card-title">
-                    {% if lang == 'de' %}Ubuntu in ökonomischer Form{% elif lang == 'pl' %}Ubuntu w formie ekonomicznej{% else %}Ubuntu in Economic Form{% endif %}
+                    {% if lang == 'de' %}Ubuntu in ökonomischer Form{% elif lang == 'pl' %}Ubuntu w formie ekonomicznej{% elif lang == 'uk' %}Ubuntu в економічній формі{% else %}Ubuntu in Economic Form{% endif %}
                 </h3>
                 <p class="card-text">
                     {% if lang == 'de' %}
                         Die afrikanische Philosophie Ubuntu lehrt: „Ich bin, weil wir sind." Das Kollektive Schwellenmodell verkörpert dieses Prinzip ökonomisch: Das Angebot existiert, weil wir es gemeinsam ermöglichen.
                     {% elif lang == 'pl' %}
                         Afrykańska filozofia Ubuntu uczy: „Jestem, ponieważ jesteśmy." Model Progu Zbiorowego ucieleśnia tę zasadę ekonomicznie: oferta istnieje, ponieważ wspólnie ją umożliwiamy.
-                    {% else %}
+                    {% elif lang == 'uk' %}Африканська філософія Ubuntu вчить: «Я є, бо ми є.» Модель колективного порогу втілює цей принцип економічно: пропозиція існує, бо ми колективно робимо її можливою.{% else %}
                         The African philosophy of Ubuntu teaches: "I am because we are." The Collective Threshold Model embodies this principle economically: the offering exists because we collectively make it so.
                     {% endif %}
                 </p>
@@ -177,14 +177,14 @@
             <article class="card philosophy-card">
                 <div class="card-icon">🌳</div>
                 <h3 class="card-title">
-                    {% if lang == 'de' %}Pflanzenweisheit{% elif lang == 'pl' %}Mądrość roślin{% else %}Plant Wisdom{% endif %}
+                    {% if lang == 'de' %}Pflanzenweisheit{% elif lang == 'pl' %}Mądrość roślin{% elif lang == 'uk' %}Мудрість рослин{% else %}Plant Wisdom{% endif %}
                 </h3>
                 <p class="card-text">
                     {% if lang == 'de' %}
                         In einem Wald fließen Nährstoffe durch Mykorrhiza-Netzwerke von Bäumen mit Überfluss zu Bäumen mit Bedarf. Kein Baum wird stigmatisiert für das Empfangen. Kein Baum wird gelobt für das Geben. Der Wald <em>ist</em> dieses Fließen.
                     {% elif lang == 'pl' %}
                         W lesie składniki odżywcze przepływają przez sieci mikoryzowe od drzew z nadmiarem do drzew w potrzebie. Żadne drzewo nie jest piętnowane za otrzymywanie. Żadne drzewo nie jest chwalone za dawanie. Las <em>jest</em> tym przepływem.
-                    {% else %}
+                    {% elif lang == 'uk' %}У лісі поживні речовини течуть мікоризними мережами від дерев із надлишком до дерев із потребою. Жодне дерево не соромлять за отримання. Жодне дерево не вихваляють за віддавання. Ліс <em>є</em> цим плином.{% else %}
                         In a forest, nutrients flow through mycorrhizal networks from trees with abundance to trees with need. No tree is stigmatized for receiving. No tree is praised for giving. The forest <em>is</em> this flowing.
                     {% endif %}
                 </p>
@@ -192,14 +192,14 @@
             <article class="card philosophy-card">
                 <div class="card-icon">🤲</div>
                 <h3 class="card-title">
-                    {% if lang == 'de' %}Stigma des Bedarfs auflösen{% elif lang == 'pl' %}Rozpuszczenie piętna potrzeby{% else %}Dissolving the Stigma of Need{% endif %}
+                    {% if lang == 'de' %}Stigma des Bedarfs auflösen{% elif lang == 'pl' %}Rozpuszczenie piętna potrzeby{% elif lang == 'uk' %}Розчинення стигми потреби{% else %}Dissolving the Stigma of Need{% endif %}
                 </h3>
                 <p class="card-text">
                     {% if lang == 'de' %}
                         Selbst bei progressiven Staffelpreisen muss sich jemand als „bedürftig" identifizieren. Anonymität löst dies vollständig auf. Wenn niemand weiß, wer was beigetragen hat, gibt es kein Stigma. Alle nehmen als Gleiche teil.
                     {% elif lang == 'pl' %}
                         Nawet przy progresywnych skalach przesuwnych ktoś musi zidentyfikować się jako „potrzebujący wsparcia". Anonimowość całkowicie to rozpuszcza. Gdy nikt nie wie, kto ile wpłacił, nie ma piętna. Wszyscy uczestniczą jako równi.
-                    {% else %}
+                    {% elif lang == 'uk' %}Навіть найпрогресивніша гнучка шкала все ще вимагає, щоб хтось визнав себе таким, що «потребує підтримки». Анонімність повністю це розчиняє. Коли ніхто не знає, хто що вніс, немає стигми. Усі беруть участь як рівні.{% else %}
                         Even the most progressive sliding scale still requires someone to identify themselves as "needing support." Anonymity dissolves this entirely. When no one knows who contributed what, there is no stigma. Everyone participates as equals.
                     {% endif %}
                 </p>
@@ -213,10 +213,10 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">
-                {% if lang == 'de' %}Beitragswege{% elif lang == 'pl' %}Sposoby wpłat{% else %}Contribution Methods{% endif %}
+                {% if lang == 'de' %}Beitragswege{% elif lang == 'pl' %}Sposoby wpłat{% elif lang == 'uk' %}Способи внеску{% else %}Contribution Methods{% endif %}
             </span>
             <h2 class="section-title">
-                {% if lang == 'de' %}Drei Wege zum Beitragen{% elif lang == 'pl' %}Trzy sposoby wpłaty{% else %}Three Ways to Contribute{% endif %}
+                {% if lang == 'de' %}Drei Wege zum Beitragen{% elif lang == 'pl' %}Trzy sposoby wpłaty{% elif lang == 'uk' %}Три способи зробити внесок{% else %}Three Ways to Contribute{% endif %}
             </h2>
         </div>
         <div class="streams-grid">
@@ -228,7 +228,7 @@
                         Standard-Zahlungsmethoden — geben Sie, was sich für Ihre Umstände richtig anfühlt.
                     {% elif lang == 'pl' %}
                         Standardowe metody płatności — wpłać tyle, ile czujesz, że jest odpowiednie dla Twoich okoliczności.
-                    {% else %}
+                    {% elif lang == 'uk' %}Стандартні способи оплати — дайте те, що відповідає вашим обставинам.{% else %}
                         Standard payment methods — give what feels right for your circumstances.
                     {% endif %}
                 </p>
@@ -241,7 +241,7 @@
                         Durch Umweltüberwachung verdiente Tokens können zu Gemeinschafts-Angeboten beitragen. Ökologische Fürsorge ermöglicht direkt gemeinschaftliches Lernen.
                     {% elif lang == 'pl' %}
                         Tokeny zdobyte poprzez monitoring środowiska mogą być wpłacane na oferty społeczności. Opieka ekologiczna bezpośrednio umożliwia wspólne uczenie się.
-                    {% else %}
+                    {% elif lang == 'uk' %}Токени, зароблені завдяки екологічному моніторингу, можуть іти на внесок до спільнотних пропозицій. Турбота про довкілля безпосередньо уможливлює навчання спільноти.{% else %}
                         Tokens earned through environmental monitoring can contribute to community offerings. Ecological care directly enables community learning.
                     {% endif %}
                 </p>
@@ -249,14 +249,14 @@
             <article class="stream-card">
                 <span class="stream-meta">⏰</span>
                 <h3 class="stream-title">
-                    {% if lang == 'de' %}Beitragsstunden{% elif lang == 'pl' %}Godziny wkładu{% else %}Contribution Hours{% endif %}
+                    {% if lang == 'de' %}Beitragsstunden{% elif lang == 'pl' %}Godziny wkładu{% elif lang == 'uk' %}Години внеску{% else %}Contribution Hours{% endif %}
                 </h3>
                 <p class="stream-text">
                     {% if lang == 'de' %}
                         Vorab vereinbarte Arbeit, die den monetären Bedarf ausgleicht — Zeit und Fähigkeiten sind ebenso wertvoll wie Geld.
                     {% elif lang == 'pl' %}
                         Wcześniej uzgodniona praca, która kompensuje potrzebę pieniężną — czas i umiejętności są równie cenne jak pieniądze.
-                    {% else %}
+                    {% elif lang == 'uk' %}Заздалегідь узгоджена робота, що компенсує грошову потребу — час і навички такі ж цінні, як гроші.{% else %}
                         Pre-arranged work that offsets monetary need — time and skills are as valuable as money.
                     {% endif %}
                 </p>
@@ -271,29 +271,29 @@
         <div class="content-grid">
             <div class="content-main">
                 <h2>
-                    {% if lang == 'de' %}Der Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% else %}The Regeneration Fund{% endif %}
+                    {% if lang == 'de' %}Der Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracji{% elif lang == 'uk' %}Фонд регенерації{% else %}The Regeneration Fund{% endif %}
                 </h2>
                 <p>
                     {% if lang == 'de' %}
                         Wenn kollektive Beiträge die Schwelle eines Angebots überschreiten, verschwindet der Überschuss nicht. Er fließt in den <strong>Regenerationsfonds</strong> — eine Gemeinschaftsressource, die:
                     {% elif lang == 'pl' %}
                         Gdy zbiorowe wpłaty przekroczą próg oferty, nadwyżka nie znika. Trafia do <strong>Funduszu Regeneracji</strong> — zasobu społeczności, który:
-                    {% else %}
+                    {% elif lang == 'uk' %}Коли колективні внески перевищують поріг пропозиції, надлишок не зникає. Він надходить до <strong>Фонду регенерації</strong> — спільнотного ресурсу, що:{% else %}
                         When collective contributions exceed an offering's threshold, the surplus doesn't disappear. It flows into the <strong>Regeneration Fund</strong> — a community resource that:
                     {% endif %}
                 </p>
                 <ul class="feature-list">
                     <li>
-                        {% if lang == 'de' %}Deckt Fehlbeträge, wenn Angebote die Schwelle nicht erreichen{% elif lang == 'pl' %}Pokrywa niedobory, gdy oferty nie osiągną progu{% else %}Covers shortfalls when offerings don't reach threshold{% endif %}
+                        {% if lang == 'de' %}Deckt Fehlbeträge, wenn Angebote die Schwelle nicht erreichen{% elif lang == 'pl' %}Pokrywa niedobory, gdy oferty nie osiągną progu{% elif lang == 'uk' %}Покриває нестачі, коли пропозиції не досягають порогу{% else %}Covers shortfalls when offerings don't reach threshold{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Sät neue Angebote, die sonst nicht entstehen würden{% elif lang == 'pl' %}Zasila nowe oferty, które inaczej by nie powstały{% else %}Seeds new offerings that might not otherwise happen{% endif %}
+                        {% if lang == 'de' %}Sät neue Angebote, die sonst nicht entstehen würden{% elif lang == 'pl' %}Zasila nowe oferty, które inaczej by nie powstały{% elif lang == 'uk' %}Дає початок новим пропозиціям, які інакше могли б не відбутися{% else %}Seeds new offerings that might not otherwise happen{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Unterstützt unerwartete Gemeinschaftsbedürfnisse{% elif lang == 'pl' %}Wspiera nieoczekiwane potrzeby społeczności{% else %}Supports unexpected community needs{% endif %}
+                        {% if lang == 'de' %}Unterstützt unerwartete Gemeinschaftsbedürfnisse{% elif lang == 'pl' %}Wspiera nieoczekiwane potrzeby społeczności{% elif lang == 'uk' %}Підтримує непередбачені потреби спільноти{% else %}Supports unexpected community needs{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Baut langfristige Resilienz auf{% elif lang == 'pl' %}Buduje długoterminową odporność{% else %}Builds long-term resilience{% endif %}
+                        {% if lang == 'de' %}Baut langfristige Resilienz auf{% elif lang == 'pl' %}Buduje długoterminową odporność{% elif lang == 'uk' %}Розбудовує довгострокову стійкість{% else %}Builds long-term resilience{% endif %}
                     </li>
                 </ul>
                 <p>
@@ -301,12 +301,12 @@
                         Der Fonds funktioniert wie Erde — empfängt, was fällt, kompostiert es zu Fruchtbarkeit und macht Nährstoffe dort verfügbar, wo Wachstum geschehen will. Sein Stand ist öffentlich sichtbar, eine weitere Ebene der Transparenz.
                     {% elif lang == 'pl' %}
                         Fundusz działa jak gleba — przyjmuje to, co opada, kompostuje w żyzność i udostępnia składniki odżywcze tam, gdzie chce się wydarzyć wzrost. Jego stan jest publicznie widoczny, kolejna warstwa transparentności.
-                    {% else %}
+                    {% elif lang == 'uk' %}Фонд діє як ґрунт — приймає те, що падає, перетворює це на родючість і надає поживні речовини там, де прагне з’явитися ріст. Його баланс публічно видимий — ще один рівень прозорості.{% else %}
                         The Fund operates like soil — receiving what falls, composting it into fertility, and making nutrients available where growth wants to happen. Its balance is publicly visible, another layer of transparency.
                     {% endif %}
                 </p>
                 <a href="/fund" class="btn btn-primary">
-                    {% if lang == 'de' %}Fondsstand ansehen{% elif lang == 'pl' %}Zobacz stan funduszu{% else %}View Fund Balance{% endif %} →
+                    {% if lang == 'de' %}Fondsstand ansehen{% elif lang == 'pl' %}Zobacz stan funduszu{% elif lang == 'uk' %}Переглянути баланс фонду{% else %}View Fund Balance{% endif %} →
                 </a>
             </div>
         </div>
@@ -318,24 +318,24 @@
     <div class="container">
         <div class="section-header">
             <span class="section-eyebrow">
-                {% if lang == 'de' %}Für Beitragende{% elif lang == 'pl' %}Dla wpłacających{% else %}For Contributors{% endif %}
+                {% if lang == 'de' %}Für Beitragende{% elif lang == 'pl' %}Dla wpłacających{% elif lang == 'uk' %}Для учасників{% else %}For Contributors{% endif %}
             </span>
             <h2 class="section-title">
-                {% if lang == 'de' %}Leitfragen{% elif lang == 'pl' %}Pytania przewodnie{% else %}Guiding Questions{% endif %}
+                {% if lang == 'de' %}Leitfragen{% elif lang == 'pl' %}Pytania przewodnie{% elif lang == 'uk' %}Дороговказні питання{% else %}Guiding Questions{% endif %}
             </h2>
         </div>
         <div class="questions-grid">
             <blockquote class="question-card">
-                {% if lang == 'de' %}„Was bedeutet dieses Angebot für mich?"{% elif lang == 'pl' %}„Co ta oferta dla mnie znaczy?"{% else %}"What does this offering mean to me?"{% endif %}
+                {% if lang == 'de' %}„Was bedeutet dieses Angebot für mich?"{% elif lang == 'pl' %}„Co ta oferta dla mnie znaczy?"{% elif lang == 'uk' %}«Що ця пропозиція означає для мене?»{% else %}"What does this offering mean to me?"{% endif %}
             </blockquote>
             <blockquote class="question-card">
-                {% if lang == 'de' %}„Was ist meine aktuelle Kapazität zu geben?"{% elif lang == 'pl' %}„Jaka jest moja obecna zdolność do dawania?"{% else %}"What is my current capacity to give?"{% endif %}
+                {% if lang == 'de' %}„Was ist meine aktuelle Kapazität zu geben?"{% elif lang == 'pl' %}„Jaka jest moja obecna zdolność do dawania?"{% elif lang == 'uk' %}«Яка моя поточна спроможність давати?»{% else %}"What is my current capacity to give?"{% endif %}
             </blockquote>
             <blockquote class="question-card">
-                {% if lang == 'de' %}„Was würde ich mir wünschen, dass andere beitragen, wenn sie in meiner Situation wären?"{% elif lang == 'pl' %}„Co chciałbym, żeby inni wpłacili, gdyby byli w mojej sytuacji?"{% else %}"What would I want others to contribute if they were in my situation?"{% endif %}
+                {% if lang == 'de' %}„Was würde ich mir wünschen, dass andere beitragen, wenn sie in meiner Situation wären?"{% elif lang == 'pl' %}„Co chciałbym, żeby inni wpłacili, gdyby byli w mojej sytuacji?"{% elif lang == 'uk' %}«Що я хотів би, щоб внесли інші, якби вони були в моїй ситуації?»{% else %}"What would I want others to contribute if they were in my situation?"{% endif %}
             </blockquote>
             <blockquote class="question-card">
-                {% if lang == 'de' %}„Wie kann ich am Gedeihen der Gemeinschaft teilhaben?"{% elif lang == 'pl' %}„Jak mogę uczestniczyć w rozkwicie społeczności?"{% else %}"How can I participate in the community's flourishing?"{% endif %}
+                {% if lang == 'de' %}„Wie kann ich am Gedeihen der Gemeinschaft teilhaben?"{% elif lang == 'pl' %}„Jak mogę uczestniczyć w rozkwicie społeczności?"{% elif lang == 'uk' %}«Як я можу долучитися до розквіту спільноти?»{% else %}"How can I participate in the community's flourishing?"{% endif %}
             </blockquote>
         </div>
     </div>
@@ -345,14 +345,14 @@
 <section class="section cta-section">
     <div class="cta-container">
         <h2 class="cta-title">
-            {% if lang == 'de' %}Das Angebot als Allmende{% elif lang == 'pl' %}Oferta jako dobro wspólne{% else %}The Offering as Commons{% endif %}
+            {% if lang == 'de' %}Das Angebot als Allmende{% elif lang == 'pl' %}Oferta jako dobro wspólne{% elif lang == 'uk' %}Пропозиція як спільне надбання{% else %}The Offering as Commons{% endif %}
         </h2>
         <p class="cta-text">
             {% if lang == 'de' %}
                 Im Kollektiven Schwellenmodell wird jedes Angebot zu einer Allmende — einer gemeinsamen Ressource, die von der Gemeinschaft geschaffen und erhalten wird. Niemand „kauft" oder „erhält" das Angebot. Die Gemeinschaft erschafft es gemeinsam.
             {% elif lang == 'pl' %}
                 W Modelu Progu Zbiorowego każda oferta staje się dobrem wspólnym — wspólnym zasobem tworzonym i utrzymywanym przez społeczność. Nikt nie „kupuje" ani nie „otrzymuje" oferty. Społeczność tworzy ją wspólnie.
-            {% else %}
+            {% elif lang == 'uk' %}У Моделі колективного порогу кожна пропозиція стає спільним надбанням — ресурсом, що створюється і підтримується спільнотою. Ніхто не «купує» і не «отримує» пропозицію. Спільнота творить її разом.{% else %}
                 In the Collective Threshold Model, each offering becomes a commons — a shared resource created and sustained by community. No one "buys" or "receives" the offering. The community creates it together.
             {% endif %}
         </p>
@@ -361,16 +361,16 @@
                 Wie eine Pflanze, die nicht fragt „Was hat jeder Sonnenstrahl beigetragen?", sondern einfach das kollektive Licht in Leben photosynthetisiert.
             {% elif lang == 'pl' %}
                 Jak roślina, która nie pyta „Co wniósł każdy promień słońca?", lecz po prostu fotosyntetyzuje zbiorowe światło w życie.
-            {% else %}
+            {% elif lang == 'uk' %}Немов рослина, що не питає «який внесок зробив кожен промінь сонця?», а просто фотосинтезує колективне світло в життя.{% else %}
                 Like a plant that doesn't ask "what did each ray of sunlight contribute?" but simply photosynthesizes the collective light into life.
             {% endif %}
         </blockquote>
         <div class="cta-buttons">
             <a href="/#offerings" class="btn btn-primary">
-                {% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne oferty{% else %}Current Offerings{% endif %} →
+                {% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne oferty{% elif lang == 'uk' %}Поточні пропозиції{% else %}Current Offerings{% endif %} →
             </a>
             <a href="/about" class="btn btn-secondary">
-                {% if lang == 'de' %}Über Erdpuls{% elif lang == 'pl' %}O Erdpuls{% else %}About Erdpuls{% endif %}
+                {% if lang == 'de' %}Über Erdpuls{% elif lang == 'pl' %}O Erdpuls{% elif lang == 'uk' %}Про Erdpuls{% else %}About Erdpuls{% endif %}
             </a>
         </div>
     </div>
