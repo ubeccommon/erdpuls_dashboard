@@ -112,6 +112,33 @@ proposing changes — never guess server state; verify with `ls`/`cat`/`git log`
   pages. `web.py` now imports the canonical `auth.get_current_user_optional` (as
   `admin.py` / `api.py` already do). **Do not reintroduce a `user_id`-cookie reader.**
 
+### OER Library — live aggregation from `ubeccommon.github.io`
+- **Not stored in this repo.** `/library` is a live aggregator/renderer over a
+  **separate** repo: `github.com/ubeccommon/ubeccommon.github.io` (branch `main`,
+  the "UBEC Open" Pages site). Service module: **`app/services/oer_library.py`**.
+- **Content roots (only these are indexed):**
+  `Pattern_Language_of_Place/oer/docs/{EN,DE,PL}/` (OER curriculum + `soil/`
+  sub-collections) and `Pattern_Language_of_Place/Learning_Pathways/{EN,DE,PL}/`.
+  Language is detected from the path segment `EN`/`DE`/`PL` (case-insensitive),
+  **NOT** the filename. Companion PDFs: same filename stem under `.../{LANG}/pdf/`.
+  Excluded even inside roots: `index.md`, `README`, `/standards/`, `/audit/`,
+  `00_METADATA`, and the `*.py` tooling / `ERDPULS_*` standard docs.
+- **Fetch strategy (rate-limit-aware):** the recursive file **tree** comes from
+  the **GitHub API** (`git/trees/main?recursive=1`) — the *only* call that counts
+  against rate limits; optional `GITHUB_TOKEN` env lifts 60→5,000 req/hr. Raw
+  bodies come from **`raw.githubusercontent.com`** (no auth, no API limit).
+  Markdown → HTML rendered server-side with the `markdown` lib (tables,
+  fenced_code, toc, attr_list, def_list, nl2br). In-memory cache, **30-min TTL**
+  (tree + raw); index previews fetched concurrently via `asyncio.gather`.
+- **Routes (`app/routers/web.py`):** `GET /library` → `library/index.html`
+  (grouped by collection, optional `lang_filter`); `GET /library/resource?path=…`
+  → `library/detail.html` (rendered MD; path sanitised — rejects `..` / leading
+  `/`); `GET /library/pathways` → `library/pathways.html` (full-page iframe embed
+  of the pre-rendered GitHub Pages HTML pathway maps; **EN+DE live, PL commented
+  out** pending publication).
+- **Licensing split:** the service module is **AGPL v3.0** (code); rendered
+  resources are stamped **CC BY-SA 4.0** (Michel Garand) as content.
+
 ### Database
 - DB `ubec_erdpuls`, schema **`erdpuls_threshold`** (app sets `search_path` per connection
   to `erdpuls_threshold, public`; no `create_all`). Canonical fresh-install file
@@ -148,6 +175,10 @@ proposing changes — never guess server state; verify with `ls`/`cat`/`git log`
   `mkdir -p` it, owned by `ubec`, **outside the repo**. Only needs setting in `.env` to
   override the default path.
 - `requirements.txt` needs `markdown` (OER library).
+- **OER library** (`app/services/oer_library.py`) calls the GitHub **tree** API
+  (rate-limited); set **`GITHUB_TOKEN`** in the service env to raise 60→5,000
+  req/hr. Raw doc bodies use `raw.githubusercontent.com` (unlimited, no auth).
+  30-min in-memory cache, so edits in `ubeccommon.github.io` take ≤30 min to show.
 - **Migrations run as `postgres`, not `ubec`:** `psql -d ubec_erdpuls` as OS-user `ubec`
   fails with `role "ubec" does not exist`. Use
   `cat db/scripts/0NN.sql | sudo -u postgres psql -d ubec_erdpuls -v ON_ERROR_STOP=1`.
@@ -178,6 +209,12 @@ proposing changes — never guess server state; verify with `ls`/`cat`/`git log`
 2. **Extend DE/PL/UK coverage to remaining templates** — add missing language branches
    (esp. `uk`) across `/muellrose`, about, legal/*, model_*, offerings, auth. EN is base/
    fallback; ongoing native review of DE/PL/UK.
+   **OER-library UK — DONE:** `_LANG_DIRS` now maps UK (`oer_library.py`), so the 16
+   `UK/` OER docs + UK pathway in `ubeccommon.github.io` are indexed; `_COLLECTION_LABELS`
+   gained `uk` labels (pending native review), the `library/index.html` filter chip row
+   gained Українська, and `_PATHWAY_URLS["uk"]` is wired to the (live) UK maps HTML.
+   Remaining: native review of the `uk` collection labels; optionally enable `pl`
+   pathway maps (its HTML now also exists on Pages).
 3. **De-Müllrose the shared/network-level pages** — `about`, `legal/imprint|privacy|terms`
    (also confirm **CC BY-SA**, verify Impressum details), `model_*`: make copy generic /
    protocol-level; keep place-specifics under `/muellrose`.
@@ -198,6 +235,8 @@ proposing changes — never guess server state; verify with `ls`/`cat`/`git log`
 - **#3 data-driven directory** — DB-backed (`initiatives` table).
 - **#4 "Start an initiative" onboarding** — public propose → admin review → publish.
 - **Login bug** — public pages now read the real `erdpuls_session` session cookie.
+- **OER library UK** — Ukrainian resources now surface in `/library` (indexer language
+  map + filter chip + pathway-maps URL); template already carried `uk` UI strings.
 
 ## NOT IN SCOPE (Erdpuls module)
 Keycloak/SSO build-out, token-reward on-chain logic, `mapservice`/`bioregional`
@@ -210,6 +249,7 @@ migrations, ecosystem-wide `uk` on other services, Hub management dashboard.
 | `living-labs.ubec.network` | steward registration (some CTAs link here) |
 | `design.ubec.network` | shared CSS + `ubec-nav.js` |
 | `ubec.network` | portal; Erdpuls service card |
+| `ubeccommon.github.io` (UBEC Open) | OER source — `/library` live-aggregates the `Pattern_Language_of_Place` repo via GitHub tree API + raw CDN |
 | Stellar | UBECrc reciprocity token (Phase 2 logic) |
 
 ---
