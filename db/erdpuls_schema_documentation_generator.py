@@ -28,14 +28,14 @@ decisions and recommendations.
 
 ================================================================================
 The material is available as Open Educational Resource (OER) and is licensed 
-under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International 
-(CC BY-NC-SA 4.0). For license details visit:
-https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+under Creative Commons Attribution-ShareAlike 4.0 International 
+(CC BY-SA 4.0). For license details visit:
+https://creativecommons.org/licenses/by-sa/4.0/deed.de
 ================================================================================
 
-Author: Farmer
+Author: Michel Garand
 Version: 1.0.0
-License: CC BY-NC-SA 4.0
+License: CC BY-SA 4.0
 """
 
 import psycopg2
@@ -72,9 +72,9 @@ VERSION = "1.0.0"
 DEFAULT_SCHEMA = "erdpuls_threshold"
 DEFAULT_DATABASE = "ubec_erdpuls"
 GENERATOR_NAME = "Erdpuls Collective Threshold Model Schema Documenter"
-AUTHOR = "Farmer"
-LICENSE = "CC BY-NC-SA 4.0"
-LICENSE_URL = "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de"
+AUTHOR = "Michel Garand"
+LICENSE = "CC BY-SA 4.0"
+LICENSE_URL = "https://creativecommons.org/licenses/by-sa/4.0/deed.de"
 
 # Erdpuls Platform specific tables for enhanced documentation
 ERDPULS_CORE_TABLES = {
