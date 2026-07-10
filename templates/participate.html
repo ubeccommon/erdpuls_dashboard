@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if lang == 'de' %}Teilnahme registrieren{% elif lang == 'pl' %}Zarejestruj uczestnictwo{% else %}Register to Participate{% endif %} | {{ offering.get_title(lang) }}
+{% if lang == 'de' %}Teilnahme registrieren{% elif lang == 'pl' %}Zarejestruj uczestnictwo{% elif lang == 'uk' %}Зареєструватися для участі{% else %}Register to Participate{% endif %} | {{ offering.get_title(lang) }}
 {% endblock %}
 
 {% block content %}
@@ -9,13 +9,13 @@
 <section class="page-hero compact">
     <div class="container">
         <a href="/offering/{{ offering.id }}/engage" class="back-link">
-            ← {% if lang == 'de' %}Zurück zur Auswahl{% elif lang == 'pl' %}Powrót do wyboru{% else %}Back to Selection{% endif %}
+            ← {% if lang == 'de' %}Zurück zur Auswahl{% elif lang == 'pl' %}Powrót do wyboru{% elif lang == 'uk' %}Назад до вибору{% else %}Back to Selection{% endif %}
         </a>
         <span class="hero-eyebrow">
-            {% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% else %}Participate Only{% endif %}
+            {% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% elif lang == 'uk' %}Лише участь{% else %}Participate Only{% endif %}
         </span>
         <h1 class="page-title">
-            {% if lang == 'de' %}Registrieren Sie Ihre Teilnahme{% elif lang == 'pl' %}Zarejestruj swoje uczestnictwo{% else %}Register Your Participation{% endif %}
+            {% if lang == 'de' %}Registrieren Sie Ihre Teilnahme{% elif lang == 'pl' %}Zarejestruj swoje uczestnictwo{% elif lang == 'uk' %}Зареєструйте свою участь{% else %}Register Your Participation{% endif %}
         </h1>
         <p class="page-intro">
             {{ offering.get_title(lang) }}
@@ -35,7 +35,7 @@
                     „Ich bin, weil wir sind." — Die Gemeinschaft trägt Sie. Keine finanzielle Beitrag erforderlich.
                 {% elif lang == 'pl' %}
                     „Jestem, ponieważ jesteśmy." — Społeczność Cię wspiera. Nie wymagany jest wkład finansowy.
-                {% else %}
+                {% elif lang == 'uk' %}«Я є, бо ми є.» — Спільнота підтримує вас. Фінансовий внесок не потрібен.{% else %}
                     "I am because we are." — The community supports you. No financial contribution required.
                 {% endif %}
             </blockquote>
@@ -50,13 +50,13 @@
                         Email <span class="required">*</span>
                     </label>
                     <input type="email" id="email" name="email" required 
-                           placeholder="{% if lang == 'de' %}ihre.email@beispiel.de{% elif lang == 'pl' %}twoj.email@przyklad.pl{% else %}your.email@example.com{% endif %}">
+                           placeholder="{% if lang == 'de' %}ihre.email@beispiel.de{% elif lang == 'pl' %}twoj.email@przyklad.pl{% elif lang == 'uk' %}your.email@example.com{% else %}your.email@example.com{% endif %}">
                     <p class="form-hint">
                         {% if lang == 'de' %}
                             Wir senden Ihnen eine Bestätigung und Updates zum Angebot.
                         {% elif lang == 'pl' %}
                             Wyślemy Ci potwierdzenie i aktualizacje dotyczące oferty.
-                        {% else %}
+                        {% elif lang == 'uk' %}Ми надішлемо вам підтвердження та новини про пропозицію.{% else %}
                             We'll send you confirmation and updates about the offering.
                         {% endif %}
                     </p>
@@ -64,24 +64,24 @@
                 
                 <div class="form-group">
                     <label for="name">
-                        {% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię{% else %}Name{% endif %}
+                        {% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię{% elif lang == 'uk' %}Ім’я{% else %}Name{% endif %}
                     </label>
                     <input type="text" id="name" name="name" 
-                           placeholder="{% if lang == 'de' %}Ihr Name{% elif lang == 'pl' %}Twoje imię{% else %}Your name{% endif %}">
+                           placeholder="{% if lang == 'de' %}Ihr Name{% elif lang == 'pl' %}Twoje imię{% elif lang == 'uk' %}Ваше ім’я{% else %}Your name{% endif %}">
                 </div>
                 
                 <div class="form-group">
                     <label for="referral">
-                        {% if lang == 'de' %}Wie haben Sie von uns erfahren?{% elif lang == 'pl' %}Jak się o nas dowiedziałeś?{% else %}How did you hear about us?{% endif %}
+                        {% if lang == 'de' %}Wie haben Sie von uns erfahren?{% elif lang == 'pl' %}Jak się o nas dowiedziałeś?{% elif lang == 'uk' %}Звідки ви про нас дізналися?{% else %}How did you hear about us?{% endif %}
                     </label>
                     <select id="referral" name="referral">
-                        <option value="">{% if lang == 'de' %}Bitte auswählen{% elif lang == 'pl' %}Proszę wybrać{% else %}Please select{% endif %}</option>
-                        <option value="friend">{% if lang == 'de' %}Freund/Bekannter{% elif lang == 'pl' %}Znajomy{% else %}Friend/Acquaintance{% endif %}</option>
-                        <option value="school">{% if lang == 'de' %}Schule{% elif lang == 'pl' %}Szkoła{% else %}School{% endif %}</option>
-                        <option value="social_media">{% if lang == 'de' %}Soziale Medien{% elif lang == 'pl' %}Media społecznościowe{% else %}Social Media{% endif %}</option>
-                        <option value="website">{% if lang == 'de' %}Website{% elif lang == 'pl' %}Strona internetowa{% else %}Website{% endif %}</option>
-                        <option value="event">{% if lang == 'de' %}Veranstaltung{% elif lang == 'pl' %}Wydarzenie{% else %}Event{% endif %}</option>
-                        <option value="other">{% if lang == 'de' %}Andere{% elif lang == 'pl' %}Inne{% else %}Other{% endif %}</option>
+                        <option value="">{% if lang == 'de' %}Bitte auswählen{% elif lang == 'pl' %}Proszę wybrać{% elif lang == 'uk' %}Будь ласка, оберіть{% else %}Please select{% endif %}</option>
+                        <option value="friend">{% if lang == 'de' %}Freund/Bekannter{% elif lang == 'pl' %}Znajomy{% elif lang == 'uk' %}Друг/знайомий{% else %}Friend/Acquaintance{% endif %}</option>
+                        <option value="school">{% if lang == 'de' %}Schule{% elif lang == 'pl' %}Szkoła{% elif lang == 'uk' %}Школа{% else %}School{% endif %}</option>
+                        <option value="social_media">{% if lang == 'de' %}Soziale Medien{% elif lang == 'pl' %}Media społecznościowe{% elif lang == 'uk' %}Соціальні мережі{% else %}Social Media{% endif %}</option>
+                        <option value="website">{% if lang == 'de' %}Website{% elif lang == 'pl' %}Strona internetowa{% elif lang == 'uk' %}Вебсайт{% else %}Website{% endif %}</option>
+                        <option value="event">{% if lang == 'de' %}Veranstaltung{% elif lang == 'pl' %}Wydarzenie{% elif lang == 'uk' %}Подія{% else %}Event{% endif %}</option>
+                        <option value="other">{% if lang == 'de' %}Andere{% elif lang == 'pl' %}Inne{% elif lang == 'uk' %}Інше{% else %}Other{% endif %}</option>
                     </select>
                 </div>
                 
@@ -93,14 +93,14 @@
                             <strong>Datenschutz:</strong> Ihre Kontaktdaten werden nur für die Koordination dieser Veranstaltung verwendet.
                         {% elif lang == 'pl' %}
                             <strong>Prywatność:</strong> Twoje dane kontaktowe będą używane tylko do koordynacji tego wydarzenia.
-                        {% else %}
+                        {% elif lang == 'uk' %}<strong>Приватність:</strong> Ваші контактні дані використовуватимуться лише для координації цієї події.{% else %}
                             <strong>Privacy:</strong> Your contact information will only be used for coordinating this event.
                         {% endif %}
                     </div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary btn-large btn-block">
-                    {% if lang == 'de' %}Teilnahme bestätigen{% elif lang == 'pl' %}Potwierdź uczestnictwo{% else %}Confirm Participation{% endif %}
+                    {% if lang == 'de' %}Teilnahme bestätigen{% elif lang == 'pl' %}Potwierdź uczestnictwo{% elif lang == 'uk' %}Підтвердити участь{% else %}Confirm Participation{% endif %}
                 </button>
                 
             </form>
@@ -108,14 +108,14 @@
         
         <!-- Info Box -->
         <div class="info-box">
-            <h3>{% if lang == 'de' %}Was passiert als nächstes?{% elif lang == 'pl' %}Co dalej?{% else %}What happens next?{% endif %}</h3>
+            <h3>{% if lang == 'de' %}Was passiert als nächstes?{% elif lang == 'pl' %}Co dalej?{% elif lang == 'uk' %}Що відбувається далі?{% else %}What happens next?{% endif %}</h3>
             <ol class="next-steps">
                 <li>
                     {% if lang == 'de' %}
                         Sie erhalten eine E-Mail-Bestätigung Ihrer Registrierung.
                     {% elif lang == 'pl' %}
                         Otrzymasz e-mail z potwierdzeniem rejestracji.
-                    {% else %}
+                    {% elif lang == 'uk' %}Ви отримаєте підтвердження реєстрації електронною поштою.{% else %}
                         You'll receive an email confirmation of your registration.
                     {% endif %}
                 </li>
@@ -124,7 +124,7 @@
                         Wenn die Schwelle erreicht ist, wird das Angebot bestätigt.
                     {% elif lang == 'pl' %}
                         Gdy próg zostanie osiągnięty, oferta zostanie potwierdzona.
-                    {% else %}
+                    {% elif lang == 'uk' %}Коли поріг буде досягнуто, пропозицію буде підтверджено.{% else %}
                         When the threshold is met, the offering will be confirmed.
                     {% endif %}
                 </li>
@@ -133,7 +133,7 @@
                         Sie erhalten alle Details zur Teilnahme.
                     {% elif lang == 'pl' %}
                         Otrzymasz wszystkie szczegóły dotyczące uczestnictwa.
-                    {% else %}
+                    {% elif lang == 'uk' %}Ви отримаєте всі деталі щодо участі.{% else %}
                         You'll receive all details for participation.
                     {% endif %}
                 </li>
@@ -147,7 +147,7 @@
                     Möchten Sie doch beitragen? <a href="/offering/{{ offering.id }}/engage">Wählen Sie einen anderen Weg</a>
                 {% elif lang == 'pl' %}
                     Chcesz jednak wnieść wkład? <a href="/offering/{{ offering.id }}/engage">Wybierz inną ścieżkę</a>
-                {% else %}
+                {% elif lang == 'uk' %}Все ж хочете зробити внесок? <a href="/offering/{{ offering.id }}/engage">Оберіть інший шлях</a>{% else %}
                     Want to contribute after all? <a href="/offering/{{ offering.id }}/engage">Choose a different pathway</a>
                 {% endif %}
             </p>

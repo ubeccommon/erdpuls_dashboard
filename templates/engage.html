@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if lang == 'de' %}Engagement wählen{% elif lang == 'pl' %}Wybierz zaangażowanie{% else %}Choose Your Engagement{% endif %} | {{ offering.get_title(lang) }}
+{% if lang == 'de' %}Engagement wählen{% elif lang == 'pl' %}Wybierz zaangażowanie{% elif lang == 'uk' %}Оберіть форму залучення{% else %}Choose Your Engagement{% endif %} | {{ offering.get_title(lang) }}
 {% endblock %}
 
 {% block content %}
@@ -9,7 +9,7 @@
 <section class="engage-header">
     <div class="container">
         <a href="/offering/{{ offering.id }}" class="back-link">
-            ← {% if lang == 'de' %}Zurück zum Angebot{% elif lang == 'pl' %}Powrót do oferty{% else %}Back to Offering{% endif %}
+            ← {% if lang == 'de' %}Zurück zum Angebot{% elif lang == 'pl' %}Powrót do oferty{% elif lang == 'uk' %}Назад до пропозиції{% else %}Back to Offering{% endif %}
         </a>
     </div>
 </section>
@@ -21,14 +21,14 @@
         
         <div class="engage-subtitle">
             <h2 class="engage-question">
-                {% if lang == 'de' %}Wie möchten Sie sich engagieren?{% elif lang == 'pl' %}Jak chcesz się zaangażować?{% else %}How would you like to engage?{% endif %}
+                {% if lang == 'de' %}Wie möchten Sie sich engagieren?{% elif lang == 'pl' %}Jak chcesz się zaangażować?{% elif lang == 'uk' %}Як ви хочете долучитися?{% else %}How would you like to engage?{% endif %}
             </h2>
             <p class="engage-description">
                 {% if lang == 'de' %}
                     Es gibt verschiedene Wege zur Teilnahme. Wählen Sie, was für Ihre Situation passt.
                 {% elif lang == 'pl' %}
                     Istnieją różne ścieżki uczestnictwa. Wybierz to, co pasuje do Twojej sytuacji.
-                {% else %}
+                {% elif lang == 'uk' %}Існують різні шляхи залучення. Оберіть той, що відповідає вашій ситуації.{% else %}
                     There are different pathways to engagement. Choose what fits your situation.
                 {% endif %}
             </p>
@@ -47,20 +47,20 @@
             <article class="engagement-card">
                 <div class="card-icon">🙋</div>
                 <h2 class="card-title">
-                    {% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% else %}Participate Only{% endif %}
+                    {% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% elif lang == 'uk' %}Лише участь{% else %}Participate Only{% endif %}
                 </h2>
                 <p class="card-subtitle">
-                    {% if lang == 'de' %}Registrieren Sie Ihre Teilnahmeabsicht{% elif lang == 'pl' %}Zarejestruj zamiar uczestnictwa{% else %}Register your intention to participate{% endif %}
+                    {% if lang == 'de' %}Registrieren Sie Ihre Teilnahmeabsicht{% elif lang == 'pl' %}Zarejestruj zamiar uczestnictwa{% elif lang == 'uk' %}Зареєструйте намір взяти участь{% else %}Register your intention to participate{% endif %}
                 </p>
                 <ul class="card-features">
                     <li>
-                        {% if lang == 'de' %}Kein finanzieller Beitrag erforderlich{% elif lang == 'pl' %}Nie wymaga wkładu finansowego{% else %}No financial contribution required{% endif %}
+                        {% if lang == 'de' %}Kein finanzieller Beitrag erforderlich{% elif lang == 'pl' %}Nie wymaga wkładu finansowego{% elif lang == 'uk' %}Фінансовий внесок не потрібен{% else %}No financial contribution required{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Sichern Sie Ihren Platz{% elif lang == 'pl' %}Zarezerwuj swoje miejsce{% else %}Secure your spot{% endif %}
+                        {% if lang == 'de' %}Sichern Sie Ihren Platz{% elif lang == 'pl' %}Zarezerwuj swoje miejsce{% elif lang == 'uk' %}Забронюйте своє місце{% else %}Secure your spot{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Die Gemeinschaft trägt die Kosten{% elif lang == 'pl' %}Społeczność pokrywa koszty{% else %}Community covers the costs{% endif %}
+                        {% if lang == 'de' %}Die Gemeinschaft trägt die Kosten{% elif lang == 'pl' %}Społeczność pokrywa koszty{% elif lang == 'uk' %}Спільнота покриває витрати{% else %}Community covers the costs{% endif %}
                     </li>
                 </ul>
                 <div class="card-note">
@@ -68,12 +68,12 @@
                         <strong>Ubuntu:</strong> Individuelles Wohlergehen hängt von der Gemeinschaft ab
                     {% elif lang == 'pl' %}
                         <strong>Ubuntu:</strong> Indywidualne dobro zależy od społeczności
-                    {% else %}
+                    {% elif lang == 'uk' %}<strong>Ubuntu:</strong> Добробут особистості залежить від спільноти{% else %}
                         <strong>Ubuntu:</strong> Individual wellbeing depends on community
                     {% endif %}
                 </div>
                 <a href="/offering/{{ offering.id }}/participate" class="btn btn-outline btn-block">
-                    {% if lang == 'de' %}Teilnahme registrieren{% elif lang == 'pl' %}Zarejestruj uczestnictwo{% else %}Register to Participate{% endif %}
+                    {% if lang == 'de' %}Teilnahme registrieren{% elif lang == 'pl' %}Zarejestruj uczestnictwo{% elif lang == 'uk' %}Зареєструватися для участі{% else %}Register to Participate{% endif %}
                 </a>
             </article>
             
@@ -81,20 +81,20 @@
             <article class="engagement-card">
                 <div class="card-icon">💚</div>
                 <h2 class="card-title">
-                    {% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% else %}Support Only{% endif %}
+                    {% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% elif lang == 'uk' %}Лише підтримка{% else %}Support Only{% endif %}
                 </h2>
                 <p class="card-subtitle">
-                    {% if lang == 'de' %}Registrieren Sie Ihre Unterstützungsabsicht{% elif lang == 'pl' %}Zarejestruj zamiar wsparcia{% else %}Register your intention to support{% endif %}
+                    {% if lang == 'de' %}Registrieren Sie Ihre Unterstützungsabsicht{% elif lang == 'pl' %}Zarejestruj zamiar wsparcia{% elif lang == 'uk' %}Зареєструйте намір підтримати{% else %}Register your intention to support{% endif %}
                 </p>
                 <ul class="card-features">
                     <li>
-                        {% if lang == 'de' %}Ermöglichen Sie die Teilnahme anderer{% elif lang == 'pl' %}Umożliw uczestnictwo innych{% else %}Enable others to participate{% endif %}
+                        {% if lang == 'de' %}Ermöglichen Sie die Teilnahme anderer{% elif lang == 'pl' %}Umożliw uczestnictwo innych{% elif lang == 'uk' %}Дайте змогу іншим взяти участь{% else %}Enable others to participate{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Euro, Tokens oder Stunden{% elif lang == 'pl' %}Euro, tokeny lub godziny{% else %}Euro, tokens, or hours{% endif %}
+                        {% if lang == 'de' %}Euro, Tokens oder Stunden{% elif lang == 'pl' %}Euro, tokeny lub godziny{% elif lang == 'uk' %}Євро, токени або години{% else %}Euro, tokens, or hours{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Privatsphäre geschützt{% elif lang == 'pl' %}Prywatność chroniona{% else %}Privacy protected{% endif %}
+                        {% if lang == 'de' %}Privatsphäre geschützt{% elif lang == 'pl' %}Prywatność chroniona{% elif lang == 'uk' %}Приватність захищено{% else %}Privacy protected{% endif %}
                     </li>
                 </ul>
                 <div class="card-note">
@@ -102,36 +102,36 @@
                         <strong>Pflanzliche Großzügigkeit:</strong> Mehr geben als nehmen
                     {% elif lang == 'pl' %}
                         <strong>Hojna roślina:</strong> Dawać więcej niż brać
-                    {% else %}
+                    {% elif lang == 'uk' %}<strong>Щедрість рослини:</strong> Давати більше, ніж брати{% else %}
                         <strong>Plant generosity:</strong> Giving more than taking
                     {% endif %}
                 </div>
                 <a href="/offering/{{ offering.id }}/contribute?pathway=support_only" class="btn btn-outline btn-block">
-                    {% if lang == 'de' %}Angebot unterstützen{% elif lang == 'pl' %}Wesprzyj ofertę{% else %}Support This Offering{% endif %}
+                    {% if lang == 'de' %}Angebot unterstützen{% elif lang == 'pl' %}Wesprzyj ofertę{% elif lang == 'uk' %}Підтримати цю пропозицію{% else %}Support This Offering{% endif %}
                 </a>
             </article>
             
             <!-- Contribute & Participate -->
             <article class="engagement-card featured">
                 <div class="card-badge">
-                    {% if lang == 'de' %}Empfohlen{% elif lang == 'pl' %}Zalecane{% else %}Recommended{% endif %}
+                    {% if lang == 'de' %}Empfohlen{% elif lang == 'pl' %}Zalecane{% elif lang == 'uk' %}Рекомендовано{% else %}Recommended{% endif %}
                 </div>
                 <div class="card-icon">🌱</div>
                 <h2 class="card-title">
-                    {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+                    {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% elif lang == 'uk' %}Підтримка й участь{% else %}Support & Participate{% endif %}
                 </h2>
                 <p class="card-subtitle">
-                    {% if lang == 'de' %}Registrieren Sie Ihre Absicht zu beitragen und teilzunehmen{% elif lang == 'pl' %}Zarejestruj zamiar wkładu i uczestnictwa{% else %}Register your intention to contribute and attend{% endif %}
+                    {% if lang == 'de' %}Registrieren Sie Ihre Absicht zu beitragen und teilzunehmen{% elif lang == 'pl' %}Zarejestruj zamiar wkładu i uczestnictwa{% elif lang == 'uk' %}Зареєструйте намір зробити внесок і взяти участь{% else %}Register your intention to contribute and attend{% endif %}
                 </p>
                 <ul class="card-features">
                     <li>
-                        {% if lang == 'de' %}Wählen Sie Ihren Beitrag{% elif lang == 'pl' %}Wybierz swój wkład{% else %}Choose your contribution{% endif %}
+                        {% if lang == 'de' %}Wählen Sie Ihren Beitrag{% elif lang == 'pl' %}Wybierz swój wkład{% elif lang == 'uk' %}Оберіть свій внесок{% else %}Choose your contribution{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Sichern Sie Ihren Platz{% elif lang == 'pl' %}Zarezerwuj miejsce{% else %}Secure your spot{% endif %}
+                        {% if lang == 'de' %}Sichern Sie Ihren Platz{% elif lang == 'pl' %}Zarezerwuj miejsce{% elif lang == 'uk' %}Забронюйте своє місце{% else %}Secure your spot{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Alles in einem Schritt{% elif lang == 'pl' %}Wszystko w jednym kroku{% else %}All in one step{% endif %}
+                        {% if lang == 'de' %}Alles in einem Schritt{% elif lang == 'pl' %}Wszystko w jednym kroku{% elif lang == 'uk' %}Усе за один крок{% else %}All in one step{% endif %}
                     </li>
                 </ul>
                 <div class="card-note">
@@ -139,12 +139,12 @@
                         <strong>Reziprozität:</strong> Wert fließt in beide Richtungen
                     {% elif lang == 'pl' %}
                         <strong>Wzajemność:</strong> Wartość płynie w obie strony
-                    {% else %}
+                    {% elif lang == 'uk' %}<strong>Взаємність:</strong> Цінність тече в обох напрямках{% else %}
                         <strong>Reciprocity:</strong> Value flows in both directions
                     {% endif %}
                 </div>
                 <a href="/offering/{{ offering.id }}/contribute?pathway=support_and_participate" class="btn btn-primary btn-block">
-                    {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+                    {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% elif lang == 'uk' %}Підтримка й участь{% else %}Support & Participate{% endif %}
                 </a>
             </article>
             
@@ -152,67 +152,67 @@
         
         <!-- Current Progress -->
         <div class="progress-summary">
-            <h3>{% if lang == 'de' %}Aktueller Stand{% elif lang == 'pl' %}Aktualny status{% else %}Current Progress{% endif %}</h3>
+            <h3>{% if lang == 'de' %}Aktueller Stand{% elif lang == 'pl' %}Aktualny status{% elif lang == 'uk' %}Поточний прогрес{% else %}Current Progress{% endif %}</h3>
             <div class="progress-bar-container">
                 <div class="progress-bar" style="width: {{ [offering._percent, 100]|min }}%">
                     {% if offering._percent >= 100 %}
-                        <span class="progress-label">✓ {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}</span>
+                        <span class="progress-label">✓ {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% elif lang == 'uk' %}Поріг досягнуто{% else %}Threshold Met{% endif %}</span>
                     {% endif %}
                 </div>
             </div>
             <div class="progress-stats">
                 <span class="stat">
                     <strong>€{{ offering._total|round(2) }}</strong> 
-                    {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} 
+                    {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% elif lang == 'uk' %}з{% else %}of{% endif %} 
                     €{{ offering.threshold_amount }}
                 </span>
                 <span class="stat">
                     <strong>{{ offering._percent|round(1) }}%</strong> 
-                    {% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% else %}funded{% endif %}
+                    {% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% elif lang == 'uk' %}профінансовано{% else %}funded{% endif %}
                 </span>
                 <span class="stat">
                     <strong>{{ offering._reg_count }}</strong> 
-                    {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}uczestników{% else %}participants{% endif %}
+                    {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}uczestników{% elif lang == 'uk' %}учасників{% else %}participants{% endif %}
                 </span>
             </div>
         </div>
         
         <!-- Help Text -->
         <div class="help-section">
-            <h3>{% if lang == 'de' %}Nicht sicher, welchen Weg Sie wählen sollen?{% elif lang == 'pl' %}Nie wiesz, którą ścieżkę wybrać?{% else %}Not sure which pathway to choose?{% endif %}</h3>
+            <h3>{% if lang == 'de' %}Nicht sicher, welchen Weg Sie wählen sollen?{% elif lang == 'pl' %}Nie wiesz, którą ścieżkę wybrać?{% elif lang == 'uk' %}Не впевнені, який шлях обрати?{% else %}Not sure which pathway to choose?{% endif %}</h3>
             <div class="help-grid">
                 <div class="help-item">
-                    <strong>{% if lang == 'de' %}Wählen Sie "Nur Teilnehmen" wenn:{% elif lang == 'pl' %}Wybierz "Tylko Uczestnictwo" jeśli:{% else %}Choose "Participate Only" if:{% endif %}</strong>
+                    <strong>{% if lang == 'de' %}Wählen Sie "Nur Teilnehmen" wenn:{% elif lang == 'pl' %}Wybierz "Tylko Uczestnictwo" jeśli:{% elif lang == 'uk' %}Оберіть «Лише участь», якщо:{% else %}Choose "Participate Only" if:{% endif %}</strong>
                     <p>
                         {% if lang == 'de' %}
                             Sie teilnehmen möchten, aber derzeit keine finanziellen Ressourcen haben. Es wird keine Rechtfertigung benötigt — die Gemeinschaft ist für Sie da.
                         {% elif lang == 'pl' %}
                             Chcesz uczestniczyć, ale obecnie nie masz zasobów finansowych. Nie potrzeba uzasadnienia — społeczność jest dla Ciebie.
-                        {% else %}
+                        {% elif lang == 'uk' %}Ви хочете взяти участь, але наразі не маєте фінансових можливостей для внеску. Пояснень не потрібно — спільнота поруч із вами.{% else %}
                             You want to participate but don't currently have financial resources to contribute. No justification needed — the community is here for you.
                         {% endif %}
                     </p>
                 </div>
                 <div class="help-item">
-                    <strong>{% if lang == 'de' %}Wählen Sie "Nur Unterstützen" wenn:{% elif lang == 'pl' %}Wybierz "Tylko Wsparcie" jeśli:{% else %}Choose "Support Only" if:{% endif %}</strong>
+                    <strong>{% if lang == 'de' %}Wählen Sie "Nur Unterstützen" wenn:{% elif lang == 'pl' %}Wybierz "Tylko Wsparcie" jeśli:{% elif lang == 'uk' %}Оберіть «Лише підтримка», якщо:{% else %}Choose "Support Only" if:{% endif %}</strong>
                     <p>
                         {% if lang == 'de' %}
                             Sie nicht teilnehmen können oder möchten, aber die Mission unterstützen wollen. Ihre Unterstützung ermöglicht anderen die Teilnahme.
                         {% elif lang == 'pl' %}
                             Nie możesz lub nie chcesz uczestniczyć, ale chcesz wspierać misję. Twoje wsparcie umożliwia innym uczestnictwo.
-                        {% else %}
+                        {% elif lang == 'uk' %}Ви не можете або не хочете бути присутніми, але прагнете підтримати місію. Ваша підтримка дає змогу іншим взяти участь.{% else %}
                             You can't or don't want to attend but want to support the mission. Your support enables others to participate.
                         {% endif %}
                     </p>
                 </div>
                 <div class="help-item">
-                    <strong>{% if lang == 'de' %}Wählen Sie "Unterstützen & Teilnehmen" wenn:{% elif lang == 'pl' %}Wybierz "Wesprzyj & Uczestniczyj" jeśli:{% else %}Choose "Support & Participate" if:{% endif %}</strong>
+                    <strong>{% if lang == 'de' %}Wählen Sie "Unterstützen & Teilnehmen" wenn:{% elif lang == 'pl' %}Wybierz "Wesprzyj & Uczestniczyj" jeśli:{% elif lang == 'uk' %}Оберіть «Підтримка й участь», якщо:{% else %}Choose "Support & Participate" if:{% endif %}</strong>
                     <p>
                         {% if lang == 'de' %}
                             Sie sowohl teilnehmen als auch beitragen möchten. Wählen Sie den Betrag, der für Ihre Situation richtig erscheint.
                         {% elif lang == 'pl' %}
                             Chcesz zarówno uczestniczyć, jak i wnieść wkład. Wybierz kwotę, która wydaje się właściwa dla Twojej sytuacji.
-                        {% else %}
+                        {% elif lang == 'uk' %}Ви хочете і бути присутніми, і зробити внесок. Оберіть суму, яка відповідає вашій ситуації.{% else %}
                             You want to both attend and contribute. Choose the amount that feels right for your situation.
                         {% endif %}
                     </p>

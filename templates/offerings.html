@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne oferty{% else %}Current Offerings{% endif %} | Erdpuls Müllrose
+{% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne oferty{% elif lang == 'uk' %}Поточні пропозиції{% else %}Current Offerings{% endif %} | Erdpuls Müllrose
 {% endblock %}
 
 {% block content %}
@@ -11,24 +11,24 @@
         <div class="offerings-page-header">
             <div>
                 <h1 class="page-title">
-                    {% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne oferty{% else %}Current Offerings{% endif %}
+                    {% if lang == 'de' %}Aktuelle Angebote{% elif lang == 'pl' %}Aktualne oferty{% elif lang == 'uk' %}Поточні пропозиції{% else %}Current Offerings{% endif %}
                 </h1>
                 <p class="page-intro">
                     {% if lang == 'de' %}
                         Entdecken Sie Workshops, Kurse und Veranstaltungen, die von unserer Gemeinschaft ins Leben gerufen werden.
                     {% elif lang == 'pl' %}
                         Odkryj warsztaty, kursy i wydarzenia tworzone przez naszą społeczność.
-                    {% else %}
+                    {% elif lang == 'uk' %}Відкрийте майстерні, курси та події, втілені нашою спільнотою.{% else %}
                         Discover workshops, courses, and events brought into being by our community.
                     {% endif %}
                 </p>
             </div>
             <div class="header-actions">
                 <a href="/fund" class="btn btn-outline">
-                    {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracyjny{% else %}Regeneration Fund{% endif %} →
+                    {% if lang == 'de' %}Regenerationsfonds{% elif lang == 'pl' %}Fundusz Regeneracyjny{% elif lang == 'uk' %}Фонд регенерації{% else %}Regeneration Fund{% endif %} →
                 </a>
                 <a href="/create-offering" class="btn btn-secondary">
-                    {% if lang == 'de' %}Ein Angebot erstellen{% elif lang == 'pl' %}Utwórz ofertę{% else %}Create an Offering{% endif %} →
+                    {% if lang == 'de' %}Ein Angebot erstellen{% elif lang == 'pl' %}Utwórz ofertę{% elif lang == 'uk' %}Створити пропозицію{% else %}Create an Offering{% endif %} →
                 </a>
             </div>
         </div>
@@ -51,11 +51,11 @@
                     <div class="offering-badge-overlay">
                         <span class="offering-badge {% if offering.status == 'threshold_met' %}badge-success{% elif offering.status == 'open' %}badge-open{% endif %}">
                             {% if offering.status == 'open' %}
-                                {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% else %}Open{% endif %}
+                                {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% elif lang == 'uk' %}Відкрито{% else %}Open{% endif %}
                             {% elif offering.status == 'threshold_met' %}
-                                {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}
+                                {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% elif lang == 'uk' %}Поріг досягнуто{% else %}Threshold Met{% endif %}
                             {% elif offering.status == 'confirmed' %}
-                                {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}
+                                {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% elif lang == 'uk' %}Підтверджено{% else %}Confirmed{% endif %}
                             {% endif %}
                         </span>
                     </div>
@@ -81,7 +81,7 @@
                         <div class="progress-stats">
                             <span class="progress-amount">
                                 <strong>€{{ offering._total|int }}</strong> 
-                                {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} 
+                                {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% elif lang == 'uk' %}з{% else %}of{% endif %} 
                                 €{{ offering.threshold_amount|int }}
                             </span>
                             <span class="progress-percent {% if offering._percent >= 100 %}funded{% endif %}">
@@ -100,12 +100,12 @@
                         {% endif %}
                         <span class="meta-item">
                             <span class="meta-icon">👥</span>
-                            {{ offering._reg_count }} {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}uczestników{% else %}participants{% endif %}
+                            {{ offering._reg_count }} {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}uczestników{% elif lang == 'uk' %}учасників{% else %}participants{% endif %}
                         </span>
                         {% if offering.max_participants %}
                         <span class="meta-item capacity">
                             <span class="meta-icon">🎯</span>
-                            {% if lang == 'de' %}max{% elif lang == 'pl' %}maks{% else %}max{% endif %} {{ offering.max_participants }}
+                            {% if lang == 'de' %}max{% elif lang == 'pl' %}maks{% elif lang == 'uk' %}макс.{% else %}max{% endif %} {{ offering.max_participants }}
                         </span>
                         {% endif %}
                     </div>
@@ -113,10 +113,10 @@
                     <!-- Action Buttons -->
                     <div class="offering-actions">
                         <a href="/offering/{{ offering.id }}/engage" class="btn btn-primary">
-                            {% if lang == 'de' %}Mitmachen{% elif lang == 'pl' %}Dołącz{% else %}Get Involved{% endif %}
+                            {% if lang == 'de' %}Mitmachen{% elif lang == 'pl' %}Dołącz{% elif lang == 'uk' %}Долучитися{% else %}Get Involved{% endif %}
                         </a>
                         <a href="/offering/{{ offering.id }}" class="btn btn-text">
-                            {% if lang == 'de' %}Details ansehen{% elif lang == 'pl' %}Zobacz szczegóły{% else %}View Details{% endif %} →
+                            {% if lang == 'de' %}Details ansehen{% elif lang == 'pl' %}Zobacz szczegóły{% elif lang == 'uk' %}Переглянути деталі{% else %}View Details{% endif %} →
                         </a>
                     </div>
                 </div>
@@ -128,18 +128,18 @@
         <!-- No Offerings State -->
         <div class="no-offerings">
             <div class="no-offerings-icon">🌱</div>
-            <h2>{% if lang == 'de' %}Keine aktuellen Angebote{% elif lang == 'pl' %}Brak aktualnych ofert{% else %}No Current Offerings{% endif %}</h2>
+            <h2>{% if lang == 'de' %}Keine aktuellen Angebote{% elif lang == 'pl' %}Brak aktualnych ofert{% elif lang == 'uk' %}Наразі немає пропозицій{% else %}No Current Offerings{% endif %}</h2>
             <p>
                 {% if lang == 'de' %}
                     Neue Angebote werden bald verfügbar sein. Besuchen Sie uns regelmäßig oder kontaktieren Sie uns, um über neue Angebote informiert zu werden.
                 {% elif lang == 'pl' %}
                     Nowe oferty będą wkrótce dostępne. Odwiedzaj nas regularnie lub skontaktuj się z nami, aby otrzymywać informacje o nowych ofertach.
-                {% else %}
+                {% elif lang == 'uk' %}Нові пропозиції з’являться незабаром. Заходьте регулярно або зв’яжіться з нами, щоб отримувати сповіщення про нові пропозиції.{% else %}
                     New offerings will be available soon. Check back regularly or contact us to be notified about new offerings.
                 {% endif %}
             </p>
             <a href="/fund" class="btn btn-outline">
-                {% if lang == 'de' %}Regenerationsfonds erkunden{% elif lang == 'pl' %}Poznaj Fundusz Regeneracyjny{% else %}Explore Regeneration Fund{% endif %}
+                {% if lang == 'de' %}Regenerationsfonds erkunden{% elif lang == 'pl' %}Poznaj Fundusz Regeneracyjny{% elif lang == 'uk' %}Дослідити Фонд регенерації{% else %}Explore Regeneration Fund{% endif %}
             </a>
         </div>
         {% endif %}
@@ -151,32 +151,32 @@
 <section class="section how-it-works-section">
     <div class="container">
         <h2 class="section-title centered">
-            {% if lang == 'de' %}So funktioniert es{% elif lang == 'pl' %}Jak to działa{% else %}How It Works{% endif %}
+            {% if lang == 'de' %}So funktioniert es{% elif lang == 'pl' %}Jak to działa{% elif lang == 'uk' %}Як це працює{% else %}How It Works{% endif %}
         </h2>
         
         <div class="pathways-grid">
             <div class="pathway-card">
                 <div class="pathway-icon">🙋</div>
-                <h3>{% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% else %}Participate Only{% endif %}</h3>
-                <p>{% if lang == 'de' %}Registrieren Sie Ihre Absicht zur Teilnahme — kein Beitrag erforderlich{% elif lang == 'pl' %}Zarejestruj zamiar uczestnictwa — nie wymaga wkładu{% else %}Register your intention to participate — no contribution required{% endif %}</p>
+                <h3>{% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% elif lang == 'uk' %}Лише участь{% else %}Participate Only{% endif %}</h3>
+                <p>{% if lang == 'de' %}Registrieren Sie Ihre Absicht zur Teilnahme — kein Beitrag erforderlich{% elif lang == 'pl' %}Zarejestruj zamiar uczestnictwa — nie wymaga wkładu{% elif lang == 'uk' %}Зареєструйте намір взяти участь — внесок не потрібен{% else %}Register your intention to participate — no contribution required{% endif %}</p>
             </div>
             
             <div class="pathway-card">
                 <div class="pathway-icon">💚</div>
-                <h3>{% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% else %}Support Only{% endif %}</h3>
-                <p>{% if lang == 'de' %}Ermöglichen Sie die Teilnahme anderer durch Ihre Unterstützung{% elif lang == 'pl' %}Umożliw uczestnictwo innych poprzez swoje wsparcie{% else %}Enable others to participate through your support{% endif %}</p>
+                <h3>{% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% elif lang == 'uk' %}Лише підтримка{% else %}Support Only{% endif %}</h3>
+                <p>{% if lang == 'de' %}Ermöglichen Sie die Teilnahme anderer durch Ihre Unterstützung{% elif lang == 'pl' %}Umożliw uczestnictwo innych poprzez swoje wsparcie{% elif lang == 'uk' %}Дайте змогу іншим взяти участь завдяки вашій підтримці{% else %}Enable others to participate through your support{% endif %}</p>
             </div>
             
             <div class="pathway-card featured">
                 <div class="pathway-icon">🌱</div>
-                <h3>{% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}</h3>
-                <p>{% if lang == 'de' %}Beitragen und teilnehmen — Wert fließt in beide Richtungen{% elif lang == 'pl' %}Wpłać i weź udział — wartość płynie w obie strony{% else %}Contribute and attend — value flows both ways{% endif %}</p>
+                <h3>{% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% elif lang == 'uk' %}Підтримка й участь{% else %}Support & Participate{% endif %}</h3>
+                <p>{% if lang == 'de' %}Beitragen und teilnehmen — Wert fließt in beide Richtungen{% elif lang == 'pl' %}Wpłać i weź udział — wartość płynie w obie strony{% elif lang == 'uk' %}Зробіть внесок і візьміть участь — цінність тече в обидва боки{% else %}Contribute and attend — value flows both ways{% endif %}</p>
             </div>
         </div>
         
         <div class="learn-more-cta">
             <a href="/model/threshold" class="btn btn-outline">
-                {% if lang == 'de' %}Erfahren Sie mehr über das Collective Threshold Model{% elif lang == 'pl' %}Dowiedz się więcej o Modelu Progu Zbiorowego{% else %}Learn more about the Collective Threshold Model{% endif %} →
+                {% if lang == 'de' %}Erfahren Sie mehr über das Collective Threshold Model{% elif lang == 'pl' %}Dowiedz się więcej o Modelu Progu Zbiorowego{% elif lang == 'uk' %}Дізнайтеся більше про Модель колективного порогу{% else %}Learn more about the Collective Threshold Model{% endif %} →
             </a>
         </div>
     </div>

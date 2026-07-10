@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if lang == 'de' %}Ein Angebot erstellen{% elif lang == 'pl' %}Utwórz ofertę{% else %}Create an Offering{% endif %}
+{% if lang == 'de' %}Ein Angebot erstellen{% elif lang == 'pl' %}Utwórz ofertę{% elif lang == 'uk' %}Створити пропозицію{% else %}Create an Offering{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -9,14 +9,14 @@
 <section class="page-hero compact">
     <div class="container">
         <span class="hero-eyebrow">
-            {% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% else %}Collective Threshold Model{% endif %}
+            {% if lang == 'de' %}Kollektives Schwellenmodell{% elif lang == 'pl' %}Model Progu Zbiorowego{% elif lang == 'uk' %}Модель колективного порогу{% else %}Collective Threshold Model{% endif %}
         </span>
         <h1 class="page-title">
             {% if lang == 'de' %}
                 Ein Angebot erstellen
             {% elif lang == 'pl' %}
                 Utwórz ofertę
-            {% else %}
+            {% elif lang == 'uk' %}Створити пропозицію{% else %}
                 Create an Offering
             {% endif %}
         </h1>
@@ -25,7 +25,7 @@
                 Teilen Sie Ihr Wissen, Ihre Fähigkeiten oder Ihre Vision mit der Gemeinschaft. Jedes Angebot wird gemeinsam ins Leben gerufen.
             {% elif lang == 'pl' %}
                 Podziel się swoją wiedzą, umiejętnościami lub wizją ze społecznością. Każda oferta jest wspólnie realizowana.
-            {% else %}
+            {% elif lang == 'uk' %}Поділіться своїми знаннями, навичками чи баченням зі спільнотою. Кожна пропозиція втілюється колективно.{% else %}
                 Share your knowledge, skills, or vision with the community. Every offering is brought into being collectively.
             {% endif %}
         </p>
@@ -39,20 +39,20 @@
             
             <div class="info-card">
                 <h2>
-                    {% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% else %}How It Works{% endif %}
+                    {% if lang == 'de' %}Wie es funktioniert{% elif lang == 'pl' %}Jak to działa{% elif lang == 'uk' %}Як це працює{% else %}How It Works{% endif %}
                 </h2>
                 
                 <div class="steps-list">
                     <div class="step">
                         <span class="step-number">1</span>
                         <div class="step-content">
-                            <h3>{% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj się{% else %}Register{% endif %}</h3>
+                            <h3>{% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj się{% elif lang == 'uk' %}Зареєструватися{% else %}Register{% endif %}</h3>
                             <p>
                                 {% if lang == 'de' %}
                                     Erstellen Sie ein Konto, um Angebote zu erstellen und zu verwalten.
                                 {% elif lang == 'pl' %}
                                     Utwórz konto, aby tworzyć i zarządzać ofertami.
-                                {% else %}
+                                {% elif lang == 'uk' %}Створіть обліковий запис, щоб створювати пропозиції та керувати ними.{% else %}
                                     Create an account to create and manage offerings.
                                 {% endif %}
                             </p>
@@ -62,13 +62,13 @@
                     <div class="step">
                         <span class="step-number">2</span>
                         <div class="step-content">
-                            <h3>{% if lang == 'de' %}Genehmigung erhalten{% elif lang == 'pl' %}Uzyskaj zatwierdzenie{% else %}Get Approved{% endif %}</h3>
+                            <h3>{% if lang == 'de' %}Genehmigung erhalten{% elif lang == 'pl' %}Uzyskaj zatwierdzenie{% elif lang == 'uk' %}Отримайте схвалення{% else %}Get Approved{% endif %}</h3>
                             <p>
                                 {% if lang == 'de' %}
                                     Nach der Registrierung wird Ihr Konto als "Mitglied" eingerichtet. Ein Administrator wird Ihr Konto auf "Ersteller" hochstufen, damit Sie Angebote erstellen können.
                                 {% elif lang == 'pl' %}
                                     Po rejestracji Twoje konto będzie ustawione jako "Członek". Administrator podniesie Twoje konto do rangi "Twórca", abyś mógł tworzyć oferty.
-                                {% else %}
+                                {% elif lang == 'uk' %}Після реєстрації вашому обліковому запису буде надано роль «Учасник». Адміністратор підвищить його до статусу «Автор», щоб ви могли створювати пропозиції.{% else %}
                                     After registration, your account will be set as "Member". An administrator will upgrade your account to "Creator" status so you can create offerings.
                                 {% endif %}
                             </p>
@@ -78,13 +78,13 @@
                     <div class="step">
                         <span class="step-number">3</span>
                         <div class="step-content">
-                            <h3>{% if lang == 'de' %}Angebot beschreiben{% elif lang == 'pl' %}Opisz ofertę{% else %}Describe Your Offering{% endif %}</h3>
+                            <h3>{% if lang == 'de' %}Angebot beschreiben{% elif lang == 'pl' %}Opisz ofertę{% elif lang == 'uk' %}Опишіть свою пропозицію{% else %}Describe Your Offering{% endif %}</h3>
                             <p>
                                 {% if lang == 'de' %}
                                     Erklären Sie transparent, was Sie anbieten: Titel, Beschreibung, Kosten (Honorar, Materialien, Verpflegung, Raummiete), Termine und maximale Teilnehmerzahl.
                                 {% elif lang == 'pl' %}
                                     Opisz przejrzyście, co oferujesz: tytuł, opis, koszty (honorarium, materiały, wyżywienie, wynajem sali), terminy i maksymalną liczbę uczestników.
-                                {% else %}
+                                {% elif lang == 'uk' %}Прозоро опишіть, що ви пропонуєте: назва, опис, витрати (гонорар фасилітатора, матеріали, харчування, приміщення), дати та максимальна кількість учасників.{% else %}
                                     Transparently describe what you're offering: title, description, costs (facilitator fee, materials, meals, venue), dates, and maximum participants.
                                 {% endif %}
                             </p>
@@ -94,13 +94,13 @@
                     <div class="step">
                         <span class="step-number">4</span>
                         <div class="step-content">
-                            <h3>{% if lang == 'de' %}Gemeinschaft finanziert{% elif lang == 'pl' %}Społeczność finansuje{% else %}Community Funds{% endif %}</h3>
+                            <h3>{% if lang == 'de' %}Gemeinschaft finanziert{% elif lang == 'pl' %}Społeczność finansuje{% elif lang == 'uk' %}Спільнота фінансує{% else %}Community Funds{% endif %}</h3>
                             <p>
                                 {% if lang == 'de' %}
                                     Die Gemeinschaft trägt anonym bei – Euro, Zeitspenden oder UBECrc-Token. Niemand weiß, wer was beigetragen hat.
                                 {% elif lang == 'pl' %}
                                     Społeczność anonimowo wpłaca – euro, darowizny czasu lub tokeny UBECrc. Nikt nie wie, kto ile wpłacił.
-                                {% else %}
+                                {% elif lang == 'uk' %}Спільнота робить внески анонімно — євро, пожертви часу або токени UBECrc. Ніхто не знає, хто що вніс.{% else %}
                                     The community contributes anonymously – Euros, time donations, or UBECrc tokens. No one knows who contributed what.
                                 {% endif %}
                             </p>
@@ -110,13 +110,13 @@
                     <div class="step">
                         <span class="step-number">5</span>
                         <div class="step-content">
-                            <h3>{% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}</h3>
+                            <h3>{% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% elif lang == 'uk' %}Поріг досягнуто{% else %}Threshold Met{% endif %}</h3>
                             <p>
                                 {% if lang == 'de' %}
                                     Wenn die Schwelle erreicht ist, findet das Angebot statt. Überschüsse gehen in den Regenerationsfonds, Fehlbeträge werden daraus gedeckt.
                                 {% elif lang == 'pl' %}
                                     Gdy próg zostanie osiągnięty, oferta się realizuje. Nadwyżki trafiają do Funduszu Regeneracji, niedobory są z niego pokrywane.
-                                {% else %}
+                                {% elif lang == 'uk' %}Коли поріг досягнуто, пропозиція відбувається. Надлишки надходять до Фонду регенерації, а нестачі покриваються з нього.{% else %}
                                     When the threshold is met, the offering happens. Surpluses go to the Regeneration Fund, shortfalls are covered from it.
                                 {% endif %}
                             </p>
@@ -128,19 +128,19 @@
             <!-- Role Explanation -->
             <div class="info-card">
                 <h2>
-                    {% if lang == 'de' %}Benutzerrollen{% elif lang == 'pl' %}Role użytkowników{% else %}User Roles{% endif %}
+                    {% if lang == 'de' %}Benutzerrollen{% elif lang == 'pl' %}Role użytkowników{% elif lang == 'uk' %}Ролі користувачів{% else %}User Roles{% endif %}
                 </h2>
                 
                 <div class="roles-grid">
                     <div class="role-item">
                         <span class="role-icon">👤</span>
-                        <h3>{% if lang == 'de' %}Mitglied{% elif lang == 'pl' %}Członek{% else %}Member{% endif %}</h3>
+                        <h3>{% if lang == 'de' %}Mitglied{% elif lang == 'pl' %}Członek{% elif lang == 'uk' %}Учасник{% else %}Member{% endif %}</h3>
                         <p>
                             {% if lang == 'de' %}
                                 Kann an Angeboten teilnehmen und beitragen. Standardrolle nach der Registrierung.
                             {% elif lang == 'pl' %}
                                 Może uczestniczyć i wspierać oferty. Domyślna rola po rejestracji.
-                            {% else %}
+                            {% elif lang == 'uk' %}Може брати участь у пропозиціях і робити внески. Роль за замовчуванням після реєстрації.{% else %}
                                 Can participate in and contribute to offerings. Default role after registration.
                             {% endif %}
                         </p>
@@ -148,13 +148,13 @@
                     
                     <div class="role-item">
                         <span class="role-icon">✏️</span>
-                        <h3>{% if lang == 'de' %}Ersteller{% elif lang == 'pl' %}Twórca{% else %}Creator{% endif %}</h3>
+                        <h3>{% if lang == 'de' %}Ersteller{% elif lang == 'pl' %}Twórca{% elif lang == 'uk' %}Автор{% else %}Creator{% endif %}</h3>
                         <p>
                             {% if lang == 'de' %}
                                 Kann Angebote erstellen. Angebote müssen von einem Moderator genehmigt werden.
                             {% elif lang == 'pl' %}
                                 Może tworzyć oferty. Oferty muszą zostać zatwierdzone przez moderatora.
-                            {% else %}
+                            {% elif lang == 'uk' %}Може створювати пропозиції. Пропозиції має схвалити модератор.{% else %}
                                 Can create offerings. Offerings must be approved by a moderator.
                             {% endif %}
                         </p>
@@ -168,7 +168,7 @@
                                 Vertrauenswürdiger Ersteller. Angebote werden direkt veröffentlicht ohne Genehmigung.
                             {% elif lang == 'pl' %}
                                 Zaufany twórca. Oferty publikowane bezpośrednio bez zatwierdzenia.
-                            {% else %}
+                            {% elif lang == 'uk' %}Довірений автор. Пропозиції публікуються одразу, без схвалення.{% else %}
                                 Trusted creator. Offerings are published directly without approval.
                             {% endif %}
                         </p>
@@ -181,7 +181,7 @@
                 {% if user %}
                     {% if user.role in ['creator', 'facilitator', 'moderator', 'admin'] %}
                         <a href="/dashboard/create" class="btn btn-primary btn-large">
-                            {% if lang == 'de' %}Angebot jetzt erstellen{% elif lang == 'pl' %}Utwórz ofertę teraz{% else %}Create Offering Now{% endif %} →
+                            {% if lang == 'de' %}Angebot jetzt erstellen{% elif lang == 'pl' %}Utwórz ofertę teraz{% elif lang == 'uk' %}Створити пропозицію зараз{% else %}Create Offering Now{% endif %} →
                         </a>
                     {% else %}
                         <div class="cta-message">
@@ -190,15 +190,15 @@
                                     Ihr Konto ist als <strong>Mitglied</strong> registriert. Kontaktieren Sie uns, um Ersteller-Rechte zu erhalten.
                                 {% elif lang == 'pl' %}
                                     Twoje konto jest zarejestrowane jako <strong>Członek</strong>. Skontaktuj się z nami, aby uzyskać uprawnienia twórcy.
-                                {% else %}
+                                {% elif lang == 'uk' %}Ваш обліковий запис зареєстровано як <strong>Учасник</strong>. Зв’яжіться з нами, щоб отримати права автора.{% else %}
                                     Your account is registered as <strong>Member</strong>. Contact us to receive creator permissions.
                                 {% endif %}
                             </p>
                             <a href="mailto:erdpuls@ubec.network" class="btn btn-primary">
-                                {% if lang == 'de' %}Kontakt aufnehmen{% elif lang == 'pl' %}Skontaktuj się{% else %}Contact Us{% endif %}
+                                {% if lang == 'de' %}Kontakt aufnehmen{% elif lang == 'pl' %}Skontaktuj się{% elif lang == 'uk' %}Зв’язатися з нами{% else %}Contact Us{% endif %}
                             </a>
                             <a href="/dashboard" class="btn btn-outline">
-                                {% if lang == 'de' %}Zum Dashboard{% elif lang == 'pl' %}Do panelu{% else %}Go to Dashboard{% endif %}
+                                {% if lang == 'de' %}Zum Dashboard{% elif lang == 'pl' %}Do panelu{% elif lang == 'uk' %}Перейти до панелі{% else %}Go to Dashboard{% endif %}
                             </a>
                         </div>
                     {% endif %}
@@ -208,16 +208,16 @@
                             Bereit, ein Angebot zu erstellen? Registrieren Sie sich oder melden Sie sich an.
                         {% elif lang == 'pl' %}
                             Gotowy, aby utworzyć ofertę? Zarejestruj się lub zaloguj.
-                        {% else %}
+                        {% elif lang == 'uk' %}Готові створити пропозицію? Зареєструйтеся або увійдіть, щоб почати.{% else %}
                             Ready to create an offering? Register or log in to get started.
                         {% endif %}
                     </p>
                     <div class="cta-buttons">
                         <a href="/register" class="btn btn-primary btn-large">
-                            {% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj się{% else %}Register{% endif %}
+                            {% if lang == 'de' %}Registrieren{% elif lang == 'pl' %}Zarejestruj się{% elif lang == 'uk' %}Зареєструватися{% else %}Register{% endif %}
                         </a>
                         <a href="/login" class="btn btn-outline btn-large">
-                            {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj się{% else %}Login{% endif %}
+                            {% if lang == 'de' %}Anmelden{% elif lang == 'pl' %}Zaloguj się{% elif lang == 'uk' %}Увійти{% else %}Login{% endif %}
                         </a>
                     </div>
                 {% endif %}

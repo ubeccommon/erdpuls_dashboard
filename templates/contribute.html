@@ -2,9 +2,9 @@
 
 {% block title %}
 {% if pathway == 'support_and_participate' %}
-    {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+    {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% elif lang == 'uk' %}Підтримка й участь{% else %}Support & Participate{% endif %}
 {% else %}
-    {% if lang == 'de' %}Angebot unterstützen{% elif lang == 'pl' %}Wesprzyj ofertę{% else %}Support Offering{% endif %}
+    {% if lang == 'de' %}Angebot unterstützen{% elif lang == 'pl' %}Wesprzyj ofertę{% elif lang == 'uk' %}Підтримати пропозицію{% else %}Support Offering{% endif %}
 {% endif %} | {{ offering.get_title(lang) }}
 {% endblock %}
 
@@ -13,20 +13,20 @@
 <section class="page-hero compact">
     <div class="container">
         <a href="/offering/{{ offering.id }}/engage" class="back-link">
-            ← {% if lang == 'de' %}Zurück zur Auswahl{% elif lang == 'pl' %}Powrót do wyboru{% else %}Back to Selection{% endif %}
+            ← {% if lang == 'de' %}Zurück zur Auswahl{% elif lang == 'pl' %}Powrót do wyboru{% elif lang == 'uk' %}Назад до вибору{% else %}Back to Selection{% endif %}
         </a>
         <span class="hero-eyebrow">
             {% if pathway == 'support_and_participate' %}
-                {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+                {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% elif lang == 'uk' %}Підтримка й участь{% else %}Support & Participate{% endif %}
             {% else %}
-                {% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% else %}Support Only{% endif %}
+                {% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% elif lang == 'uk' %}Лише підтримка{% else %}Support Only{% endif %}
             {% endif %}
         </span>
         <h1 class="page-title">
             {% if pathway == 'support_and_participate' %}
-                {% if lang == 'de' %}Beitragen und Teilnehmen{% elif lang == 'pl' %}Wpłać i weź udział{% else %}Contribute and Participate{% endif %}
+                {% if lang == 'de' %}Beitragen und Teilnehmen{% elif lang == 'pl' %}Wpłać i weź udział{% elif lang == 'uk' %}Зробити внесок і взяти участь{% else %}Contribute and Participate{% endif %}
             {% else %}
-                {% if lang == 'de' %}Dieses Angebot unterstützen{% elif lang == 'pl' %}Wesprzyj tę ofertę{% else %}Support This Offering{% endif %}
+                {% if lang == 'de' %}Dieses Angebot unterstützen{% elif lang == 'pl' %}Wesprzyj tę ofertę{% elif lang == 'uk' %}Підтримати цю пропозицію{% else %}Support This Offering{% endif %}
             {% endif %}
         </h1>
         <p class="page-intro">
@@ -52,7 +52,7 @@
                                 <strong>Reziprozität:</strong> Wert fließt in beide Richtungen. Ihr Beitrag ermöglicht das Angebot, und Sie werden Teil der Erfahrung.
                             {% elif lang == 'pl' %}
                                 <strong>Wzajemność:</strong> Wartość płynie w obie strony. Twój wkład umożliwia ofertę, a Ty stajesz się częścią doświadczenia.
-                            {% else %}
+                            {% elif lang == 'uk' %}<strong>Взаємність:</strong> Цінність тече в обидва боки. Ваш внесок уможливлює пропозицію, а ви стаєте частиною досвіду.{% else %}
                                 <strong>Reciprocity:</strong> Value flows both ways. Your contribution enables the offering, and you become part of the experience.
                             {% endif %}
                         </p>
@@ -63,7 +63,7 @@
                                 <strong>Pflanzliche Großzügigkeit:</strong> Wie eine Pflanze, die Sauerstoff, Nahrung und Schönheit gibt, ermöglicht Ihre Unterstützung anderen die Teilnahme.
                             {% elif lang == 'pl' %}
                                 <strong>Hojna roślina:</strong> Jak roślina, która daje tlen, pożywienie i piękno, Twoje wsparcie umożliwia innym uczestnictwo.
-                            {% else %}
+                            {% elif lang == 'uk' %}<strong>Щедрість рослини:</strong> Як рослина, що дарує кисень, їжу та красу, ваша підтримка дає змогу іншим взяти участь.{% else %}
                                 <strong>Plant generosity:</strong> Like a plant giving oxygen, food, and beauty, your support enables others to participate.
                             {% endif %}
                         </p>
@@ -78,7 +78,7 @@
                     <div class="form-section">
                         <h3 class="section-title">
                             <span class="step-number">1</span>
-                            {% if lang == 'de' %}Beitragsart wählen{% elif lang == 'pl' %}Wybierz rodzaj wkładu{% else %}Choose Contribution Type{% endif %}
+                            {% if lang == 'de' %}Beitragsart wählen{% elif lang == 'pl' %}Wybierz rodzaj wkładu{% elif lang == 'uk' %}Оберіть тип внеску{% else %}Choose Contribution Type{% endif %}
                         </h3>
                         
                         <div class="contribution-type-grid">
@@ -88,7 +88,7 @@
                                 <div class="type-icon">💶</div>
                                 <div class="type-name">Euro</div>
                                 <div class="type-desc">
-                                    {% if lang == 'de' %}Direkter finanzieller Beitrag{% elif lang == 'pl' %}Bezpośredni wkład finansowy{% else %}Direct financial contribution{% endif %}
+                                    {% if lang == 'de' %}Direkter finanzieller Beitrag{% elif lang == 'pl' %}Bezpośredni wkład finansowy{% elif lang == 'uk' %}Прямий фінансовий внесок{% else %}Direct financial contribution{% endif %}
                                 </div>
                             </label>
                             
@@ -98,7 +98,7 @@
                                 <div class="type-icon">🪙</div>
                                 <div class="type-name">UBECrc Tokens</div>
                                 <div class="type-desc">
-                                    {% if lang == 'de' %}{{ token_rate.tokens_per_eur }} Tokens = €1{% elif lang == 'pl' %}{{ token_rate.tokens_per_eur }} tokenów = €1{% else %}{{ token_rate.tokens_per_eur }} tokens = €1{% endif %}
+                                    {% if lang == 'de' %}{{ token_rate.tokens_per_eur }} Tokens = €1{% elif lang == 'pl' %}{{ token_rate.tokens_per_eur }} tokenów = €1{% elif lang == 'uk' %}{{ token_rate.tokens_per_eur }} токенів = €1{% else %}{{ token_rate.tokens_per_eur }} tokens = €1{% endif %}
                                 </div>
                             </label>
                             
@@ -106,9 +106,9 @@
                             <label class="type-card" data-type="hours">
                                 <input type="radio" name="contribution_type" value="hours">
                                 <div class="type-icon">⏱️</div>
-                                <div class="type-name">{% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% else %}Hours{% endif %}</div>
+                                <div class="type-name">{% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% elif lang == 'uk' %}Години{% else %}Hours{% endif %}</div>
                                 <div class="type-desc">
-                                    {% if lang == 'de' %}Fähigkeiten/Arbeit{% elif lang == 'pl' %}Umiejętności/praca{% else %}Skills/labor{% endif %}
+                                    {% if lang == 'de' %}Fähigkeiten/Arbeit{% elif lang == 'pl' %}Umiejętności/praca{% elif lang == 'uk' %}Навички/праця{% else %}Skills/labor{% endif %}
                                 </div>
                             </label>
                         </div>
@@ -118,14 +118,14 @@
                     <div class="form-section">
                         <h3 class="section-title">
                             <span class="step-number">2</span>
-                            {% if lang == 'de' %}Betrag angeben{% elif lang == 'pl' %}Podaj kwotę{% else %}Specify Amount{% endif %}
+                            {% if lang == 'de' %}Betrag angeben{% elif lang == 'pl' %}Podaj kwotę{% elif lang == 'uk' %}Вкажіть суму{% else %}Specify Amount{% endif %}
                         </h3>
                         
                         <!-- Euro Amount -->
                         <div class="amount-panel" id="euroPanel">
                             <div class="form-group">
                                 <label for="amount_eur">
-                                    {% if lang == 'de' %}Betrag in Euro{% elif lang == 'pl' %}Kwota w Euro{% else %}Amount in Euro{% endif %}
+                                    {% if lang == 'de' %}Betrag in Euro{% elif lang == 'pl' %}Kwota w Euro{% elif lang == 'uk' %}Сума в євро{% else %}Amount in Euro{% endif %}
                                 </label>
                                 <div class="amount-input-wrapper">
                                     <span class="currency-symbol">€</span>
@@ -136,7 +136,7 @@
                             </div>
                             
                             <div class="quick-amounts">
-                                <span class="quick-label">{% if lang == 'de' %}Schnellauswahl:{% elif lang == 'pl' %}Szybki wybór:{% else %}Quick select:{% endif %}</span>
+                                <span class="quick-label">{% if lang == 'de' %}Schnellauswahl:{% elif lang == 'pl' %}Szybki wybór:{% elif lang == 'uk' %}Швидкий вибір:{% else %}Quick select:{% endif %}</span>
                                 <button type="button" class="quick-btn" data-amount="10">€10</button>
                                 <button type="button" class="quick-btn" data-amount="25">€25</button>
                                 <button type="button" class="quick-btn" data-amount="50">€50</button>
@@ -148,13 +148,13 @@
                         <div class="amount-panel hidden" id="tokenPanel">
                             <div class="form-group">
                                 <label for="token_amount">
-                                    {% if lang == 'de' %}Anzahl Tokens{% elif lang == 'pl' %}Liczba tokenów{% else %}Number of Tokens{% endif %}
+                                    {% if lang == 'de' %}Anzahl Tokens{% elif lang == 'pl' %}Liczba tokenów{% elif lang == 'uk' %}Кількість токенів{% else %}Number of Tokens{% endif %}
                                 </label>
                                 <input type="number" id="token_amount" name="token_amount" 
                                        min="1" step="1" placeholder="0" class="amount-input">
                             </div>
                             <p class="conversion-note">
-                                {% if lang == 'de' %}Aktueller Kurs: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% elif lang == 'pl' %}Aktualny kurs: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% else %}Current rate: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% endif %}
+                                {% if lang == 'de' %}Aktueller Kurs: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% elif lang == 'pl' %}Aktualny kurs: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% elif lang == 'uk' %}Поточний курс: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% else %}Current rate: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% endif %}
                             </p>
                         </div>
                         
@@ -162,13 +162,13 @@
                         <div class="amount-panel hidden" id="hoursPanel">
                             <div class="form-group">
                                 <label for="hours_category">
-                                    {% if lang == 'de' %}Art der Arbeit{% elif lang == 'pl' %}Rodzaj pracy{% else %}Type of Work{% endif %}
+                                    {% if lang == 'de' %}Art der Arbeit{% elif lang == 'pl' %}Rodzaj pracy{% elif lang == 'uk' %}Вид роботи{% else %}Type of Work{% endif %}
                                 </label>
                                 <select id="hours_category" name="hours_category">
-                                    <option value="">{% if lang == 'de' %}Bitte auswählen{% elif lang == 'pl' %}Proszę wybrać{% else %}Please select{% endif %}</option>
+                                    <option value="">{% if lang == 'de' %}Bitte auswählen{% elif lang == 'pl' %}Proszę wybrać{% elif lang == 'uk' %}Будь ласка, оберіть{% else %}Please select{% endif %}</option>
                                     {% for rate in hours_rates %}
                                     <option value="{{ rate.category }}" data-rate="{{ rate.eur_per_hour }}">
-                                        {{ rate.get_description(lang) or rate.category }} (€{{ rate.eur_per_hour }}/{% if lang == 'de' %}Std{% elif lang == 'pl' %}godz{% else %}hr{% endif %})
+                                        {{ rate.get_description(lang) or rate.category }} (€{{ rate.eur_per_hour }}/{% if lang == 'de' %}Std{% elif lang == 'pl' %}godz{% elif lang == 'uk' %}год{% else %}hr{% endif %})
                                     </option>
                                     {% endfor %}
                                 </select>
@@ -176,7 +176,7 @@
                             
                             <div class="form-group">
                                 <label for="hours_amount">
-                                    {% if lang == 'de' %}Anzahl Stunden{% elif lang == 'pl' %}Liczba godzin{% else %}Number of Hours{% endif %}
+                                    {% if lang == 'de' %}Anzahl Stunden{% elif lang == 'pl' %}Liczba godzin{% elif lang == 'uk' %}Кількість годин{% else %}Number of Hours{% endif %}
                                 </label>
                                 <input type="number" id="hours_amount" name="hours_amount" 
                                        min="0.5" max="100" step="0.5" placeholder="0">
@@ -184,10 +184,10 @@
                             
                             <div class="form-group">
                                 <label for="hours_description">
-                                    {% if lang == 'de' %}Beschreibung (optional){% elif lang == 'pl' %}Opis (opcjonalnie){% else %}Description (optional){% endif %}
+                                    {% if lang == 'de' %}Beschreibung (optional){% elif lang == 'pl' %}Opis (opcjonalnie){% elif lang == 'uk' %}Опис (необов’язково){% else %}Description (optional){% endif %}
                                 </label>
                                 <textarea id="hours_description" name="hours_description" rows="2"
-                                          placeholder="{% if lang == 'de' %}Welche Fähigkeiten/Erfahrungen bringen Sie mit?{% elif lang == 'pl' %}Jakie umiejętności/doświadczenie wnosisz?{% else %}What skills/experience do you bring?{% endif %}"></textarea>
+                                          placeholder="{% if lang == 'de' %}Welche Fähigkeiten/Erfahrungen bringen Sie mit?{% elif lang == 'pl' %}Jakie umiejętności/doświadczenie wnosisz?{% elif lang == 'uk' %}Які навички/досвід ви пропонуєте?{% else %}What skills/experience do you bring?{% endif %}"></textarea>
                             </div>
                         </div>
                     </div>
@@ -197,9 +197,9 @@
                         <h3 class="section-title">
                             <span class="step-number">3</span>
                             {% if pathway == 'support_and_participate' %}
-                                {% if lang == 'de' %}Ihre Kontaktdaten{% elif lang == 'pl' %}Twoje dane kontaktowe{% else %}Your Contact Details{% endif %}
+                                {% if lang == 'de' %}Ihre Kontaktdaten{% elif lang == 'pl' %}Twoje dane kontaktowe{% elif lang == 'uk' %}Ваші контактні дані{% else %}Your Contact Details{% endif %}
                             {% else %}
-                                {% if lang == 'de' %}Kontakt (optional){% elif lang == 'pl' %}Kontakt (opcjonalnie){% else %}Contact (Optional){% endif %}
+                                {% if lang == 'de' %}Kontakt (optional){% elif lang == 'pl' %}Kontakt (opcjonalnie){% elif lang == 'uk' %}Контакт (необов’язково){% else %}Contact (Optional){% endif %}
                             {% endif %}
                         </h3>
                         
@@ -209,7 +209,7 @@
                                 Da Sie auch teilnehmen möchten, benötigen wir Ihre Kontaktdaten.
                             {% elif lang == 'pl' %}
                                 Ponieważ chcesz również uczestniczyć, potrzebujemy Twoich danych kontaktowych.
-                            {% else %}
+                            {% elif lang == 'uk' %}Оскільки ви також хочете взяти участь, нам потрібні ваші контактні дані.{% else %}
                                 Since you also want to participate, we need your contact details.
                             {% endif %}
                         </p>
@@ -219,7 +219,7 @@
                                 Optional: Nur falls Sie eine Quittung wünschen oder bei Stunden-Beiträgen kontaktiert werden möchten.
                             {% elif lang == 'pl' %}
                                 Opcjonalnie: Tylko jeśli chcesz otrzymać potwierdzenie lub być kontaktowany w sprawie wkładu godzinowego.
-                            {% else %}
+                            {% elif lang == 'uk' %}Необов’язково: лише якщо ви бажаєте отримати квитанцію або щоб з вами зв’язалися щодо внеску годинами.{% else %}
                                 Optional: Only if you want a receipt or to be contacted about hours contributions.
                             {% endif %}
                         </p>
@@ -228,7 +228,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="contact_name">
-                                    {% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię{% else %}Name{% endif %}
+                                    {% if lang == 'de' %}Name{% elif lang == 'pl' %}Imię{% elif lang == 'uk' %}Ім’я{% else %}Name{% endif %}
                                     {% if pathway == 'support_and_participate' %}<span class="required">*</span>{% endif %}
                                 </label>
                                 <input type="text" id="contact_name" name="contact_name"
@@ -246,32 +246,32 @@
                         
                         <div class="form-group">
                             <label for="contact_phone">
-                                {% if lang == 'de' %}Telefon{% elif lang == 'pl' %}Telefon{% else %}Phone{% endif %}
-                                {% if pathway == 'support_and_participate' %}({% if lang == 'de' %}für Koordination{% elif lang == 'pl' %}do koordynacji{% else %}for coordination{% endif %}){% endif %}
+                                {% if lang == 'de' %}Telefon{% elif lang == 'pl' %}Telefon{% elif lang == 'uk' %}Телефон{% else %}Phone{% endif %}
+                                {% if pathway == 'support_and_participate' %}({% if lang == 'de' %}für Koordination{% elif lang == 'pl' %}do koordynacji{% elif lang == 'uk' %}для координації{% else %}for coordination{% endif %}){% endif %}
                             </label>
                             <input type="tel" id="contact_phone" name="contact_phone">
                         </div>
                         
                         <div class="form-group">
                             <label for="contact_notes">
-                                {% if lang == 'de' %}Notizen (optional){% elif lang == 'pl' %}Notatki (opcjonalnie){% else %}Notes (optional){% endif %}
+                                {% if lang == 'de' %}Notizen (optional){% elif lang == 'pl' %}Notatki (opcjonalnie){% elif lang == 'uk' %}Примітки (необов’язково){% else %}Notes (optional){% endif %}
                             </label>
                             <textarea id="contact_notes" name="contact_notes" rows="2"
-                                      placeholder="{% if lang == 'de' %}Besondere Hinweise oder Wünsche{% elif lang == 'pl' %}Specjalne uwagi lub życzenia{% else %}Any special notes or requests{% endif %}"></textarea>
+                                      placeholder="{% if lang == 'de' %}Besondere Hinweise oder Wünsche{% elif lang == 'pl' %}Specjalne uwagi lub życzenia{% elif lang == 'uk' %}Будь-які особливі примітки чи побажання{% else %}Any special notes or requests{% endif %}"></textarea>
                         </div>
                         
                         {% if pathway == 'support_and_participate' %}
                         <div class="form-group">
                             <label for="referral">
-                                {% if lang == 'de' %}Wie haben Sie von uns erfahren?{% elif lang == 'pl' %}Jak się o nas dowiedziałeś?{% else %}How did you hear about us?{% endif %}
+                                {% if lang == 'de' %}Wie haben Sie von uns erfahren?{% elif lang == 'pl' %}Jak się o nas dowiedziałeś?{% elif lang == 'uk' %}Звідки ви про нас дізналися?{% else %}How did you hear about us?{% endif %}
                             </label>
                             <select id="referral" name="referral">
-                                <option value="">{% if lang == 'de' %}Bitte auswählen{% elif lang == 'pl' %}Proszę wybrać{% else %}Please select{% endif %}</option>
-                                <option value="friend">{% if lang == 'de' %}Freund/Bekannter{% elif lang == 'pl' %}Znajomy{% else %}Friend{% endif %}</option>
-                                <option value="school">{% if lang == 'de' %}Schule{% elif lang == 'pl' %}Szkoła{% else %}School{% endif %}</option>
-                                <option value="social_media">{% if lang == 'de' %}Soziale Medien{% elif lang == 'pl' %}Media społecznościowe{% else %}Social Media{% endif %}</option>
-                                <option value="website">{% if lang == 'de' %}Website{% elif lang == 'pl' %}Strona internetowa{% else %}Website{% endif %}</option>
-                                <option value="other">{% if lang == 'de' %}Andere{% elif lang == 'pl' %}Inne{% else %}Other{% endif %}</option>
+                                <option value="">{% if lang == 'de' %}Bitte auswählen{% elif lang == 'pl' %}Proszę wybrać{% elif lang == 'uk' %}Будь ласка, оберіть{% else %}Please select{% endif %}</option>
+                                <option value="friend">{% if lang == 'de' %}Freund/Bekannter{% elif lang == 'pl' %}Znajomy{% elif lang == 'uk' %}Друг{% else %}Friend{% endif %}</option>
+                                <option value="school">{% if lang == 'de' %}Schule{% elif lang == 'pl' %}Szkoła{% elif lang == 'uk' %}Школа{% else %}School{% endif %}</option>
+                                <option value="social_media">{% if lang == 'de' %}Soziale Medien{% elif lang == 'pl' %}Media społecznościowe{% elif lang == 'uk' %}Соціальні мережі{% else %}Social Media{% endif %}</option>
+                                <option value="website">{% if lang == 'de' %}Website{% elif lang == 'pl' %}Strona internetowa{% elif lang == 'uk' %}Вебсайт{% else %}Website{% endif %}</option>
+                                <option value="other">{% if lang == 'de' %}Andere{% elif lang == 'pl' %}Inne{% elif lang == 'uk' %}Інше{% else %}Other{% endif %}</option>
                             </select>
                         </div>
                         {% endif %}
@@ -287,6 +287,9 @@
                             {% elif lang == 'pl' %}
                                 <strong>Prywatność chroniona:</strong> Tylko suma i liczba wpłat są wyświetlane publicznie.
                                 {% if pathway == 'support_and_participate' %}Twoje dane kontaktowe są widoczne tylko dla organizatorów.{% else %}Jeśli podasz dane kontaktowe, są one widoczne tylko dla organizatorów.{% endif %}
+                            {% elif lang == 'uk' %}
+                                <strong>Приватність захищено:</strong> Публічно відображаються лише загальна сума та кількість внесків.
+                                {% if pathway == 'support_and_participate' %}Ваші контактні дані видимі лише організаторам.{% else %}Якщо ви вкажете контактні дані, вони видимі лише організаторам.{% endif %}
                             {% else %}
                                 <strong>Privacy protected:</strong> Only totals and contribution count shown publicly.
                                 {% if pathway == 'support_and_participate' %}Your contact info visible to organizers only.{% else %}If you provide contact info, it's visible to organizers only.{% endif %}
@@ -297,9 +300,9 @@
                     <!-- Submit -->
                     <button type="submit" class="btn btn-primary btn-large btn-block">
                         {% if pathway == 'support_and_participate' %}
-                            {% if lang == 'de' %}Beitragen & Teilnahme bestätigen{% elif lang == 'pl' %}Wpłać i potwierdź uczestnictwo{% else %}Contribute & Confirm Participation{% endif %}
+                            {% if lang == 'de' %}Beitragen & Teilnahme bestätigen{% elif lang == 'pl' %}Wpłać i potwierdź uczestnictwo{% elif lang == 'uk' %}Зробити внесок і підтвердити участь{% else %}Contribute & Confirm Participation{% endif %}
                         {% else %}
-                            {% if lang == 'de' %}Beitrag absenden{% elif lang == 'pl' %}Wyślij wkład{% else %}Submit Contribution{% endif %}
+                            {% if lang == 'de' %}Beitrag absenden{% elif lang == 'pl' %}Wyślij wkład{% elif lang == 'uk' %}Надіслати внесок{% else %}Submit Contribution{% endif %}
                         {% endif %}
                     </button>
                     
@@ -309,7 +312,7 @@
             <!-- Right: Progress Sidebar -->
             <aside class="progress-sidebar">
                 <div class="progress-card">
-                    <h3>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% else %}Progress{% endif %}</h3>
+                    <h3>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% elif lang == 'uk' %}Прогрес{% else %}Progress{% endif %}</h3>
                     
                     <div class="progress-visual">
                         <div class="progress-circle" data-percent="{{ offering._percent }}">
@@ -324,24 +327,24 @@
                     
                     <div class="progress-details">
                         <div class="detail-row">
-                            <span class="label">{% if lang == 'de' %}Gesammelt{% elif lang == 'pl' %}Zebrano{% else %}Raised{% endif %}</span>
+                            <span class="label">{% if lang == 'de' %}Gesammelt{% elif lang == 'pl' %}Zebrano{% elif lang == 'uk' %}Зібрано{% else %}Raised{% endif %}</span>
                             <span class="value">€{{ offering._total }}</span>
                         </div>
                         <div class="detail-row">
-                            <span class="label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}</span>
+                            <span class="label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% elif lang == 'uk' %}Поріг{% else %}Threshold{% endif %}</span>
                             <span class="value">€{{ offering.threshold_amount }}</span>
                         </div>
                         <div class="detail-row">
-                            <span class="label">{% if lang == 'de' %}Verbleibend{% elif lang == 'pl' %}Pozostało{% else %}Remaining{% endif %}</span>
+                            <span class="label">{% if lang == 'de' %}Verbleibend{% elif lang == 'pl' %}Pozostało{% elif lang == 'uk' %}Залишилося{% else %}Remaining{% endif %}</span>
                             <span class="value {% if offering._remaining <= 0 %}success{% endif %}">
-                                {% if offering._remaining > 0 %}€{{ offering._remaining }}{% else %}✓ {% if lang == 'de' %}Erreicht{% elif lang == 'pl' %}Osiągnięto{% else %}Met{% endif %}{% endif %}
+                                {% if offering._remaining > 0 %}€{{ offering._remaining }}{% else %}✓ {% if lang == 'de' %}Erreicht{% elif lang == 'pl' %}Osiągnięto{% elif lang == 'uk' %}Досягнуто{% else %}Met{% endif %}{% endif %}
                             </span>
                         </div>
                     </div>
                     
                     {% if offering._percent >= 100 %}
                     <div class="threshold-met-badge">
-                        🎉 {% if lang == 'de' %}Schwelle erreicht!{% elif lang == 'pl' %}Próg osiągnięty!{% else %}Threshold Met!{% endif %}
+                        🎉 {% if lang == 'de' %}Schwelle erreicht!{% elif lang == 'pl' %}Próg osiągnięty!{% elif lang == 'uk' %}Поріг досягнуто!{% else %}Threshold Met!{% endif %}
                     </div>
                     {% endif %}
                 </div>

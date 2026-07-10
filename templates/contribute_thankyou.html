@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{% if lang == 'de' %}Vielen Dank{% elif lang == 'pl' %}Dziękujemy{% else %}Thank You{% endif %}{% endblock %}
+{% block title %}{% if lang == 'de' %}Vielen Dank{% elif lang == 'pl' %}Dziękujemy{% elif lang == 'uk' %}Дякуємо{% else %}Thank You{% endif %}{% endblock %}
 
 {% block content %}
 <section class="contribution-flow">
@@ -10,43 +10,43 @@
         <div class="flow-steps">
             <div class="step completed">
                 <span class="step-number">✓</span>
-                <span class="step-label">{% if lang == 'de' %}Angaben{% elif lang == 'pl' %}Dane{% else %}Details{% endif %}</span>
+                <span class="step-label">{% if lang == 'de' %}Angaben{% elif lang == 'pl' %}Dane{% elif lang == 'uk' %}Деталі{% else %}Details{% endif %}</span>
             </div>
             <div class="step-line completed"></div>
             <div class="step completed">
                 <span class="step-number">✓</span>
-                <span class="step-label">{% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}</span>
+                <span class="step-label">{% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% elif lang == 'uk' %}Підтверджено{% else %}Confirmed{% endif %}</span>
             </div>
             <div class="step-line completed"></div>
             <div class="step completed">
                 <span class="step-number">✓</span>
-                <span class="step-label">{% if lang == 'de' %}Fertig{% elif lang == 'pl' %}Gotowe{% else %}Done{% endif %}</span>
+                <span class="step-label">{% if lang == 'de' %}Fertig{% elif lang == 'pl' %}Gotowe{% elif lang == 'uk' %}Готово{% else %}Done{% endif %}</span>
             </div>
         </div>
 
         <div class="flow-card thankyou-card">
             <div class="thankyou-icon">🌱</div>
-            <h1>{% if lang == 'de' %}Vielen Dank!{% elif lang == 'pl' %}Dziękujemy!{% else %}Thank You!{% endif %}</h1>
+            <h1>{% if lang == 'de' %}Vielen Dank!{% elif lang == 'pl' %}Dziękujemy!{% elif lang == 'uk' %}Дякуємо!{% else %}Thank You!{% endif %}</h1>
             
             <p class="thankyou-message">
                 {% if lang == 'de' %}
                     Ihr Beitrag wurde erfolgreich zum kollektiven Topf hinzugefügt.
                 {% elif lang == 'pl' %}
                     Twój wkład został pomyślnie dodany do wspólnego funduszu.
-                {% else %}
+                {% elif lang == 'uk' %}Ваш внесок успішно додано до спільного фонду.{% else %}
                     Your contribution has been successfully added to the collective pot.
                 {% endif %}
             </p>
 
             <!-- Contribution Receipt -->
             <div class="receipt-card">
-                <h3>{% if lang == 'de' %}Ihre Zusage{% elif lang == 'pl' %}Twoja deklaracja{% else %}Your Pledge{% endif %}</h3>
+                <h3>{% if lang == 'de' %}Ihre Zusage{% elif lang == 'pl' %}Twoja deklaracja{% elif lang == 'uk' %}Ваше зобов’язання{% else %}Your Pledge{% endif %}</h3>
                 
                 <div class="receipt-items">
                     {% if contribution_data.euro and contribution_data.euro > 0 %}
                     <div class="receipt-item">
                         <span class="receipt-icon">💶</span>
-                        <span class="receipt-label">{% if lang == 'de' %}Finanziell{% elif lang == 'pl' %}Finansowy{% else %}Financial{% endif %}</span>
+                        <span class="receipt-label">{% if lang == 'de' %}Finanziell{% elif lang == 'pl' %}Finansowy{% elif lang == 'uk' %}Фінансовий{% else %}Financial{% endif %}</span>
                         <span class="receipt-value">€{{ "%.2f"|format(contribution_data.euro) }}</span>
                     </div>
                     {% endif %}
@@ -68,7 +68,7 @@
                     {% endif %}
 
                     <div class="receipt-total">
-                        <span>{% if lang == 'de' %}Gesamtwert{% elif lang == 'pl' %}Łączna wartość{% else %}Total{% endif %}</span>
+                        <span>{% if lang == 'de' %}Gesamtwert{% elif lang == 'pl' %}Łączna wartość{% elif lang == 'uk' %}Усього{% else %}Total{% endif %}</span>
                         <span class="total-value">€{{ "%.2f"|format(contribution_data.total_eur) }}</span>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
 
             <!-- Updated Progress -->
             <div class="progress-update">
-                <h3>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% else %}Progress{% endif %}</h3>
+                <h3>{% if lang == 'de' %}Fortschritt{% elif lang == 'pl' %}Postęp{% elif lang == 'uk' %}Прогрес{% else %}Progress{% endif %}</h3>
                 <div class="progress-bar-container">
                     <div class="progress-bar-fill" style="width: {{ [new_percent, 100]|min }}%"></div>
                 </div>
@@ -92,7 +92,7 @@
                         <strong>Schwelle erreicht!</strong> Dank Ihres Beitrags kann dieses Angebot stattfinden!
                     {% elif lang == 'pl' %}
                         <strong>Próg osiągnięty!</strong> Dzięki twojemu wkładowi ta oferta może się odbyć!
-                    {% else %}
+                    {% elif lang == 'uk' %}<strong>Поріг досягнуто!</strong> Завдяки вашому внеску ця пропозиція може відбутися!{% else %}
                         <strong>Threshold reached!</strong> Thanks to your contribution, this offering can take place!
                     {% endif %}
                 </div>
@@ -102,7 +102,7 @@
                         Noch <strong>€{{ "%.2f"|format(new_remaining) }}</strong> benötigt
                     {% elif lang == 'pl' %}
                         Pozostało <strong>€{{ "%.2f"|format(new_remaining) }}</strong>
-                    {% else %}
+                    {% elif lang == 'uk' %}Ще потрібно <strong>€{{ "%.2f"|format(new_remaining) }}</strong>{% else %}
                         Still need <strong>€{{ "%.2f"|format(new_remaining) }}</strong>
                     {% endif %}
                 </p>
@@ -112,19 +112,19 @@
             {% if contribution_data.hours and contribution_data.hours > 0 %}
             <!-- Hours Next Steps -->
             <div class="next-steps-box">
-                <h3>{% if lang == 'de' %}Nächste Schritte{% elif lang == 'pl' %}Następne kroki{% else %}Next Steps{% endif %}</h3>
+                <h3>{% if lang == 'de' %}Nächste Schritte{% elif lang == 'pl' %}Następne kroki{% elif lang == 'uk' %}Наступні кроки{% else %}Next Steps{% endif %}</h3>
                 <p>
                     {% if lang == 'de' %}
                         Sie haben Arbeitsstunden zugesagt. Der Organisator wird sich mit Ihnen in Verbindung setzen, um die Details zu besprechen.
                     {% elif lang == 'pl' %}
                         Zadeklarowałeś godziny pracy. Organizator skontaktuje się z tobą, aby omówić szczegóły.
-                    {% else %}
+                    {% elif lang == 'uk' %}Ви зобов’язалися надати робочі години. Організатор зв’яжеться з вами, щоб обговорити деталі.{% else %}
                         You've pledged work hours. The organizer will contact you to discuss the details.
                     {% endif %}
                 </p>
                 {% if offering.organizer_email %}
                 <p>
-                    {% if lang == 'de' %}Kontakt{% elif lang == 'pl' %}Kontakt{% else %}Contact{% endif %}:
+                    {% if lang == 'de' %}Kontakt{% elif lang == 'pl' %}Kontakt{% elif lang == 'uk' %}Контакт{% else %}Contact{% endif %}:
                     <a href="mailto:{{ offering.organizer_email }}">{{ offering.organizer_email }}</a>
                 </p>
                 {% endif %}
@@ -133,19 +133,19 @@
 
             <!-- Share -->
             <div class="share-section">
-                <h3>{% if lang == 'de' %}Teilen{% elif lang == 'pl' %}Udostępnij{% else %}Share{% endif %}</h3>
+                <h3>{% if lang == 'de' %}Teilen{% elif lang == 'pl' %}Udostępnij{% elif lang == 'uk' %}Поділитися{% else %}Share{% endif %}</h3>
                 <p class="share-message">
                     {% if lang == 'de' %}
                         Helfen Sie uns, die Schwelle zu erreichen — teilen Sie dieses Angebot mit anderen.
                     {% elif lang == 'pl' %}
                         Pomóż nam osiągnąć próg — podziel się tą ofertą z innymi.
-                    {% else %}
+                    {% elif lang == 'uk' %}Допоможіть нам досягти порогу — поділіться цією пропозицією з іншими.{% else %}
                         Help us reach the threshold — share this offering with others.
                     {% endif %}
                 </p>
                 <div class="share-buttons">
-                    <button type="button" class="btn btn-outline" onclick="navigator.clipboard.writeText('{{ request.url_for('offering_detail', offering_id=offering.id) }}'); this.innerHTML='✓ {% if lang == 'de' %}Kopiert{% elif lang == 'pl' %}Skopiowano{% else %}Copied{% endif %}';">
-                        🔗 {% if lang == 'de' %}Link kopieren{% elif lang == 'pl' %}Kopiuj link{% else %}Copy Link{% endif %}
+                    <button type="button" class="btn btn-outline" onclick="navigator.clipboard.writeText('{{ request.url_for('offering_detail', offering_id=offering.id) }}'); this.innerHTML='✓ {% if lang == 'de' %}Kopiert{% elif lang == 'pl' %}Skopiowano{% elif lang == 'uk' %}Скопійовано{% else %}Copied{% endif %}';">
+                        🔗 {% if lang == 'de' %}Link kopieren{% elif lang == 'pl' %}Kopiuj link{% elif lang == 'uk' %}Копіювати посилання{% else %}Copy Link{% endif %}
                     </button>
                     <a href="mailto:?subject={{ offering.get_title(lang)|urlencode }}&body={{ request.url_for('offering_detail', offering_id=offering.id) }}" class="btn btn-outline">
                         ✉️ Email
@@ -156,10 +156,10 @@
             <!-- Actions -->
             <div class="flow-actions centered">
                 <a href="/offering/{{ offering.id }}" class="btn btn-primary">
-                    {% if lang == 'de' %}Zum Angebot{% elif lang == 'pl' %}Do oferty{% else %}View Offering{% endif %}
+                    {% if lang == 'de' %}Zum Angebot{% elif lang == 'pl' %}Do oferty{% elif lang == 'uk' %}Переглянути пропозицію{% else %}View Offering{% endif %}
                 </a>
                 <a href="/offerings" class="btn btn-secondary">
-                    {% if lang == 'de' %}Alle Angebote{% elif lang == 'pl' %}Wszystkie oferty{% else %}All Offerings{% endif %}
+                    {% if lang == 'de' %}Alle Angebote{% elif lang == 'pl' %}Wszystkie oferty{% elif lang == 'uk' %}Усі пропозиції{% else %}All Offerings{% endif %}
                 </a>
             </div>
         </div>
@@ -173,7 +173,8 @@
                 {% elif lang == 'pl' %}
                     „Jak roślina, która daje więcej niż bierze — tlen, pożywienie, piękno, schronienie — 
                     tak i twój wkład karmi społeczność."
-                {% else %}
+                {% elif lang == 'uk' %}«Як рослина, що дає більше, ніж бере — кисень, їжу, красу, прихисток — 
+                    так і ваш внесок живить спільноту.»{% else %}
                     "Like a plant that gives more than it takes — oxygen, food, beauty, shelter — 
                     so too does your contribution nourish the community."
                 {% endif %}

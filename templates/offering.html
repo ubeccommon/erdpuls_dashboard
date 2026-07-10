@@ -7,21 +7,21 @@
 <section class="offering-hero">
     <div class="container">
         <a href="/offerings" class="back-link">
-            ← {% if lang == 'de' %}Alle Angebote{% elif lang == 'pl' %}Wszystkie oferty{% else %}All Offerings{% endif %}
+            ← {% if lang == 'de' %}Alle Angebote{% elif lang == 'pl' %}Wszystkie oferty{% elif lang == 'uk' %}Усі пропозиції{% else %}All Offerings{% endif %}
         </a>
         
         <!-- Status Badge -->
         <div class="status-badge status-{{ offering.status }}">
             {% if offering.status == 'open' %}
-                {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% else %}Open{% endif %}
+                {% if lang == 'de' %}Offen{% elif lang == 'pl' %}Otwarte{% elif lang == 'uk' %}Відкрито{% else %}Open{% endif %}
             {% elif offering.status == 'threshold_met' %}
-                {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% else %}Threshold Met{% endif %}
+                {% if lang == 'de' %}Schwelle erreicht{% elif lang == 'pl' %}Próg osiągnięty{% elif lang == 'uk' %}Поріг досягнуто{% else %}Threshold Met{% endif %}
             {% elif offering.status == 'confirmed' %}
-                {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% else %}Confirmed{% endif %}
+                {% if lang == 'de' %}Bestätigt{% elif lang == 'pl' %}Potwierdzone{% elif lang == 'uk' %}Підтверджено{% else %}Confirmed{% endif %}
             {% elif offering.status == 'completed' %}
-                {% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Zakończone{% else %}Completed{% endif %}
+                {% if lang == 'de' %}Abgeschlossen{% elif lang == 'pl' %}Zakończone{% elif lang == 'uk' %}Завершено{% else %}Completed{% endif %}
             {% elif offering.status == 'cancelled' %}
-                {% if lang == 'de' %}Abgesagt{% elif lang == 'pl' %}Odwołane{% else %}Cancelled{% endif %}
+                {% if lang == 'de' %}Abgesagt{% elif lang == 'pl' %}Odwołane{% elif lang == 'uk' %}Скасовано{% else %}Cancelled{% endif %}
             {% endif %}
         </div>
         
@@ -50,7 +50,7 @@
                 
                 <!-- Description -->
                 <div class="content-section">
-                    <h2>{% if lang == 'de' %}Über dieses Angebot{% elif lang == 'pl' %}O tej ofercie{% else %}About This Offering{% endif %}</h2>
+                    <h2>{% if lang == 'de' %}Über dieses Angebot{% elif lang == 'pl' %}O tej ofercie{% elif lang == 'uk' %}Про цю пропозицію{% else %}About This Offering{% endif %}</h2>
                     <div class="description">
                         {{ offering.get_description(lang)|safe }}
                     </div>
@@ -59,40 +59,40 @@
                 <!-- Cost Breakdown -->
                 {% if offering.facilitator_cost or offering.materials_cost or offering.catering_cost or offering.space_cost %}
                 <div class="content-section">
-                    <h2>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% else %}Cost Breakdown{% endif %}</h2>
+                    <h2>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% elif lang == 'uk' %}Структура витрат{% else %}Cost Breakdown{% endif %}</h2>
                     <div class="cost-breakdown">
                         {% if offering.facilitator_cost and offering.facilitator_cost > 0 %}
                         <div class="cost-item">
-                            <span class="cost-label">{% if lang == 'de' %}Facilitator{% elif lang == 'pl' %}Prowadzący{% else %}Facilitator{% endif %}</span>
+                            <span class="cost-label">{% if lang == 'de' %}Facilitator{% elif lang == 'pl' %}Prowadzący{% elif lang == 'uk' %}Фасилітатор{% else %}Facilitator{% endif %}</span>
                             <span class="cost-value">€{{ offering.facilitator_cost }}</span>
                         </div>
                         {% endif %}
                         {% if offering.materials_cost and offering.materials_cost > 0 %}
                         <div class="cost-item">
-                            <span class="cost-label">{% if lang == 'de' %}Materialien{% elif lang == 'pl' %}Materiały{% else %}Materials{% endif %}</span>
+                            <span class="cost-label">{% if lang == 'de' %}Materialien{% elif lang == 'pl' %}Materiały{% elif lang == 'uk' %}Матеріали{% else %}Materials{% endif %}</span>
                             <span class="cost-value">€{{ offering.materials_cost }}</span>
                         </div>
                         {% endif %}
                         {% if offering.catering_cost and offering.catering_cost > 0 %}
                         <div class="cost-item">
-                            <span class="cost-label">{% if lang == 'de' %}Verpflegung{% elif lang == 'pl' %}Wyżywienie{% else %}Catering{% endif %}</span>
+                            <span class="cost-label">{% if lang == 'de' %}Verpflegung{% elif lang == 'pl' %}Wyżywienie{% elif lang == 'uk' %}Харчування{% else %}Catering{% endif %}</span>
                             <span class="cost-value">€{{ offering.catering_cost }}</span>
                         </div>
                         {% endif %}
                         {% if offering.space_cost and offering.space_cost > 0 %}
                         <div class="cost-item">
-                            <span class="cost-label">{% if lang == 'de' %}Raum{% elif lang == 'pl' %}Przestrzeń{% else %}Space{% endif %}</span>
+                            <span class="cost-label">{% if lang == 'de' %}Raum{% elif lang == 'pl' %}Przestrzeń{% elif lang == 'uk' %}Приміщення{% else %}Space{% endif %}</span>
                             <span class="cost-value">€{{ offering.space_cost }}</span>
                         </div>
                         {% endif %}
                         {% if offering.sustainability_contribution and offering.sustainability_contribution > 0 %}
                         <div class="cost-item">
-                            <span class="cost-label">{% if lang == 'de' %}Nachhaltigkeitsbeitrag{% elif lang == 'pl' %}Wkład na zrównoważony rozwój{% else %}Sustainability Contribution{% endif %}</span>
+                            <span class="cost-label">{% if lang == 'de' %}Nachhaltigkeitsbeitrag{% elif lang == 'pl' %}Wkład na zrównoważony rozwój{% elif lang == 'uk' %}Внесок на сталість{% else %}Sustainability Contribution{% endif %}</span>
                             <span class="cost-value">€{{ offering.sustainability_contribution }}</span>
                         </div>
                         {% endif %}
                         <div class="cost-item total">
-                            <span class="cost-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}</span>
+                            <span class="cost-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% elif lang == 'uk' %}Поріг{% else %}Threshold{% endif %}</span>
                             <span class="cost-value">€{{ offering.threshold_amount }}</span>
                         </div>
                     </div>
@@ -101,19 +101,19 @@
                 
                 <!-- Engagement Summary -->
                 <div class="content-section">
-                    <h2>{% if lang == 'de' %}Gemeinschaftsengagement{% elif lang == 'pl' %}Zaangażowanie społeczności{% else %}Community Engagement{% endif %}</h2>
+                    <h2>{% if lang == 'de' %}Gemeinschaftsengagement{% elif lang == 'pl' %}Zaangażowanie społeczności{% elif lang == 'uk' %}Залучення спільноти{% else %}Community Engagement{% endif %}</h2>
                     <div class="engagement-summary">
                         <div class="engagement-stat">
                             <span class="stat-value">{{ offering._engagement.total_participants }}</span>
-                            <span class="stat-label">{% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}Uczestników{% else %}Participants{% endif %}</span>
+                            <span class="stat-label">{% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}Uczestników{% elif lang == 'uk' %}Учасники{% else %}Participants{% endif %}</span>
                         </div>
                         <div class="engagement-stat">
                             <span class="stat-value">{{ offering._engagement.total_supporters }}</span>
-                            <span class="stat-label">{% if lang == 'de' %}Unterstützer{% elif lang == 'pl' %}Wspierających{% else %}Supporters{% endif %}</span>
+                            <span class="stat-label">{% if lang == 'de' %}Unterstützer{% elif lang == 'pl' %}Wspierających{% elif lang == 'uk' %}Прихильники{% else %}Supporters{% endif %}</span>
                         </div>
                         <div class="engagement-stat">
                             <span class="stat-value">{{ offering._engagement.total_engaged }}</span>
-                            <span class="stat-label">{% if lang == 'de' %}Gesamt engagiert{% elif lang == 'pl' %}Łącznie zaangażowanych{% else %}Total Engaged{% endif %}</span>
+                            <span class="stat-label">{% if lang == 'de' %}Gesamt engagiert{% elif lang == 'pl' %}Łącznie zaangażowanych{% elif lang == 'uk' %}Усього залучено{% else %}Total Engaged{% endif %}</span>
                         </div>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
                 <div class="progress-card">
                     <div class="progress-header">
                         <span class="progress-amount">€{{ offering._total }}</span>
-                        <span class="progress-of">{% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} €{{ offering.threshold_amount }}</span>
+                        <span class="progress-of">{% if lang == 'de' %}von{% elif lang == 'pl' %}z{% elif lang == 'uk' %}з{% else %}of{% endif %} €{{ offering.threshold_amount }}</span>
                     </div>
                     
                     <div class="progress-bar-container">
@@ -137,24 +137,24 @@
                     <div class="progress-stats">
                         <span class="stat">
                             <strong>{{ offering._percent|round(1) }}%</strong>
-                            {% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% else %}funded{% endif %}
+                            {% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% elif lang == 'uk' %}профінансовано{% else %}funded{% endif %}
                         </span>
                         <span class="stat">
                             <strong>{{ offering._reg_count }}</strong>
-                            {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}uczestników{% else %}participants{% endif %}
+                            {% if lang == 'de' %}Teilnehmer{% elif lang == 'pl' %}uczestników{% elif lang == 'uk' %}учасників{% else %}participants{% endif %}
                         </span>
                     </div>
                     
                     {% if offering._percent >= 100 %}
                     <div class="threshold-met-notice">
-                        🎉 {% if lang == 'de' %}Schwelle erreicht! Dieses Angebot findet statt.{% elif lang == 'pl' %}Próg osiągnięty! Ta oferta się odbędzie.{% else %}Threshold met! This offering will happen.{% endif %}
+                        🎉 {% if lang == 'de' %}Schwelle erreicht! Dieses Angebot findet statt.{% elif lang == 'pl' %}Próg osiągnięty! Ta oferta się odbędzie.{% elif lang == 'uk' %}Поріг досягнуто! Ця пропозиція відбудеться.{% else %}Threshold met! This offering will happen.{% endif %}
                     </div>
                     {% endif %}
                     
                     <!-- Main CTA: Engage Button -->
                     {% if offering.status in ['open', 'threshold_met'] %}
                     <a href="/offering/{{ offering.id }}/engage" class="btn btn-primary btn-large btn-block">
-                        🌱 {% if lang == 'de' %}Engagieren{% elif lang == 'pl' %}Zaangażuj się{% else %}Get Involved{% endif %}
+                        🌱 {% if lang == 'de' %}Engagieren{% elif lang == 'pl' %}Zaangażuj się{% elif lang == 'uk' %}Долучитися{% else %}Get Involved{% endif %}
                     </a>
                     
                     <p class="cta-note">
@@ -162,13 +162,13 @@
                             Wählen Sie Ihren Weg: Teilnehmen, Unterstützen oder beides
                         {% elif lang == 'pl' %}
                             Wybierz swoją ścieżkę: Uczestnictwo, Wsparcie lub oba
-                        {% else %}
+                        {% elif lang == 'uk' %}Оберіть свій шлях: участь, підтримка або обидва{% else %}
                             Choose your pathway: Participate, Support, or both
                         {% endif %}
                     </p>
                     {% else %}
                     <div class="closed-notice">
-                        {% if lang == 'de' %}Engagement für dieses Angebot ist geschlossen.{% elif lang == 'pl' %}Zaangażowanie w tę ofertę jest zamknięte.{% else %}Engagement for this offering is closed.{% endif %}
+                        {% if lang == 'de' %}Engagement für dieses Angebot ist geschlossen.{% elif lang == 'pl' %}Zaangażowanie w tę ofertę jest zamknięte.{% elif lang == 'uk' %}Залучення до цієї пропозиції закрито.{% else %}Engagement for this offering is closed.{% endif %}
                     </div>
                     {% endif %}
                 </div>
@@ -177,26 +177,26 @@
                 {% if offering.status in ['open', 'threshold_met'] %}
                 <div class="quick-actions">
                     <a href="/offering/{{ offering.id }}/participate" class="quick-action">
-                        🙋 {% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% else %}Participate Only{% endif %}
+                        🙋 {% if lang == 'de' %}Nur Teilnehmen{% elif lang == 'pl' %}Tylko Uczestnictwo{% elif lang == 'uk' %}Лише участь{% else %}Participate Only{% endif %}
                     </a>
                     <a href="/offering/{{ offering.id }}/contribute?pathway=support_only" class="quick-action">
-                        💚 {% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% else %}Support Only{% endif %}
+                        💚 {% if lang == 'de' %}Nur Unterstützen{% elif lang == 'pl' %}Tylko Wsparcie{% elif lang == 'uk' %}Лише підтримка{% else %}Support Only{% endif %}
                     </a>
                     <a href="/offering/{{ offering.id }}/contribute?pathway=support_and_participate" class="quick-action featured">
-                        🌱 {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% else %}Support & Participate{% endif %}
+                        🌱 {% if lang == 'de' %}Unterstützen & Teilnehmen{% elif lang == 'pl' %}Wesprzyj & Uczestniczyj{% elif lang == 'uk' %}Підтримка й участь{% else %}Support & Participate{% endif %}
                     </a>
                 </div>
                 {% endif %}
                 
                 <!-- Dates Card -->
                 <div class="dates-card">
-                    <h3>{% if lang == 'de' %}Wichtige Termine{% elif lang == 'pl' %}Ważne daty{% else %}Important Dates{% endif %}</h3>
+                    <h3>{% if lang == 'de' %}Wichtige Termine{% elif lang == 'pl' %}Ważne daty{% elif lang == 'uk' %}Важливі дати{% else %}Important Dates{% endif %}</h3>
                     
                     {% if offering.event_date %}
                     <div class="date-item">
                         <span class="date-icon">📅</span>
                         <div>
-                            <span class="date-label">{% if lang == 'de' %}Veranstaltung{% elif lang == 'pl' %}Wydarzenie{% else %}Event{% endif %}</span>
+                            <span class="date-label">{% if lang == 'de' %}Veranstaltung{% elif lang == 'pl' %}Wydarzenie{% elif lang == 'uk' %}Подія{% else %}Event{% endif %}</span>
                             <span class="date-value">{{ offering.event_date.strftime('%d.%m.%Y') }}</span>
                         </div>
                     </div>
@@ -206,7 +206,7 @@
                     <div class="date-item">
                         <span class="date-icon">🗣️</span>
                         <div>
-                            <span class="date-label">{% if lang == 'de' %}Sprache{% elif lang == 'pl' %}Język{% else %}Language{% endif %}</span>
+                            <span class="date-label">{% if lang == 'de' %}Sprache{% elif lang == 'pl' %}Język{% elif lang == 'uk' %}Мова{% else %}Language{% endif %}</span>
                             <span class="date-value">
                                 {% if offering.delivery_language %}
                                     {% for dl in offering.delivery_language %}
@@ -222,7 +222,7 @@
                     <div class="date-item">
                         <span class="date-icon">🙋</span>
                         <div>
-                            <span class="date-label">{% if lang == 'de' %}Anmeldeschluss{% elif lang == 'pl' %}Termin rejestracji{% else %}Registration Deadline{% endif %}</span>
+                            <span class="date-label">{% if lang == 'de' %}Anmeldeschluss{% elif lang == 'pl' %}Termin rejestracji{% elif lang == 'uk' %}Кінцевий термін реєстрації{% else %}Registration Deadline{% endif %}</span>
                             <span class="date-value">{{ offering.registration_deadline.strftime('%d.%m.%Y') }}</span>
                         </div>
                     </div>
@@ -230,7 +230,7 @@
                     <div class="date-item">
                         <span class="date-icon">💶</span>
                         <div>
-                            <span class="date-label">{% if lang == 'de' %}Beitragsschluss{% elif lang == 'pl' %}Termin wpłat{% else %}Contribution Deadline{% endif %}</span>
+                            <span class="date-label">{% if lang == 'de' %}Beitragsschluss{% elif lang == 'pl' %}Termin wpłat{% elif lang == 'uk' %}Кінцевий термін внесків{% else %}Contribution Deadline{% endif %}</span>
                             <span class="date-value">{{ offering.contribution_deadline.strftime('%d.%m.%Y') }}</span>
                         </div>
                     </div>
