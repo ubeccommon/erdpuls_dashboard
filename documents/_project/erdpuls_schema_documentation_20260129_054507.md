@@ -14,7 +14,7 @@
 | PostgreSQL | PostgreSQL 14.20 (Ubuntu 14.20-0ubuntu0.22.04.1) o... |
 | UUID Extension | ✅ Enabled |
 | Author | Farmer |
-| License | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de) |
+| License | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.de) |
 
 ## Table of Contents
 
@@ -473,4 +473,4 @@
 
 ---
 
-© Farmer | License: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+© Michel Garand | License: CC BY-SA 4.0 | https://creativecommons.org/licenses/by-sa/4.0/deed.de

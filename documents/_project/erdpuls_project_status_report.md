@@ -303,7 +303,7 @@ The email confirmation system is fully implemented with:
 2. **Database Documentation Generator**
    - Recently adapted from UBEC IOT project
    - Generates comprehensive schema documentation
-   - License: CC BY-NC-SA 4.0
+   - License: CC BY-SA 4.0
 
 ### 7.2 Platform Enhancements
 
@@ -345,9 +345,9 @@ All project materials follow these licensing requirements:
 
 **Code:** GNU Affero General Public License v3.0 (AGPL-3.0)
 
-**Documentation:** Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+**Documentation:** Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
 
-> The material and content are available as Open Educational Resources (OER) and are licensed under Creative Commons Attribution – ShareAlike 4.0 International (CC BY-NC-SA 4.0). To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en
+> The material and content are available as Open Educational Resources (OER) and are licensed under Creative Commons Attribution – ShareAlike 4.0 International (CC BY-SA 4.0). To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/deed.en
 
 ---
 
@@ -442,4 +442,4 @@ SMTP_FROM_NAME=Erdpuls Müllrose
 
 ---
 
-© Michel Garand | License: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en
+© Michel Garand | License: CC BY-SA 4.0 | https://creativecommons.org/licenses/by-sa/4.0/deed.en

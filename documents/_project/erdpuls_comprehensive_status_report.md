@@ -473,9 +473,9 @@ Based on documented evidence, the project has established:
 **GNU Affero General Public License v3.0 (AGPL-3.0)**
 
 ### Documentation
-**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)**
+**Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**
 
-> The material and content are available as Open Educational Resources (OER) and are licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0). To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+> The material and content are available as Open Educational Resources (OER) and are licensed under Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/deed.de
 
 ---
 
@@ -483,6 +483,6 @@ Based on documented evidence, the project has established:
 
 ---
 
-© Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+© Michel Garand | Lizenz: CC BY-SA 4.0 | https://creativecommons.org/licenses/by-sa/4.0/deed.de
 
 *This project uses the services of Claude and Anthropic PBC.*

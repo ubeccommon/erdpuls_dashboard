@@ -471,9 +471,9 @@ The project documents a seven-year development cycle:
 
 ### 11.2 Documentation
 
-**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)**
+**Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**
 
-> The material and content are available as Open Educational Resources (OER) and are licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0). To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+> The material and content are available as Open Educational Resources (OER) and are licensed under Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/deed.de
 
 ---
 
@@ -604,6 +604,6 @@ python erdpuls_schema_documentation_generator.py \
 
 ---
 
-© Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+© Michel Garand | Lizenz: CC BY-SA 4.0 | https://creativecommons.org/licenses/by-sa/4.0/deed.de
 
 *This project uses the services of Claude and Anthropic PBC.*
