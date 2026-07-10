@@ -13,8 +13,8 @@ Repo structure convention:
 Language is detected from the path segment EN / DE / PL (case-insensitive),
 NOT from filename suffixes.
 
-© Michel Garand | Lizenz: CC BY-NC-SA 4.0
-https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+© 2024–2026 Michel Garand | License: GNU AGPL v3.0
+https://www.gnu.org/licenses/agpl-3.0.html
 """
 
 import os
@@ -358,7 +358,7 @@ async def get_resource_detail(path: str) -> dict:
         "raw_md_url":       f"{RAW_BASE}/{path}",
         "pdf_url":          f"{RAW_BASE}/{pdf_path}" if pdf_path else None,
         "github_pages_url": f"{PAGES_BASE}/{path.replace('.md', '.html')}",
-        "attribution":      "© Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de",
+        "attribution":      "© Michel Garand | License: CC BY-SA 4.0 | https://creativecommons.org/licenses/by-sa/4.0/",
     }
 
 

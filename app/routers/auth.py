@@ -2,7 +2,7 @@
 Erdpuls Collective Threshold Model - Auth Router
 With role-based permissions for offering creation and password reset.
 
-© 2026 Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+© 2024–2026 Michel Garand | License: GNU AGPL v3.0 | https://www.gnu.org/licenses/agpl-3.0.html
 """
 from typing import Optional, List
 

@@ -1,7 +1,7 @@
 """
 Password Reset Routes - Add these to your existing app/routers/auth.py file
 
-© 2026 Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+© 2024–2026 Michel Garand | License: GNU AGPL v3.0 | https://www.gnu.org/licenses/agpl-3.0.html
 
 Add these imports at the top of auth.py:
     from ..auth import (

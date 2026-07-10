@@ -1,7 +1,7 @@
 """
 Session Refresh API Endpoint - Add this to your existing app/routers/api.py file
 
-© 2026 Michel Garand | Lizenz: CC BY-NC-SA 4.0 | https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
+© 2024–2026 Michel Garand | License: GNU AGPL v3.0 | https://www.gnu.org/licenses/agpl-3.0.html
 
 Add this import:
     from ..auth import get_current_user_optional, refresh_session_cookie
