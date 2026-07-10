@@ -371,3 +371,53 @@ erdpuls.ubec.network"""
     
     # Send plain text only - no HTML
     return send_email(to_email, subject, None, body)
+
+
+def send_initiative_published(to_email: str, name: str, slug: str) -> bool:
+    """Notify a proposer that their initiative was approved and is now live,
+    with a link to its new landing page. Best-effort: returns False (and logs)
+    if SMTP is unconfigured or sending fails — never raise into the caller."""
+    settings = get_settings()
+    link = settings.base_url.rstrip("/") + "/" + slug
+
+    subject = f"Erdpuls · {name}"
+
+    html_content = f"""\
+<div style="font-family: sans-serif; line-height: 1.6; color: #2b2a26; max-width: 560px;">
+  <p><strong>English</strong><br>
+  Your Erdpuls initiative <strong>{name}</strong> has been approved and is now
+  published in the network directory. You can view its page here:<br>
+  <a href="{link}">{link}</a></p>
+
+  <p><strong>Deutsch</strong><br>
+  Deine Erdpuls-Initiative <strong>{name}</strong> wurde freigegeben und ist nun
+  im Netzwerk-Verzeichnis veröffentlicht. Ihre Seite findest du hier:<br>
+  <a href="{link}">{link}</a></p>
+
+  <p><strong>Polski</strong><br>
+  Twoja inicjatywa Erdpuls <strong>{name}</strong> została zatwierdzona i jest już
+  opublikowana w katalogu sieci. Jej stronę zobaczysz tutaj:<br>
+  <a href="{link}">{link}</a></p>
+
+  <p><strong>Українська</strong><br>
+  Вашу ініціативу Erdpuls <strong>{name}</strong> схвалено, і тепер вона
+  опублікована в каталозі мережі. Її сторінка тут:<br>
+  <a href="{link}">{link}</a></p>
+
+  <hr style="border:none;border-top:1px solid #e6e2d8;margin:1.5rem 0;">
+  <p style="font-size:0.85rem;color:#8a8577;">Erdpuls · UBEC — Ubuntu Bioregional Economic Commons</p>
+</div>
+"""
+
+    text_content = (
+        f"Your Erdpuls initiative \"{name}\" has been approved and is now published.\n"
+        f"View its page: {link}\n\n"
+        f"Deine Erdpuls-Initiative \"{name}\" wurde freigegeben und ist nun veröffentlicht.\n"
+        f"Seite: {link}\n\n"
+        f"Twoja inicjatywa Erdpuls \"{name}\" została zatwierdzona i jest opublikowana.\n"
+        f"Strona: {link}\n\n"
+        f"Вашу ініціативу Erdpuls \"{name}\" схвалено та опубліковано.\n"
+        f"Сторінка: {link}\n"
+    )
+
+    return send_email(to_email, subject, html_content, text_content)

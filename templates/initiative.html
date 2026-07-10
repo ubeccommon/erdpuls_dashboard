@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ initiative.name }} · Erdpuls{% endblock %}
+
+{% block head %}
+<style>
+  .init-hero { padding: 3.5rem 1.5rem 2rem; text-align: center;
+    background: linear-gradient(160deg, var(--color-commons-light) 0%, var(--color-peach-light) 100%); }
+  .init-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.72rem;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 999px;
+    background: var(--color-commons); color: #fff; margin-bottom: 1rem; }
+  .init-badge--soon { background: transparent; color: var(--color-clay); border: 1px dashed var(--color-clay); }
+  .init-hero h1 { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3rem); color: var(--color-bark); margin-bottom: 0.5rem; }
+  .init-loc { color: var(--color-clay); font-size: 1rem; margin-bottom: 1.25rem; }
+  .init-blurb { max-width: 640px; margin: 0 auto; color: var(--color-humus); line-height: 1.7; font-size: 1.1rem; }
+  .init-actions { margin-top: 1.75rem; display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+  .init-body { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 3rem; line-height: 1.75; color: var(--color-bark); }
+  .init-body h1, .init-body h2, .init-body h3 { font-family: var(--font-display); color: var(--color-bark); margin: 1.5rem 0 0.6rem; }
+  .init-body p { margin: 0 0 1rem; }
+  .init-back { max-width: 720px; margin: 0 auto 3rem; padding: 0 1.5rem; }
+  .init-back a { color: var(--color-commons-dark); font-size: 0.95rem; text-decoration: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="init-hero">
+  <span class="init-badge{% if initiative.status == 'coming_soon' %} init-badge--soon{% endif %}">
+    {%- if initiative.status == 'active' -%}
+      {% if lang == 'de' %}Aktiv{% elif lang == 'pl' %}Aktywna{% elif lang == 'uk' %}Активна{% else %}Active{% endif %}
+    {%- elif initiative.status == 'forming' -%}
+      {% if lang == 'de' %}In Entstehung{% elif lang == 'pl' %}W tworzeniu{% elif lang == 'uk' %}Формується{% else %}Forming{% endif %}
+    {%- else -%}
+      {% if lang == 'de' %}Bald{% elif lang == 'pl' %}Wkrótce{% elif lang == 'uk' %}Незабаром{% else %}Coming soon{% endif %}
+    {%- endif -%}
+  </span>
+  <h1>{{ initiative.name }}</h1>
+  {% if initiative.location %}<div class="init-loc">{{ initiative.location }}</div>{% endif %}
+  <p class="init-blurb">{{ initiative.blurb_for(lang) }}</p>
+  <div class="init-actions">
+    {% if initiative.url %}
+    <a class="btn btn-primary" href="{{ initiative.url }}" target="_blank" rel="noopener">
+      {% if lang == 'de' %}Website besuchen{% elif lang == 'pl' %}Odwiedź stronę{% elif lang == 'uk' %}Відвідати сайт{% else %}Visit website{% endif %}
+    </a>
+    {% endif %}
+  </div>
+</section>
+
+{% if body_html %}
+<article class="init-body">
+  {{ body_html | safe }}
+</article>
+{% endif %}
+
+<div class="init-back">
+  <a href="/">← {% if lang == 'de' %}Alle Erdpuls-Initiativen{% elif lang == 'pl' %}Wszystkie inicjatywy Erdpuls{% elif lang == 'uk' %}Усі ініціативи Erdpuls{% else %}All Erdpuls initiatives{% endif %}</a>
+</div>
+{% endblock %}

@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import get_settings
 from .routers import api_router, web_router, auth_router
 from .routers import admin as admin_router
+from .routers.initiative_pages import router as initiative_pages_router
 
 settings = get_settings()
 
@@ -49,3 +50,9 @@ app.include_router(admin_router.router)
 def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "app": settings.app_name}
+
+
+# LAST of all: catch-all /{slug} for per-initiative pages. Registered after every
+# other route (including inline @app routes like /health) so it can never shadow
+# them; unknown paths fall through to its 404.
+app.include_router(initiative_pages_router)

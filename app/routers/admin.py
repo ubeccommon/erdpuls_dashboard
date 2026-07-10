@@ -801,6 +801,7 @@ def admin_initiative_publish(
         return RedirectResponse(url="/admin/initiatives?error=not_found", status_code=303)
 
     initiative.is_published = True
+    initiative.has_page = True   # give the approved initiative its own /{slug} page
     db.commit()
 
     # Create the external per-initiative folder (outside the repo tree) on
@@ -812,6 +813,15 @@ def admin_initiative_publish(
     except Exception as e:
         folder_ok = False
         logger.warning("initiative folder creation failed for %s: %s", initiative.slug, e)
+
+    # Notify the proposer with the link to their new page (best-effort: no-ops
+    # if they gave no email or SMTP is unconfigured; never breaks the publish).
+    if initiative.submitter_email:
+        try:
+            from ..email import send_initiative_published
+            send_initiative_published(initiative.submitter_email, initiative.name, initiative.slug)
+        except Exception as e:
+            logger.warning("initiative published-email failed for %s: %s", initiative.slug, e)
 
     success = "published" if folder_ok else "published_no_folder"
     return RedirectResponse(url=f"/admin/initiatives?success={success}", status_code=303)
