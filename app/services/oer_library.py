@@ -64,15 +64,15 @@ EXCLUDE_PATTERNS = (
 _EXCLUDE_RE = re.compile("|".join(EXCLUDE_PATTERNS))
 
 # Language directory segments → language code
-_LANG_DIRS = {"EN": "en", "DE": "de", "PL": "pl"}
+_LANG_DIRS = {"EN": "en", "DE": "de", "PL": "pl", "UK": "uk"}
 
 # Human-readable collection labels derived from path segments
 _COLLECTION_LABELS = {
-    "oer/docs":          {"en": "OER Curriculum",        "de": "OER-Lehrplan",          "pl": "Program OER"},
-    "Learning_Pathways": {"en": "Learning Pathways",      "de": "Lernpfade",             "pl": "Ścieżki uczenia"},
-    "soil_art":          {"en": "Soil Art & Physics",     "de": "Bodenkunst & Physik",   "pl": "Sztuka gleby"},
-    "soil_questions":    {"en": "Questions to the Soil",  "de": "Fragen an den Boden",   "pl": "Pytania do gleby"},
-    "soil":              {"en": "Soil Studies",           "de": "Bodenstudien",          "pl": "Badania gleby"},
+    "oer/docs":          {"en": "OER Curriculum",        "de": "OER-Lehrplan",          "pl": "Program OER",         "uk": "Навчальна програма OER"},
+    "Learning_Pathways": {"en": "Learning Pathways",      "de": "Lernpfade",             "pl": "Ścieżki uczenia",     "uk": "Навчальні шляхи"},
+    "soil_art":          {"en": "Soil Art & Physics",     "de": "Bodenkunst & Physik",   "pl": "Sztuka gleby",        "uk": "Мистецтво та фізика ґрунту"},
+    "soil_questions":    {"en": "Questions to the Soil",  "de": "Fragen an den Boden",   "pl": "Pytania do gleby",    "uk": "Запитання до ґрунту"},
+    "soil":              {"en": "Soil Studies",           "de": "Bodenstudien",          "pl": "Badania gleby",       "uk": "Дослідження ґрунту"},
 }
 
 

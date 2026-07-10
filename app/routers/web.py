@@ -849,7 +849,8 @@ async def oer_resource_detail(
 _PATHWAY_URLS = {
     "en": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/EN/Erdpuls_Learning_Pathway_Maps_EN.html",
     "de": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/DE/Erdpuls_Learning_Pathway_Maps_DE.html",
-    # PL not yet published — will be enabled once available
+    "uk": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/UK/Erdpuls_Learning_Pathway_Maps_UK.html",
+    # PL maps HTML now exists on Pages too — enable when ready:
     # "pl": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/PL/Erdpuls_Learning_Pathway_Maps_PL.html",
 }
 
