@@ -26,14 +26,10 @@
 
     <div class="toolbar-right">
       <div class="lang-tabs">
-        <a href="/library/pathways?lang_override=en"
-           class="lang-tab {% if effective_lang == 'en' %}active{% endif %}">EN</a>
-        <a href="/library/pathways?lang_override=de"
-           class="lang-tab {% if effective_lang == 'de' %}active{% endif %}">DE</a>
-        {% if pl_available %}
-        <a href="/library/pathways?lang_override=pl"
-           class="lang-tab {% if effective_lang == 'pl' %}active{% endif %}">PL</a>
-        {% endif %}
+        {% for l in pathway_langs %}
+        <a href="/library/pathways?lang_override={{ l }}"
+           class="lang-tab {% if effective_lang == l %}active{% endif %}">{{ l | upper }}</a>
+        {% endfor %}
       </div>
       <a href="{{ embed_url }}" target="_blank" rel="noopener" class="toolbar-external">↗</a>
     </div>

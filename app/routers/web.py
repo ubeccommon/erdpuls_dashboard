@@ -27,7 +27,7 @@ from ..models import (
 from ..email import send_contribution_confirmation
 from ..auth import get_current_user_optional
 from ..initiatives import get_published_initiatives, slugify, validate_slug
-from ..services.oer_library import get_collections, get_resource_detail, _COLLECTION_LABELS
+from ..services.oer_library import get_collections, get_resource_detail, fetch_raw_html, _COLLECTION_LABELS
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -873,8 +873,13 @@ async def oer_pathway_maps(
     if effective_lang not in _PATHWAY_URLS:
         effective_lang = "en"   # fallback to English
 
-    embed_url = _PATHWAY_URLS.get(effective_lang)
-    available = embed_url is not None
+    available = effective_lang in _PATHWAY_URLS
+
+    # Serve the map SAME-ORIGIN via /library/pathways/frame (below) rather than
+    # iframing ubeccommon.github.io directly. The maps are static, self-contained
+    # HTML; re-serving them from the app's own origin avoids cross-origin iframe
+    # blocking (X-Frame-Options / CSP) and any GitHub-Pages availability issues.
+    embed_url = f"/library/pathways/frame?lang={effective_lang}"
 
     return templates.TemplateResponse(
         "library/pathways.html",
@@ -883,11 +888,32 @@ async def oer_pathway_maps(
             "lang":           lang,
             "user":           user,
             "effective_lang": effective_lang,
-            "embed_url":      embed_url or _PATHWAY_URLS["en"],
+            "embed_url":      embed_url,
             "available":      available,
-            "pl_available":   "pl" in _PATHWAY_URLS,
+            "pathway_langs":  list(_PATHWAY_URLS.keys()),
         }
     )
+
+
+@router.get("/library/pathways/frame", response_class=HTMLResponse)
+async def oer_pathway_frame(lang: str = "en"):
+    """
+    Same-origin proxy for the Learning Pathway Maps HTML.
+
+    Fetches the static, self-contained map document from raw.githubusercontent.com
+    (cached 30 min in the OER library) and serves it from the app's own origin so
+    it can be iframed by /library/pathways without cross-origin, X-Frame-Options,
+    or GitHub-Pages-availability problems.
+    """
+    if lang not in _PATHWAY_URLS:
+        lang = "en"
+    # Derive the repo-relative path from the Pages URL (…github.io/<repo_path>).
+    repo_path = _PATHWAY_URLS[lang].split(".github.io/", 1)[-1]
+    try:
+        html = await fetch_raw_html(repo_path)
+    except Exception:
+        raise HTTPException(status_code=502, detail="Pathway map temporarily unavailable")
+    return HTMLResponse(content=html)
 
 
 # ============================================

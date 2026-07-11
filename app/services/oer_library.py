@@ -194,6 +194,17 @@ async def _fetch_raw(path: str) -> str:
     return raw
 
 
+async def fetch_raw_html(repo_path: str) -> str:
+    """
+    Public wrapper around _fetch_raw for callers that need to re-serve a raw
+    HTML file (e.g. the Learning Pathway Maps) same-origin through the app,
+    avoiding cross-origin iframe restrictions. `repo_path` is repo-relative,
+    e.g. 'Pattern_Language_of_Place/Learning_Pathways/EN/…_EN.html'.
+    Cached with the same 30-min TTL as all other raw fetches.
+    """
+    return await _fetch_raw(repo_path.lstrip("/"))
+
+
 # ── Markdown parsing helpers ──────────────────────────────────────────────────
 
 def _extract_title(text: str, fallback: str) -> str:
