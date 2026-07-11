@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     smtp_use_tls: bool = False  # False for port 465 (implicit SSL)
     smtp_use_ssl: bool = True   # True for port 465
     smtp_from_email: str = "noreply@ubec.network"
-    smtp_from_name: str = "Erdpuls Müllrose"
+    smtp_from_name: str = "Erdpuls"
     
     class Config:
         env_file = ".env"

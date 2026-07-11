@@ -26,5 +26,5 @@ SMTP_USER=erdpuls@ubec.network
 SMTP_PASSWORD=<password>
 SMTP_USE_TLS=false
 SMTP_FROM_EMAIL=erdpuls@ubec.network
-SMTP_FROM_NAME=Erdpuls Müllrose
+SMTP_FROM_NAME=Erdpuls
 

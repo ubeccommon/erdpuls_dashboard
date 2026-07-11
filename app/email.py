@@ -333,7 +333,7 @@ def send_password_reset_email(
     
     # Localized content - minimal text
     if lang == 'de':
-        subject = f"Erdpuls Müllrose"
+        subject = f"Erdpuls"
         body = f"""Hallo,
 
 Hier ist Ihr Link:
@@ -342,10 +342,10 @@ Hier ist Ihr Link:
 
 Der Link ist 1 Stunde gültig.
 
-Erdpuls Müllrose
+Erdpuls
 erdpuls.ubec.network"""
     elif lang == 'pl':
-        subject = f"Erdpuls Müllrose"
+        subject = f"Erdpuls"
         body = f"""Cześć,
 
 Oto Twój link:
@@ -354,10 +354,10 @@ Oto Twój link:
 
 Link jest ważny przez 1 godzinę.
 
-Erdpuls Müllrose
+Erdpuls
 erdpuls.ubec.network"""
     else:
-        subject = f"Erdpuls Müllrose"
+        subject = f"Erdpuls"
         body = f"""Hello,
 
 Here is your link:
@@ -366,7 +366,7 @@ Here is your link:
 
 This link is valid for 1 hour.
 
-Erdpuls Müllrose
+Erdpuls
 erdpuls.ubec.network"""
     
     # Send plain text only - no HTML
