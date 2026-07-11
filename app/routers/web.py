@@ -805,6 +805,7 @@ async def oer_library(
             "collections":       collections,
             "collection_labels": _COLLECTION_LABELS,
             "lang_filter":       lang_filter,
+            "pathway_langs":     list(_PATHWAY_URLS.keys()),
             "error":             error,
         }
     )
@@ -845,13 +846,16 @@ async def oer_resource_detail(
 
 # ── Learning Pathway Maps ─────────────────────────────────────────────────────
 
-# GitHub Pages URLs for each language version
+# GitHub Pages source URLs for each language version. The maps are served to
+# the browser SAME-ORIGIN via /library/pathways/frame (which fetches these paths
+# from the raw CDN); these URLs are the canonical source + the basis for the
+# repo-relative path. Any key added here appears automatically in the pathways
+# language tabs and the /library interactive-card badges.
 _PATHWAY_URLS = {
     "en": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/EN/Erdpuls_Learning_Pathway_Maps_EN.html",
     "de": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/DE/Erdpuls_Learning_Pathway_Maps_DE.html",
+    "pl": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/PL/Erdpuls_Learning_Pathway_Maps_PL.html",
     "uk": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/UK/Erdpuls_Learning_Pathway_Maps_UK.html",
-    # PL maps HTML now exists on Pages too — enable when ready:
-    # "pl": "https://ubeccommon.github.io/Pattern_Language_of_Place/Learning_Pathways/PL/Erdpuls_Learning_Pathway_Maps_PL.html",
 }
 
 @router.get("/library/pathways", response_class=HTMLResponse)

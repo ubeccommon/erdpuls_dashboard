@@ -105,9 +105,9 @@
             {% endif %}
           </p>
           <div class="featured-langs">
-            <span class="lang-tag lang-en">EN</span>
-            <span class="lang-tag lang-de">DE</span>
-            <span class="lang-tag" style="background:#aaa">PL soon</span>
+            {% for l in pathway_langs %}
+            <span class="lang-tag lang-{{ l }}">{{ l | upper }}</span>
+            {% endfor %}
           </div>
           <a href="/library/pathways" class="btn btn-primary">
             {% if lang == 'de' %}Karten erkunden →
@@ -199,6 +199,7 @@
 .lang-tag { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 600; background: var(--color-moss, #4a7c59); color: white; }
 .lang-tag.lang-de { background: #3d6b8c; }
 .lang-tag.lang-pl { background: #8c3d3d; }
+.lang-tag.lang-uk { background: #b0862e; }
 .format-tag { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem; background: #e8f0ed; color: var(--color-forest, #2d4a3e); }
 .format-pdf { background: #fde8e8; color: #c0392b; }
 
