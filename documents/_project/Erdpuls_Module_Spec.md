@@ -117,9 +117,9 @@ proposing changes — never guess server state; verify with `ls`/`cat`/`git log`
   **separate** repo: `github.com/ubeccommon/ubeccommon.github.io` (branch `main`,
   the "UBEC Open" Pages site). Service module: **`app/services/oer_library.py`**.
 - **Content roots (only these are indexed):**
-  `Pattern_Language_of_Place/oer/docs/{EN,DE,PL}/` (OER curriculum + `soil/`
-  sub-collections) and `Pattern_Language_of_Place/Learning_Pathways/{EN,DE,PL}/`.
-  Language is detected from the path segment `EN`/`DE`/`PL` (case-insensitive),
+  `Pattern_Language_of_Place/oer/docs/{EN,DE,PL,UK}/` (OER curriculum + `soil/`
+  sub-collections) and `Pattern_Language_of_Place/Learning_Pathways/{EN,DE,PL,UK}/`.
+  Language is detected from the path segment `EN`/`DE`/`PL`/`UK` (case-insensitive),
   **NOT** the filename. Companion PDFs: same filename stem under `.../{LANG}/pdf/`.
   Excluded even inside roots: `index.md`, `README`, `/standards/`, `/audit/`,
   `00_METADATA`, and the `*.py` tooling / `ERDPULS_*` standard docs.
@@ -133,9 +133,15 @@ proposing changes — never guess server state; verify with `ls`/`cat`/`git log`
 - **Routes (`app/routers/web.py`):** `GET /library` → `library/index.html`
   (grouped by collection, optional `lang_filter`); `GET /library/resource?path=…`
   → `library/detail.html` (rendered MD; path sanitised — rejects `..` / leading
-  `/`); `GET /library/pathways` → `library/pathways.html` (full-page iframe embed
-  of the pre-rendered GitHub Pages HTML pathway maps; **EN+DE live, PL commented
-  out** pending publication).
+  `/`); `GET /library/pathways` → `library/pathways.html`. The maps are **not**
+  iframed cross-origin from Pages; instead `GET /library/pathways/frame?lang=…`
+  re-serves the static, self-contained map HTML **same-origin** (fetched from the
+  raw CDN via `oer_library.fetch_raw_html`, 30-min cache), which the page iframes.
+  This avoids cross-origin / X-Frame-Options / Pages-availability failures (a blank
+  cross-origin iframe was the original bug). Languages **EN/DE/PL/UK all live**;
+  the toolbar tabs and the `/library` interactive-card badges both loop over
+  `pathway_langs = list(_PATHWAY_URLS)` — single source of truth, so add a language
+  in one place and it appears on every surface.
 - **Licensing split:** the service module is **AGPL v3.0** (code); rendered
   resources are stamped **CC BY-SA 4.0** (Michel Garand) as content.
 
@@ -209,12 +215,13 @@ proposing changes — never guess server state; verify with `ls`/`cat`/`git log`
 2. **Extend DE/PL/UK coverage to remaining templates** — add missing language branches
    (esp. `uk`) across `/muellrose`, about, legal/*, model_*, offerings, auth. EN is base/
    fallback; ongoing native review of DE/PL/UK.
-   **OER-library UK — DONE:** `_LANG_DIRS` now maps UK (`oer_library.py`), so the 16
+   **OER-library multilingual — DONE:** `_LANG_DIRS` maps EN/DE/PL/UK, so the 16
    `UK/` OER docs + UK pathway in `ubeccommon.github.io` are indexed; `_COLLECTION_LABELS`
-   gained `uk` labels (pending native review), the `library/index.html` filter chip row
-   gained Українська, and `_PATHWAY_URLS["uk"]` is wired to the (live) UK maps HTML.
-   Remaining: native review of the `uk` collection labels; optionally enable `pl`
-   pathway maps (its HTML now also exists on Pages).
+   gained `uk` labels, and `library/index.html` gained the Українська filter chip. The
+   Learning Pathway Maps are now served **same-origin** (see the OER Library arch note)
+   with **EN/DE/PL/UK all live**; tabs + interactive-card badges are data-driven from
+   `_PATHWAY_URLS`. Remaining: native review of the machine-drafted `uk` collection
+   labels; PL OER *curriculum* is still sparse in the source repo (content gap, not code).
 3. **De-Müllrose the shared/network-level pages** — `about`, `legal/imprint|privacy|terms`
    (also confirm **CC BY-SA**, verify Impressum details), `model_*`: make copy generic /
    protocol-level; keep place-specifics under `/muellrose`.
@@ -235,8 +242,10 @@ proposing changes — never guess server state; verify with `ls`/`cat`/`git log`
 - **#3 data-driven directory** — DB-backed (`initiatives` table).
 - **#4 "Start an initiative" onboarding** — public propose → admin review → publish.
 - **Login bug** — public pages now read the real `erdpuls_session` session cookie.
-- **OER library UK** — Ukrainian resources now surface in `/library` (indexer language
-  map + filter chip + pathway-maps URL); template already carried `uk` UI strings.
+- **OER library multilingual** — Ukrainian resources now surface in `/library`; the
+  Learning Pathway Maps render **same-origin** via `/library/pathways/frame` (fixing a
+  blank cross-origin iframe) with EN/DE/PL/UK tabs + badges data-driven from
+  `_PATHWAY_URLS`; PL pathway enabled.
 
 ## NOT IN SCOPE (Erdpuls module)
 Keycloak/SSO build-out, token-reward on-chain logic, `mapservice`/`bioregional`
