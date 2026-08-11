@@ -14,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import get_settings
 from .routers import api_router, web_router, auth_router
 from .routers import admin as admin_router
+from .routers.solidarity import router as solidarity_router
 from .routers.initiative_pages import router as initiative_pages_router
 
 settings = get_settings()
@@ -44,6 +45,12 @@ app.include_router(api_router)
 app.include_router(web_router)   # includes /library and /library/resource (OER)
 app.include_router(auth_router)
 app.include_router(admin_router.router)
+
+# Solidarity Financing (working title) — internal module for the Erdpuls
+# Verkhovyna initiative, mounted at /erdpuls-verkhovyna/solidarity. Behind
+# Erdpuls login with role facilitator or higher; deliberately NOT linked from
+# the public initiative page. Registered before the catch-all below.
+app.include_router(solidarity_router)
 
 
 @app.get("/health")

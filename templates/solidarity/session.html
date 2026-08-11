@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.sol table{border-collapse:collapse;width:100%;margin:.8rem 0}
+.sol th,.sol td{border:1px solid #cfc9bb;padding:.35rem .6rem;text-align:left}
+.sol th{background:#f4f2ec}.sol tr.total td{font-weight:bold;background:#faf9f5}
+.sol form.inline{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.8rem 0}
+.sol label{display:flex;flex-direction:column;font-size:.85rem}
+.sol .err{background:#fdf3d0;border:1px solid #d9c76a;padding:.5rem .8rem;margin:.6rem 0}
+.sol .muted{opacity:.75;font-size:.9rem}
+.sol footer.sol-note{margin-top:2.2rem;border-top:1px solid #cfc9bb;padding-top:.6rem;font-size:.8rem;opacity:.75}
+</style>
+{% endblock %}
+{% block title %}{{ s.label }} · Solidarity Financing{% endblock %}
+{% block content %}<div class=sol>
+<h1>{{ s.label }}</h1>
+<p class=muted><a href="{{ prefix }}/">Sessions</a> · <a href="{{ prefix }}/supporters">Supporter circle</a></p>
+{% if error %}<div class=err>{{ error }}</div>{% endif %}
+
+<h2>Open budget</h2>
+<table><tr><th>Line item</th><th>Amount</th><th>Status</th><th>Kind</th><th>Note</th></tr>
+{% for l in lines %}<tr><td>{{ l.line_item }}</td><td>{{ l.amount_uah }} UAH</td>
+ <td>{{ l.status }}</td><td>{{ 'transfer-in cover' if l.is_transfer_in else 'cost' }}</td><td>{{ l.note }}</td></tr>{% endfor %}
+<tr class=total><td>Cost total</td><td>{{ vb.cost_uah }} UAH</td><td colspan=3></td></tr>
+<tr class=total><td>Transfer-in cover</td><td>{{ vb.cover_uah }} UAH</td><td colspan=3></td></tr>
+<tr class=total><td>Remainder for the round</td><td>{{ vb.remainder_uah }} UAH</td><td colspan=3></td></tr>
+</table>
+<form method=post action="{{ prefix }}/session/{{ s.id }}/budget" class=inline>
+ <label>Line item <input name=line_item required></label>
+ <label>Amount (UAH) <input name=amount_uah required></label>
+ <label>Status <select name=status>{% for st in statuses %}<option>{{ st }}</option>{% endfor %}</select></label>
+ <label>Transfer-in cover? <input type=checkbox name=is_transfer_in></label>
+ <label>Note <input name=note></label>
+ <button>Add line</button>
+</form>
+<h2>Bidding rounds</h2>
+<table><tr><th>Round</th><th>State</th><th>Pledges</th><th>Total pledged</th><th>Gap</th></tr>
+{% for r in rounds %}<tr>
+ <td><a href="{{ prefix }}/round/{{ r.round_id }}">Round {{ r.round_no }}</a></td>
+ <td>{{ r.state }}</td><td>{{ r.pledge_count }}</td><td>{{ r.total_pledged_uah }} UAH</td>
+ <td>{% if r.gap_uah <= 0 %}closed, surplus {{ -r.gap_uah }} UAH{% else %}{{ r.gap_uah }} UAH open{% endif %}</td>
+</tr>{% endfor %}</table>
+<form method=post action="{{ prefix }}/session/{{ s.id }}/new-round" class=inline><button>Open next round</button></form>
+<p><a href="{{ prefix }}/session/{{ s.id }}/tokens">Tokens</a> ·
+   <a href="{{ prefix }}/report/{{ s.id }}">Anonymised report</a> ·
+   <a href="{{ prefix }}/session/{{ s.id }}/settlement">Settlement{{ ' (drawn up)' if stl }}</a></p><footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>
+</div>{% endblock %}

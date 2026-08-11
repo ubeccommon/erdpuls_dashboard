@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.sol table{border-collapse:collapse;width:100%;margin:.8rem 0}
+.sol th,.sol td{border:1px solid #cfc9bb;padding:.35rem .6rem;text-align:left}
+.sol th{background:#f4f2ec}.sol tr.total td{font-weight:bold;background:#faf9f5}
+.sol form.inline{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.8rem 0}
+.sol label{display:flex;flex-direction:column;font-size:.85rem}
+.sol .err{background:#fdf3d0;border:1px solid #d9c76a;padding:.5rem .8rem;margin:.6rem 0}
+.sol .muted{opacity:.75;font-size:.9rem}
+.sol footer.sol-note{margin-top:2.2rem;border-top:1px solid #cfc9bb;padding-top:.6rem;font-size:.8rem;opacity:.75}
+</style>
+{% endblock %}
+{% block title %}Anonymised report — {{ vb.label }} · Solidarity Financing{% endblock %}
+{% block content %}<div class=sol>
+<h1>Anonymised report — {{ vb.label }}</h1>
+<p class=muted><a href="{{ prefix }}/">Sessions</a> · <a href="{{ prefix }}/supporters">Supporter circle</a></p>
+{% if error %}<div class=err>{{ error }}</div>{% endif %}
+
+<p class=muted>Counts and sums only. No tokens, no households, no row-level amounts appear
+here or in the views this page reads.</p>
+<table>
+ <tr><th>Session budget (cost lines)</th><td>{{ vb.cost_uah }} UAH</td></tr>
+ <tr><th>Transfer-in cover</th><td>{{ vb.cover_uah }} UAH</td></tr>
+ <tr><th>Remainder for the round</th><td>{{ vb.remainder_uah }} UAH</td></tr>
+</table>
+<h2>Rounds</h2>
+<table><tr><th>Round</th><th>Pledges</th><th>Total (status pledge)</th><th>Result</th></tr>
+{% for r in rounds %}<tr><td>{{ r.round_no }}</td><td>{{ r.pledge_count }}</td>
+ <td>{{ r.total_pledged_uah }} UAH</td>
+ <td>{% if r.gap_uah <= 0 %}closed, surplus {{ -r.gap_uah }} UAH{% else %}open, gap {{ r.gap_uah }} UAH{% endif %}</td>
+</tr>{% endfor %}</table>
+<h2>Supporter circle by period</h2>
+<table><tr><th>Period</th><th>Contributions</th><th>Pledged</th><th>Settled</th></tr>
+{% for p in periods %}<tr><td>{{ p.period }}</td><td>{{ p.contributions }}</td>
+ <td>{{ p.pledged_uah }} UAH</td><td>{{ p.settled_uah }} UAH</td></tr>{% endfor %}</table><footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>
+</div>{% endblock %}

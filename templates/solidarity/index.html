@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.sol table{border-collapse:collapse;width:100%;margin:.8rem 0}
+.sol th,.sol td{border:1px solid #cfc9bb;padding:.35rem .6rem;text-align:left}
+.sol th{background:#f4f2ec}.sol tr.total td{font-weight:bold;background:#faf9f5}
+.sol form.inline{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.8rem 0}
+.sol label{display:flex;flex-direction:column;font-size:.85rem}
+.sol .err{background:#fdf3d0;border:1px solid #d9c76a;padding:.5rem .8rem;margin:.6rem 0}
+.sol .muted{opacity:.75;font-size:.9rem}
+.sol footer.sol-note{margin-top:2.2rem;border-top:1px solid #cfc9bb;padding-top:.6rem;font-size:.8rem;opacity:.75}
+</style>
+{% endblock %}
+{% block title %}Sessions · Solidarity Financing{% endblock %}
+{% block content %}<div class=sol>
+<h1>Sessions</h1>
+<p class=muted><a href="{{ prefix }}/">Sessions</a> · <a href="{{ prefix }}/supporters">Supporter circle</a></p>
+{% if error %}<div class=err>{{ error }}</div>{% endif %}
+
+<table><tr><th>Session</th><th>Days</th><th>Budget adopted</th><th>Cost</th><th>Cover</th><th>Remainder for the round</th></tr>
+{% for r in sessions %}<tr>
+ <td><a href="{{ prefix }}/session/{{ r.id }}">{{ r.label }}</a></td>
+ <td>{{ r.days or '' }}</td><td>{{ r.adopted_on or 'not adopted' }}</td>
+ <td>{{ r.cost_uah }} UAH</td><td>{{ r.cover_uah }} UAH</td><td>{{ r.remainder_uah }} UAH</td>
+</tr>{% endfor %}</table>
+<h2>New session</h2>
+<form method=post action="{{ prefix }}/" class=inline>
+ <label>Label <input name=label required></label>
+ <label>Days <input name=days type=number min=1></label>
+ <label>Budget adopted on <input name=adopted_on type=date></label>
+ <button>Create</button>
+</form><footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>
+</div>{% endblock %}

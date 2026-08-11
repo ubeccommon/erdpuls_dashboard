@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.sol table{border-collapse:collapse;width:100%;margin:.8rem 0}
+.sol th,.sol td{border:1px solid #cfc9bb;padding:.35rem .6rem;text-align:left}
+.sol th{background:#f4f2ec}.sol tr.total td{font-weight:bold;background:#faf9f5}
+.sol form.inline{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.8rem 0}
+.sol label{display:flex;flex-direction:column;font-size:.85rem}
+.sol .err{background:#fdf3d0;border:1px solid #d9c76a;padding:.5rem .8rem;margin:.6rem 0}
+.sol .muted{opacity:.75;font-size:.9rem}
+.sol footer.sol-note{margin-top:2.2rem;border-top:1px solid #cfc9bb;padding-top:.6rem;font-size:.8rem;opacity:.75}
+</style>
+{% endblock %}
+{% block title %}Round {{ r.round_no }} — {{ r.label }} · Solidarity Financing{% endblock %}
+{% block content %}<div class=sol>
+<h1>Round {{ r.round_no }} — {{ r.label }}</h1>
+<p class=muted><a href="{{ prefix }}/">Sessions</a> · <a href="{{ prefix }}/supporters">Supporter circle</a></p>
+{% if error %}<div class=err>{{ error }}</div>{% endif %}
+
+<p class=muted>Entry by token, one pledge per token per round — re-entering a token replaces
+its pledge, as in the room. This screen shows sums only. A pledge of zero is a pledge; enter it.</p>
+<table>
+ <tr><th>Pledges entered</th><td>{{ vt.pledge_count }}</td></tr>
+ <tr><th>Total pledged</th><td>{{ vt.total_pledged_uah }} UAH (status: pledge)</td></tr>
+ <tr><th>Remainder to close</th><td>{{ vt.remainder_uah }} UAH</td></tr>
+ <tr class=total><th>Result</th><td>
+  {% if vt.gap_uah <= 0 %}CLOSED — surplus {{ -vt.gap_uah }} UAH to the infrastructure fund
+  {% else %}OPEN — gap {{ vt.gap_uah }} UAH{% endif %}</td></tr>
+</table>
+{% if r.state == 'open' %}
+<form method=post action="{{ prefix }}/round/{{ r.id }}/pledge" class=inline>
+ <label>Token <input name=token required></label>
+ <label>Amount (UAH) <input name=amount_uah required></label>
+ <button>Enter pledge</button>
+</form>
+<form method=post action="{{ prefix }}/round/{{ r.id }}/state" class=inline>
+ <button name=action value=close>Close round</button>
+ <button name=action value=stop style="background:#7a3030;color:#fff">Stop round (hand gap to participants)</button>
+</form>
+{% else %}<p>Round is {{ r.state }}.</p>{% endif %}
+<p><a href="{{ prefix }}/session/{{ r.session_id }}">Back to session</a></p><footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>
+</div>{% endblock %}

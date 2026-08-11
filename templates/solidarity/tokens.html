@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.sol table{border-collapse:collapse;width:100%;margin:.8rem 0}
+.sol th,.sol td{border:1px solid #cfc9bb;padding:.35rem .6rem;text-align:left}
+.sol th{background:#f4f2ec}.sol tr.total td{font-weight:bold;background:#faf9f5}
+.sol form.inline{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.8rem 0}
+.sol label{display:flex;flex-direction:column;font-size:.85rem}
+.sol .err{background:#fdf3d0;border:1px solid #d9c76a;padding:.5rem .8rem;margin:.6rem 0}
+.sol .muted{opacity:.75;font-size:.9rem}
+.sol footer.sol-note{margin-top:2.2rem;border-top:1px solid #cfc9bb;padding-top:.6rem;font-size:.8rem;opacity:.75}
+</style>
+{% endblock %}
+{% block title %}Tokens — {{ s.label }} · Solidarity Financing{% endblock %}
+{% block content %}<div class=sol>
+<h1>Tokens — {{ s.label }}</h1>
+<p class=muted><a href="{{ prefix }}/">Sessions</a> · <a href="{{ prefix }}/supporters">Supporter circle</a></p>
+{% if error %}<div class=err>{{ error }}</div>{% endif %}
+
+<p class=muted>Pledges are entered by token. The token-to-household mapping may be recorded
+here, or left with the facilitator on paper — every round view and report works identically
+either way, and none of them joins this mapping.</p>
+<table><tr><th>Token</th><th>Mapping</th></tr>
+{% for t in toks %}<tr><td>{{ t.token }}</td><td>{{ t.mapping }}</td></tr>{% endfor %}</table>
+<form method=post action="{{ prefix }}/session/{{ s.id }}/tokens" class=inline>
+ <label>Token <input name=token placeholder="F-01" required></label>
+ <label>Household (optional — leave empty to keep on paper) <input name=household></label>
+ <button>Add</button>
+</form>
+<p><a href="{{ prefix }}/session/{{ s.id }}">Back to session</a></p><footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>
+</div>{% endblock %}
