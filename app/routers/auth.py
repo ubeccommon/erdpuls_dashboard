@@ -466,9 +466,11 @@ def create_offering(
     title: str = Form(...),
     title_de: Optional[str] = Form(None),
     title_pl: Optional[str] = Form(None),
+    title_uk: Optional[str] = Form(None),
     description: str = Form(...),
     description_de: Optional[str] = Form(None),
     description_pl: Optional[str] = Form(None),
+    description_uk: Optional[str] = Form(None),
     delivery_language: List[str] = Form(default=['de']),
     facilitator_cost: float = Form(0),
     materials_cost: float = Form(0),
@@ -501,7 +503,7 @@ def create_offering(
     from ..models import Offering
     
     # Validate delivery_language
-    valid_languages = {'de', 'en', 'pl'}
+    valid_languages = {'de', 'en', 'pl', 'uk'}
     delivery_language = [lang for lang in delivery_language if lang in valid_languages]
     if not delivery_language:
         delivery_language = ['de']  # Default fallback
@@ -520,6 +522,8 @@ def create_offering(
         return RedirectResponse(url="/dashboard/create?error=title_de_invalid", status_code=303)
     if title_pl and (len(title_pl) < TITLE_MIN or len(title_pl) > TITLE_MAX):
         return RedirectResponse(url="/dashboard/create?error=title_pl_invalid", status_code=303)
+    if title_uk and (len(title_uk) < TITLE_MIN or len(title_uk) > TITLE_MAX):
+        return RedirectResponse(url="/dashboard/create?error=title_uk_invalid", status_code=303)
     
     # Validate description lengths (security: prevent abuse)
     DESC_MIN = 50
@@ -606,9 +610,11 @@ def create_offering(
         title=title,
         title_de=title_de or None,
         title_pl=title_pl or None,
+        title_uk=title_uk or None,
         description=description,
         description_de=description_de or None,
         description_pl=description_pl or None,
+        description_uk=description_uk or None,
         delivery_language=delivery_language,
         threshold_amount=threshold,
         facilitator_cost=Decimal(str(facilitator_cost)),
@@ -853,7 +859,7 @@ def edit_offering(
         return RedirectResponse(url=f"/dashboard/offering/{offering_id}?error=not_editable", status_code=303)
     
     # Validate delivery_language
-    valid_languages = {'de', 'en', 'pl'}
+    valid_languages = {'de', 'en', 'pl', 'uk'}
     delivery_language = [lang for lang in delivery_language if lang in valid_languages]
     if not delivery_language:
         delivery_language = ['de']  # Default fallback

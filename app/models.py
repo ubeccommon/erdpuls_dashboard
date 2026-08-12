@@ -93,9 +93,11 @@ class Offering(Base):
     title = Column(String(255), nullable=False)
     title_de = Column(String(255))
     title_pl = Column(String(255))
+    title_uk = Column(String(255))
     description = Column(Text, nullable=False)
     description_de = Column(Text)
     description_pl = Column(Text)
+    description_uk = Column(Text)
     
     # Delivery language(s) - which language(s) the offering is conducted in
     delivery_language = Column(ARRAY(String(50)), default=['de'])
@@ -141,6 +143,8 @@ class Offering(Base):
             return self.title_de
         elif lang == 'pl' and self.title_pl:
             return self.title_pl
+        elif lang == 'uk' and self.title_uk:
+            return self.title_uk
         return self.title
     
     def get_description(self, lang: str = 'en') -> str:
@@ -148,14 +152,17 @@ class Offering(Base):
             return self.description_de
         elif lang == 'pl' and self.description_pl:
             return self.description_pl
+        elif lang == 'uk' and self.description_uk:
+            return self.description_uk
         return self.description
     
     def get_delivery_language_display(self, lang: str = 'en') -> str:
         """Get formatted delivery language(s) for display."""
         lang_names = {
-            'de': {'en': 'German', 'de': 'Deutsch', 'pl': 'Niemiecki'},
-            'en': {'en': 'English', 'de': 'Englisch', 'pl': 'Angielski'},
-            'pl': {'en': 'Polish', 'de': 'Polnisch', 'pl': 'Polski'}
+            'de': {'en': 'German', 'de': 'Deutsch', 'pl': 'Niemiecki', 'uk': 'Німецька'},
+            'en': {'en': 'English', 'de': 'Englisch', 'pl': 'Angielski', 'uk': 'Англійська'},
+            'pl': {'en': 'Polish', 'de': 'Polnisch', 'pl': 'Polski', 'uk': 'Польська'},
+            'uk': {'en': 'Ukrainian', 'de': 'Ukrainisch', 'pl': 'Ukraiński', 'uk': 'Українська'}
         }
         
         if not self.delivery_language:
@@ -433,6 +440,8 @@ class HoursRate(Base):
             return self.description_de
         elif lang == 'pl' and self.description_pl:
             return self.description_pl
+        elif lang == 'uk' and self.description_uk:
+            return self.description_uk
         return self.description or ''
     
     @classmethod

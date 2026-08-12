@@ -67,6 +67,13 @@
                             <span class="char-count" data-for="title_pl">0</span> / 255
                         </span>
                     </div>
+<div class="form-group">
+                        <label for="title_uk">{% if lang == 'de' %}Titel (Ukrainisch){% elif lang == 'pl' %}Tytuł (polski){% else %}Title (Ukrainian){% endif %}</label>
+                        <input type="text" id="title_uk" name="title_uk" minlength="3" maxlength="255">
+                        <span class="field-hint char-hint">
+                            <span class="char-count" data-for="title_uk">0</span> / 255
+                        </span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -93,6 +100,13 @@
                         <span class="char-count" data-for="description_pl">0</span> / 5,000
                     </span>
                 </div>
+<div class="form-group">
+                    <label for="description_uk">{% if lang == 'de' %}Beschreibung (Ukrainisch){% elif lang == 'pl' %}Opis (polski){% else %}Description (Ukrainian){% endif %}</label>
+                    <textarea id="description_uk" name="description_uk" rows="5" minlength="50" maxlength="5000"></textarea>
+                    <span class="field-hint char-hint">
+                        <span class="char-count" data-for="description_uk">0</span> / 5,000
+                    </span>
+                </div>
                 
                 <div class="form-group">
                     <label>{% if lang == 'de' %}Durchführungssprache{% elif lang == 'pl' %}Język prowadzenia{% else %}Delivery Language{% endif %} *</label>
@@ -117,6 +131,10 @@
                         <label class="checkbox-label">
                             <input type="checkbox" name="delivery_language" value="pl">
                             <span>Polski</span>
+                        </label>
+<label class="checkbox-label">
+                            <input type="checkbox" name="delivery_language" value="uk">
+                            <span>Українська</span>
                         </label>
                     </div>
                 </div>
