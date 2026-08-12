@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Optional
 import logging
+import urllib.parse
 
 from fastapi import APIRouter, Depends, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -203,7 +204,12 @@ def admin_users(
             "total_pages": total_pages,
             "total": total,
             "search": search or "",
-            "role_filter": role or ""
+            "role_filter": role or "",
+            # Why each account may or may not be deleted, so the list can
+            # show the reason rather than an inert button.
+            "delete_blocks": {str(u.id): user_delete_block(db, u, user) for u in users},
+            "error": request.query_params.get("error", ""),
+            "success": request.query_params.get("success", ""),
         }
     )
 
@@ -313,6 +319,60 @@ def admin_toggle_active(
         url=f"/admin/users/{user_id}?success=status_updated",
         status_code=303
     )
+
+
+def user_delete_block(db: Session, target, actor) -> str:
+    """Return why this account may not be deleted, or "" if it may.
+
+    Deletion is for accounts that left no trace — spam registrations and
+    mistakes. An account that authored something is a record: its
+    offerings would be left with no author, so it is deactivated instead,
+    which keeps both the person out and the authorship intact.
+    """
+    if str(target.id) == str(actor.id):
+        return "You cannot delete your own account."
+    if target.role == 'admin':
+        admins = db.query(User).filter(User.role == 'admin').count()
+        if admins <= 1:
+            return "This is the last administrator account."
+        return ("Administrator accounts are not deleted here. Change the role "
+                "first, so the decision is made deliberately.")
+    offerings = db.query(Offering).filter(Offering.creator_id == target.id).count()
+    if offerings:
+        return (f"This account authored {offerings} offering(s). Deleting it would "
+                "leave them with no author; deactivate it instead.")
+    return ""
+
+
+@router.post("/users/{user_id}/delete")
+def admin_delete_user(user_id: str, request: Request,
+                      db: Session = Depends(get_db)):
+    """Delete an account that left no trace.
+
+    Refused for your own account, for administrators, and for anyone who
+    authored an offering. Initiative memberships go with the account —
+    they say where someone belongs, not what happened. Registrations and
+    contribution contacts are keyed by email rather than account and are
+    untouched: they are records of events, and those stay.
+    """
+    admin_user, redirect = require_full_admin(request, db)
+    if redirect:
+        return redirect
+
+    target = db.query(User).filter(User.id == user_id).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    blocked = user_delete_block(db, target, admin_user)
+    if blocked:
+        return RedirectResponse(url=f"/admin/users?error={urllib.parse.quote(blocked)}",
+                                status_code=303)
+
+    logger.info("admin %s deleted account %s (%s)", admin_user.email,
+                target.email, target.id)
+    db.delete(target)
+    db.commit()
+    return RedirectResponse(url="/admin/users?success=user_deleted", status_code=303)
 
 
 @router.post("/users/{user_id}/update")

@@ -14,6 +14,8 @@
                 <h1>
                     {% if lang == 'de' %}Benutzerverwaltung{% elif lang == 'pl' %}Zarządzanie użytkownikami{% else %}User Management{% endif %}
                 </h1>
+        {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+        {% if success == 'user_deleted' %}<div class="alert">{% if lang == 'uk' %}Обліковий запис видалено.{% else %}Account deleted.{% endif %}</div>{% endif %}
                 <p class="admin-subtitle">
                     {{ total }} {% if lang == 'de' %}Benutzer insgesamt{% elif lang == 'pl' %}użytkowników łącznie{% else %}users total{% endif %}
                 </p>
@@ -92,8 +94,21 @@
                         <td>{{ u.last_login.strftime('%d.%m.%Y %H:%M') if u.last_login else '—' }}</td>
                         <td>
                             <a href="/admin/users/{{ u.id }}" class="btn btn-small">
-                                {% if lang == 'de' %}Bearbeiten{% elif lang == 'pl' %}Edytuj{% else %}Edit{% endif %}
+                                {% if lang == 'de' %}Bearbeiten{% elif lang == 'pl' %}Edytuj{% elif lang == 'uk' %}Редагувати{% else %}Edit{% endif %}
                             </a>
+                            {% if not delete_blocks.get(u.id|string) %}
+                            <form method="post" action="/admin/users/{{ u.id }}/delete"
+                                  style="display:inline"
+                                  onsubmit="return confirm('{% if lang == 'uk' %}Видалити обліковий запис{% else %}Delete the account{% endif %} {{ u.email }}? {% if lang == 'uk' %}Це остаточно.{% else %}This cannot be undone.{% endif %}')">
+                                <button class="btn btn-small" style="background:#7a3030;color:#fff">
+                                    {% if lang == 'de' %}Löschen{% elif lang == 'pl' %}Usuń{% elif lang == 'uk' %}Видалити{% else %}Delete{% endif %}
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="muted" style="font-size:.75rem" title="{{ delete_blocks.get(u.id|string) }}">
+                                {% if lang == 'uk' %}не можна видалити{% else %}not deletable{% endif %}
+                            </span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% else %}
