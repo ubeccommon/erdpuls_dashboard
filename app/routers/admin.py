@@ -83,9 +83,26 @@ def admin_dashboard(request: Request, db: Session = Depends(get_db)):
         'total_registrations': db.query(Registration).count(),
         'total_contributions': db.query(Contribution).count(),
         
-        'total_contributed': db.query(func.sum(Contribution.amount_eur)).scalar() or Decimal('0'),
+        # Contributions are held in each offering's own currency, so a
+        # single total across all offerings would add unlike things. The
+        # EUR figure below counts EUR offerings only; other currencies
+        # are reported beside it, never merged into it.
+        'total_contributed': (
+            db.query(func.sum(Contribution.amount_eur))
+              .join(Offering, Offering.id == Contribution.offering_id)
+              .filter(Offering.currency == 'EUR').scalar() or Decimal('0')),
         'fund_balance': RegenerationFund.get_balance(db),
     }
+
+    # Contribution totals for offerings in other currencies, listed
+    # separately. Nothing here is converted into euro.
+    stats['contributed_by_currency'] = [
+        {'currency': c, 'total': tot}
+        for c, tot in db.query(Offering.currency, func.sum(Contribution.amount_eur))
+                        .join(Contribution, Contribution.offering_id == Offering.id)
+                        .filter(Offering.currency != 'EUR')
+                        .group_by(Offering.currency).all()
+    ]
 
     # Solidarity financing (internal module). Counts and sums only — no
     # token, household or per-pledge figure reaches this overview, exactly

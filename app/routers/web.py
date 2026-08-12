@@ -609,6 +609,15 @@ def contribute_submit(
         )
     
     # Calculate EUR equivalent
+    # Token and hours rates are denominated in euro (tokens_per_eur,
+    # eur_per_hour). Applying them to a PLN or UAH offering would price
+    # that currency at a euro rate without saying so, so they are refused
+    # rather than silently converted.
+    if contribution_type in ('token', 'hours') and not offering.allows_token_and_hours:
+        return RedirectResponse(
+            url=f"/offerings/{offering_id}?error=token_hours_eur_only",
+            status_code=303)
+
     final_amount_eur = Decimal('0')
     token_rate = TokenRate.get_current_rate(db)
     

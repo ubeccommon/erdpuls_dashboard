@@ -472,6 +472,7 @@ def create_offering(
     description_pl: Optional[str] = Form(None),
     description_uk: Optional[str] = Form(None),
     delivery_language: List[str] = Form(default=['de']),
+    currency: str = Form(default='EUR'),
     facilitator_cost: float = Form(0),
     materials_cost: float = Form(0),
     catering_cost: float = Form(0),
@@ -504,6 +505,10 @@ def create_offering(
     
     # Validate delivery_language
     valid_languages = {'de', 'en', 'pl', 'uk'}
+    # An offering's figures are in its own currency and are never
+    # converted; an unknown code would make every figure on it meaningless.
+    if currency not in {'EUR', 'PLN', 'UAH'}:
+        return RedirectResponse(url="/dashboard/create?error=currency_invalid", status_code=303)
     delivery_language = [lang for lang in delivery_language if lang in valid_languages]
     if not delivery_language:
         delivery_language = ['de']  # Default fallback
@@ -617,6 +622,7 @@ def create_offering(
         description_uk=description_uk or None,
         delivery_language=delivery_language,
         threshold_amount=threshold,
+        currency=currency,
         facilitator_cost=Decimal(str(facilitator_cost)),
         materials_cost=Decimal(str(materials_cost)),
         catering_cost=Decimal(str(catering_cost)),
@@ -860,6 +866,10 @@ def edit_offering(
     
     # Validate delivery_language
     valid_languages = {'de', 'en', 'pl', 'uk'}
+    # An offering's figures are in its own currency and are never
+    # converted; an unknown code would make every figure on it meaningless.
+    if currency not in {'EUR', 'PLN', 'UAH'}:
+        return RedirectResponse(url="/dashboard/create?error=currency_invalid", status_code=303)
     delivery_language = [lang for lang in delivery_language if lang in valid_languages]
     if not delivery_language:
         delivery_language = ['de']  # Default fallback

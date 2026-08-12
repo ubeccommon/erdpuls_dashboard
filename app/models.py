@@ -104,6 +104,7 @@ class Offering(Base):
     
     # Threshold and financial breakdown
     threshold_amount = Column(Numeric(10, 2), nullable=False)
+    currency = Column(String(3), nullable=False, default='EUR')
     facilitator_cost = Column(Numeric(10, 2), default=0)
     materials_cost = Column(Numeric(10, 2), default=0)
     catering_cost = Column(Numeric(10, 2), default=0)
@@ -138,6 +139,24 @@ class Offering(Base):
     registrations = relationship("Registration", back_populates="offering", lazy="dynamic")
     contributions = relationship("Contribution", back_populates="offering", lazy="dynamic")
     
+    # Currency symbols. An offering's figures are always in its own
+    # currency and are never converted to another.
+    CURRENCY_SYMBOLS = {'EUR': '\u20ac', 'PLN': 'z\u0142', 'UAH': '\u20b4'}
+
+    @property
+    def currency_symbol(self) -> str:
+        return self.CURRENCY_SYMBOLS.get(self.currency or 'EUR', self.currency or 'EUR')
+
+    @property
+    def allows_token_and_hours(self) -> bool:
+        """Token and hours contributions are EUR-only.
+
+        Their rates (tokens_per_eur, eur_per_hour) are denominated in
+        euro, so applying them to a PLN or UAH offering would silently
+        price hryvnia at a euro rate. Blocked rather than guessed.
+        """
+        return (self.currency or 'EUR') == 'EUR'
+
     def get_title(self, lang: str = 'en') -> str:
         if lang == 'de' and self.title_de:
             return self.title_de

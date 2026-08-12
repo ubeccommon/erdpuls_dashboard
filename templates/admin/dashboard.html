@@ -90,6 +90,11 @@
                     <div class="stat-value">{{ stats.total_contributions }}</div>
                     <div class="stat-label">{% if lang == 'de' %}Beiträge{% elif lang == 'pl' %}Wkłady{% else %}Contributions{% endif %}</div>
                     <div class="stat-detail">€{{ stats.total_contributed|round(0)|int }} {% if lang == 'de' %}gesamt{% elif lang == 'pl' %}łącznie{% else %}total{% endif %}</div>
+                    {% for row in stats.contributed_by_currency %}
+                    <div class="stat-detail">{{ row.total }} {{ row.currency }}
+                        {% if lang == 'de' %}(nicht in EUR umgerechnet){% elif lang == 'pl' %}(nie przeliczono na EUR){% elif lang == 'uk' %}(не конвертовано в EUR){% else %}(not converted to EUR){% endif %}
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
             

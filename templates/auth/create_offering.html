@@ -2,6 +2,16 @@
 
 {% block title %}
 {% if lang == 'de' %}Neues Angebot{% elif lang == 'pl' %}Nowa oferta{% else %}New Offering{% endif %}
+
+<script>
+function updateCurrencySymbols() {
+    var sel = document.getElementById('currency');
+    var symbols = {EUR: '\u20ac', PLN: 'z\u0142', UAH: '\u20b4'};
+    var sym = symbols[sel.value] || sel.value;
+    document.querySelectorAll('.cur-sym').forEach(function (el) { el.textContent = sym; });
+}
+document.addEventListener('DOMContentLoaded', updateCurrencySymbols);
+</script>
 {% endblock %}
 
 {% block content %}
@@ -142,6 +152,19 @@
 
             <div class="form-section">
                 <h2>{% if lang == 'de' %}Kostenaufschlüsselung{% elif lang == 'pl' %}Podział kosztów{% else %}Cost Breakdown{% endif %}</h2>
+            <div class="form-group">
+                <label for="currency">
+                    {% if lang == 'de' %}Währung{% elif lang == 'pl' %}Waluta{% elif lang == 'uk' %}Валюта{% else %}Currency{% endif %} *
+                </label>
+                <select id="currency" name="currency" onchange="updateCurrencySymbols()">
+                    <option value="EUR" selected>EUR (<span class="cur-sym">€</span>)</option>
+                    <option value="PLN">PLN (zł)</option>
+                    <option value="UAH">UAH (₴)</option>
+                </select>
+                <small>
+                    {% if lang == 'de' %}Alle Beträge dieses Angebots — Kosten, Schwellenwert und Beiträge — stehen in dieser Währung. Es wird nichts umgerechnet. Token- und Stundenbeiträge sind nur in EUR möglich, da ihre Sätze in Euro festgelegt sind.{% elif lang == 'pl' %}Wszystkie kwoty tej oferty — koszty, próg i wpłaty — są w tej walucie. Nic nie jest przeliczane. Wpłaty tokenami i godzinami są możliwe tylko w EUR, ponieważ ich stawki są ustalone w euro.{% elif lang == 'uk' %}Усі суми цієї пропозиції — витрати, поріг і внески — у цій валюті. Нічого не конвертується. Внески токенами й годинами можливі лише в EUR, бо їхні ставки визначені в євро.{% else %}All amounts on this offering — costs, threshold and contributions — are in this currency. Nothing is converted. Token and hours contributions are available only in EUR, because their rates are set in euro.{% endif %}
+                </small>
+            </div>
                 <p class="section-note">
                     {% if lang == 'de' %}
                         Die Schwelle wird automatisch aus der Summe der Kosten berechnet.
@@ -154,27 +177,27 @@
                 
                 <div class="cost-inputs">
                     <div class="form-group">
-                        <label for="facilitator_cost">{% if lang == 'de' %}Honorar (€){% elif lang == 'pl' %}Wynagrodzenie (€){% else %}Facilitator (€){% endif %}</label>
+                        <label for="facilitator_cost">{% if lang == 'de' %}Honorar (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Wynagrodzenie (<span class="cur-sym">€</span>){% else %}Facilitator (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="facilitator_cost" name="facilitator_cost" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="materials_cost">{% if lang == 'de' %}Materialien (€){% elif lang == 'pl' %}Materiały (€){% else %}Materials (€){% endif %}</label>
+                        <label for="materials_cost">{% if lang == 'de' %}Materialien (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Materiały (<span class="cur-sym">€</span>){% else %}Materials (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="materials_cost" name="materials_cost" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="catering_cost">{% if lang == 'de' %}Verpflegung (€){% elif lang == 'pl' %}Wyżywienie (€){% else %}Catering (€){% endif %}</label>
+                        <label for="catering_cost">{% if lang == 'de' %}Verpflegung (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Wyżywienie (<span class="cur-sym">€</span>){% else %}Catering (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="catering_cost" name="catering_cost" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="space_cost">{% if lang == 'de' %}Raum (€){% elif lang == 'pl' %}Przestrzeń (€){% else %}Space (€){% endif %}</label>
+                        <label for="space_cost">{% if lang == 'de' %}Raum (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Przestrzeń (<span class="cur-sym">€</span>){% else %}Space (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="space_cost" name="space_cost" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="sustainability_contribution">{% if lang == 'de' %}Nachhaltigkeitsbeitrag (€){% elif lang == 'pl' %}Wkład na rzecz zrównoważonego rozwoju (€){% else %}Sustainability Contribution (€){% endif %}</label>
+                        <label for="sustainability_contribution">{% if lang == 'de' %}Nachhaltigkeitsbeitrag (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Wkład na rzecz zrównoważonego rozwoju (<span class="cur-sym">€</span>){% else %}Sustainability Contribution (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="sustainability_contribution" name="sustainability_contribution" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                 </div>
