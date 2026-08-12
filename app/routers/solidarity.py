@@ -1,5 +1,5 @@
 """
-Solidarity Financing — native Erdpuls router, v0.8
+Solidarity Financing — native Erdpuls router, v0.9
 ==================================================
 Project: Solidarity Financing 2026 (working title) — Michel Garand
 Mounted at /erdpuls-verkhovyna/solidarity inside the Erdpuls dashboard.
@@ -20,6 +20,14 @@ Invariants (unchanged from the paper layer):
   - Records and computes; moves no money.
 
 Changelog:
+  v0.9 (August 2026) — a session can be deleted, on the same terms as a
+      round: only while nothing has been committed against it. No pledge
+      and no settlement means nobody promised anything and no account was
+      drawn, so removing it erases no record. One pledge or a drawn-up
+      settlement makes it permanent — a financing record must not vanish
+      once families have committed or the cycle has been accounted for.
+      Deleting a session leaves its offering standing; the offering is
+      simply no longer financed this way.
   v0.8 (August 2026) — sessions are created ONLY by ticking solidarity
       financing when an offering is created. The module's own "new
       session" form is gone and its endpoint refuses, so an offering is
@@ -143,6 +151,24 @@ def budget_locked(db: Session, sid: int) -> bool:
                       WHERE session_id = :i LIMIT 1""", i=sid) is not None
 
 
+def session_delete_block(db: Session, sid: int) -> str:
+    """Return the reason a session may not be deleted, or "" if it may.
+
+    A session may go only while nothing has been committed against it.
+    Pledges are promises families made; a settlement is the account of a
+    cycle that happened. Either one makes the session a record, and
+    records are not deleted — they are superseded, corrected in the
+    settlement account, or left standing.
+    """
+    if session_pledge_count(db, sid):
+        return ("This session holds pledges. Families have committed against its "
+                "figures, so it cannot be deleted — a financing record stays.")
+    if one(db, "SELECT 1 FROM solidarity.settlement WHERE session_id = :i", i=sid):
+        return ("This session has a settlement account. The cycle has been accounted "
+                "for, so it cannot be deleted.")
+    return ""
+
+
 def session_pledge_count(db: Session, sid: int) -> int:
     """How many pledges exist across all rounds of this session.
 
@@ -219,6 +245,7 @@ def session_view(sid: int, request: Request,
         stl=one(db, "SELECT * FROM solidarity.settlement WHERE session_id = :i", i=sid),
         locked=budget_locked(db, sid),
         pledges_exist=session_pledge_count(db, sid) > 0,
+        delete_block=session_delete_block(db, sid),
         error=request.query_params.get("error", ""))
 
 
@@ -282,6 +309,27 @@ def delete_budget_line(sid: int, lid: int, request: Request,
                        WHERE id = :l AND session_id = :s"""), {"l": lid, "s": sid})
     db.commit()
     return back(request, f"/session/{sid}")
+
+
+@router.post("/session/{sid}/delete")
+def delete_session(sid: int, request: Request,
+                   user: User = Depends(require_facilitator),
+                   db: Session = Depends(get_db)):
+    """Delete a session that holds no pledges and has no settlement.
+
+    Budget lines, tokens and empty rounds go with it: none of them is a
+    commitment by anyone. The offering it financed is untouched and
+    remains, simply no longer financed this way.
+    """
+    s = one(db, "SELECT id FROM solidarity.camp_session WHERE id = :i", i=sid)
+    if not s:
+        raise HTTPException(404)
+    blocked = session_delete_block(db, sid)
+    if blocked:
+        return back(request, f"/session/{sid}", blocked)
+    db.execute(text("DELETE FROM solidarity.camp_session WHERE id = :i"), {"i": sid})
+    db.commit()
+    return back(request, "/")
 
 
 @router.post("/session/{sid}/details")

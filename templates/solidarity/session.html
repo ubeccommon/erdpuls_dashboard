@@ -99,5 +99,18 @@ entered yet — delete the round below to edit the budget again.{% endif %}</p>{
 {% if not locked %}<p class=muted>Opening the first round freezes the budget above.</p>{% endif %}
 <p><a href="{{ prefix }}/session/{{ s.id }}/tokens">Tokens</a> ·
    <a href="{{ prefix }}/report/{{ s.id }}">Anonymised report</a> ·
-   <a href="{{ prefix }}/session/{{ s.id }}/settlement">Settlement{{ ' (drawn up)' if stl }}</a></p><footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>
+   <a href="{{ prefix }}/session/{{ s.id }}/settlement">Settlement{{ ' (drawn up)' if stl }}</a></p><h2>Delete this session</h2>
+{% if delete_block %}
+<p class=muted>{{ delete_block }}{% if offering %} The offering it finances is unaffected either way.{% endif %}</p>
+{% else %}
+<p class=muted>Nothing has been committed against this session — no pledges, no settlement
+account — so it can still be removed. Its budget lines, tokens and empty rounds go with it.
+{% if offering %}The offering it finances stays, simply no longer financed this way.{% endif %}</p>
+<form method=post action="{{ prefix }}/session/{{ s.id }}/delete" class=inline
+      onsubmit="return confirm('Delete the session {{ s.label }}? Its budget, tokens and empty rounds go with it. This cannot be undone.')">
+ <button style="background:#7a3030;color:#fff">Delete session</button>
+</form>
+{% endif %}
+
+<footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>
 </div>{% endblock %}
