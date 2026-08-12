@@ -1,5 +1,5 @@
 """
-Solidarity Financing — native Erdpuls router, v0.5
+Solidarity Financing — native Erdpuls router, v0.7
 ==================================================
 Project: Solidarity Financing 2026 (working title) — Michel Garand
 Mounted at /erdpuls-verkhovyna/solidarity inside the Erdpuls dashboard.
@@ -20,6 +20,15 @@ Invariants (unchanged from the paper layer):
   - Records and computes; moves no money.
 
 Changelog:
+  v0.7 (August 2026) — a session may be linked to an Erdpuls offering
+      (migration 014), chosen at offering creation by a facilitator.
+      The link carries words, not money: offering costs are EUR, the
+      session budget is UAH, and nothing is converted. The threshold
+      model's contributions and the round's pledges stay separate
+      ledgers that never reconcile per person — the first records who
+      gave what, the second is anonymous by design.
+  v0.6 (August 2026) — entry points from the dashboard for facilitator
+      and above; the role gate is unchanged and still decides access.
   v0.5 (August 2026) — session description: what the session offers, in
       plain words, shown above the open budget so a family reads the
       thing and its cost together. Editable at any time (it is not a
@@ -191,7 +200,12 @@ def session_view(sid: int, request: Request,
     s = one(db, "SELECT * FROM solidarity.camp_session WHERE id = :i", i=sid)
     if not s:
         raise HTTPException(404)
-    return render("session.html", request, user, s=s,
+    offering = None
+    if s["offering_id"]:
+        offering = one(db, """SELECT id, title, threshold_amount
+                              FROM erdpuls_threshold.offerings WHERE id = :o""",
+                       o=s["offering_id"])
+    return render("session.html", request, user, s=s, offering=offering,
         lines=rows(db, """SELECT * FROM solidarity.budget_line WHERE session_id = :i
                           ORDER BY is_transfer_in, id""", i=sid),
         vb=one(db, "SELECT * FROM solidarity.v_session_budget WHERE session_id = :i", i=sid),

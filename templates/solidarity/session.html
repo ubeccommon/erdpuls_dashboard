@@ -17,6 +17,11 @@
 <p class=muted><a href="{{ prefix }}/">Sessions</a> · <a href="{{ prefix }}/supporters">Supporter circle</a></p>
 {% if error %}<div class=err>{{ error }}</div>{% endif %}
 
+{% if offering %}<p class=muted>Finances the Erdpuls offering
+<a href="/dashboard/offering/{{ offering.id }}">{{ offering.title }}</a> —
+threshold {{ offering.threshold_amount }} EUR, shown as a reference only. The budget below is
+in UAH and is not converted from it; the two ledgers do not reconcile per person.</p>{% endif %}
+
 <h2>What this session offers</h2>
 {% if s.description %}<p>{{ s.description }}</p>
 {% else %}<p class=muted>No description yet. What is on offer here — the days, the rhythm,

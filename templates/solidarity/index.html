@@ -19,7 +19,8 @@
 
 <table><tr><th>Session</th><th>Days</th><th>Budget adopted</th><th>Cost</th><th>Cover</th><th>Remainder for the round</th></tr>
 {% for r in sessions %}<tr>
- <td><a href="{{ prefix }}/session/{{ r.id }}">{{ r.label }}</a></td>
+ <td><a href="{{ prefix }}/session/{{ r.id }}">{{ r.label }}</a>
+  {% if r.offering_id %}<br><small class=muted>linked to an Erdpuls offering</small>{% endif %}</td>
  <td>{{ r.days or '' }}</td><td>{{ r.adopted_on or 'not adopted' }}</td>
  <td>{{ r.cost_uah }} UAH</td><td>{{ r.cover_uah }} UAH</td><td>{{ r.remainder_uah }} UAH</td>
 </tr>{% endfor %}</table>

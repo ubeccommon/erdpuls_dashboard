@@ -236,6 +236,22 @@
             </div>
             {% endif %}
 
+            {% if user.role in ['facilitator', 'moderator', 'admin'] %}
+            <div class="info-box" style="border-left:4px solid #2d4a2d">
+                <label style="display:flex;gap:.6rem;align-items:flex-start">
+                    <input type="checkbox" name="solidarity_financing" value="1" style="margin-top:.3rem">
+                    <span>
+                        <strong>
+                            {% if lang == 'de' %}Über solidarische Finanzierung finanzieren{% elif lang == 'pl' %}Finansuj przez finansowanie solidarnościowe{% elif lang == 'uk' %}Фінансувати через солідарне фінансування{% else %}Finance through solidarity financing{% endif %}
+                        </strong><br>
+                        <small>
+                            {% if lang == 'de' %}Öffnet eine verknüpfte Sitzung im internen Solidaritätsmodul: offenes Budget in UAH, Bieterrunde, Unterstützerkreis. Der Schwellenwert oben bleibt davon unberührt — es wird nichts umgerechnet und nichts übertragen.{% elif lang == 'pl' %}Otwiera powiązaną sesję w wewnętrznym module solidarnościowym: otwarty budżet w UAH, runda licytacji, krąg wspierających. Próg powyżej pozostaje nienaruszony — nic nie jest przeliczane ani przenoszone.{% elif lang == 'uk' %}Відкриває пов'язану сесію у внутрішньому модулі солідарності: відкритий бюджет у гривні, раунд заявок, коло підтримки. Поріг вище лишається без змін — нічого не конвертується і не переноситься.{% else %}Opens a linked session in the internal solidarity module: open budget in UAH, bidding round, supporter circle. The threshold above is untouched — nothing is converted and no money moves between them.{% endif %}
+                        </small>
+                    </span>
+                </label>
+            </div>
+            {% endif %}
+
             <div class="form-actions">
                 <a href="/dashboard" class="btn btn-secondary">{% if lang == 'de' %}Abbrechen{% elif lang == 'pl' %}Anuluj{% else %}Cancel{% endif %}</a>
                 <button type="submit" class="btn btn-primary">

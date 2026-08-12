@@ -483,6 +483,7 @@ def create_offering(
     organizer_name: str = Form(...),
     organizer_email: str = Form(...),
     organizer_phone: Optional[str] = Form(None),
+    solidarity_financing: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
     """Create a new offering"""
@@ -629,7 +630,34 @@ def create_offering(
     
     db.add(offering)
     db.commit()
-    
+
+    # Optional: finance this offering through the solidarity module.
+    # Only for facilitator and above, since that is who may open the
+    # module at all — a creator ticking this box would otherwise make a
+    # session they cannot reach. Nothing is copied but the words: the
+    # offering's costs are EUR and the session budget is UAH, and no
+    # conversion happens anywhere in the module. The facilitator enters
+    # the UAH budget; the EUR threshold travels only as a reference note.
+    if solidarity_financing:
+        from ..roles import has_role_or_higher
+        if has_role_or_higher(user.role, "facilitator"):
+            from sqlalchemy import text as _sql
+            db.refresh(offering)
+            label = offering.title[:120]
+            if db.execute(_sql("SELECT 1 FROM solidarity.camp_session WHERE label = :l"),
+                          {"l": label}).first():
+                label = f"{label} ({str(offering.id)[:8]})"
+            db.execute(_sql("""INSERT INTO solidarity.camp_session
+                               (label, description, offering_id, note)
+                               VALUES (:l, :d, :o, :n)"""),
+                       {"l": label, "d": offering.description or "",
+                        "o": str(offering.id),
+                        "n": ("Opened from Erdpuls offering. Reference only, not converted: "
+                              f"threshold {offering.threshold_amount} EUR. "
+                              "Enter the session budget in UAH.")})
+            db.commit()
+            return RedirectResponse(url="/dashboard?created=1&solidarity=1", status_code=303)
+
     return RedirectResponse(url="/dashboard?created=1", status_code=303)
 
 
