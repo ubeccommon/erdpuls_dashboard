@@ -34,7 +34,7 @@ def client():
         http.cookiejar.CookieJar(policy=LocalPolicy())))
 
 def call(op, path, data=None):
-    d = urllib.parse.urlencode(data).encode() if data is not None else None
+    d = urllib.parse.urlencode(data, doseq=True).encode() if data is not None else None
     try:
         with op.open(BASE + path, data=d, timeout=10) as r:
             return r.status, r.read().decode()
@@ -92,7 +92,7 @@ check("creator typing the URL is still refused (403)", st == 403)
 
 op_fac = login_as("facilitator@test.invalid")
 st, body = call(op_fac, P + "/")
-check("facilitator reaches the module (200)", st == 200 and "New session" in body)
+check("facilitator reaches the module (200)", st == 200 and "Sessions" in body)
 
 # ── the public page still shows nothing ──────────────────────
 anon = client()

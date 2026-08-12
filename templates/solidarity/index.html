@@ -24,13 +24,9 @@
  <td>{{ r.days or '' }}</td><td>{{ r.adopted_on or 'not adopted' }}</td>
  <td>{{ r.cost_uah }} UAH</td><td>{{ r.cover_uah }} UAH</td><td>{{ r.remainder_uah }} UAH</td>
 </tr>{% endfor %}</table>
-<h2>New session</h2>
-<form method=post action="{{ prefix }}/" class=inline>
- <label>Label <input name=label required></label>
- <label>Days <input name=days type=number min=1></label>
- <label>Budget adopted on <input name=adopted_on type=date></label>
- <label style="flex:1 1 100%">What this session offers (optional; editable later)
-  <textarea name=description rows=3 style="width:100%"></textarea></label>
- <button>Create</button>
-</form><footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>
+<p class=muted>Sessions are not started here. A session exists to finance something,
+so it begins with the thing: create an offering and tick <em>Finance through solidarity
+financing</em>, and the linked session opens with it — carrying its description, organiser
+and deadlines.</p>
+<p><a href="/dashboard/create" class=btn>Create an offering</a></p><footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>
 </div>{% endblock %}

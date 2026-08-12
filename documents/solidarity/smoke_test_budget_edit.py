@@ -30,7 +30,7 @@ op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(
     http.cookiejar.CookieJar(policy=LocalPolicy())))
 
 def call(path, data=None):
-    d = urllib.parse.urlencode(data).encode() if data is not None else None
+    d = urllib.parse.urlencode(data, doseq=True).encode() if data is not None else None
     try:
         with op.open(BASE + path, data=d, timeout=10) as r:
             return r.status, r.read().decode()
@@ -51,9 +51,27 @@ for t in ("pledge", "token_mapping", "round_token", "bidding_round",
 conn.commit()
 
 call("/login", {"email": "steward@test.invalid", "password": "synthetic-test-pass"})
-call(P + "/", {"label": "SYNTHETIC Session L", "days": "9", "adopted_on": "", "note": ""})
-st, body = call(P + "/")
-sid = re.search(P + r"/session/(\d+)", body).group(1)
+
+# Sessions are created only through the offering form (v0.8), so tests
+# open one the same way a facilitator would.
+SYNTH_DESC = ("A synthetic offering used only to open a session for this test. "
+              "It describes nothing real and should never resemble a real one.")
+
+def make_session(title):
+    """Create an offering with solidarity financing ticked; return its session id."""
+    call("/dashboard/create", {
+        "title": title, "description": SYNTH_DESC, "delivery_language": ["en"],
+        "facilitator_cost": "100", "materials_cost": "0", "catering_cost": "0",
+        "space_cost": "0", "sustainability_contribution": "0",
+        "registration_deadline": "2026-09-01", "contribution_deadline_date": "2026-09-10",
+        "organizer_name": "Synthetic Organizer", "organizer_email": "organizer@test.invalid",
+        "solidarity_financing": "1"})
+    st, body = call(P + "/")
+    ids = re.findall(re.escape(P) + r"/session/(\d+)", body)
+    return ids[-1]
+
+
+sid = make_session("SYNTHETIC Session L")
 
 # ── unlocked: add, edit, delete ──────────────────────────────
 call(f"{P}/session/{sid}/budget",
@@ -119,9 +137,7 @@ check("database unchanged after refused attempts",
       len(remaining) == 1 and remaining[0][0] == "Food" and str(remaining[0][1]) == "20000.00")
 
 # cross-session isolation: another session stays editable
-call(P + "/", {"label": "SYNTHETIC Session M", "days": "9", "adopted_on": "", "note": ""})
-st, body = call(P + "/")
-sid2 = re.findall(P + r"/session/(\d+)", body)[-1]
+sid2 = make_session("SYNTHETIC Session M")
 st, body = call(f"{P}/session/{sid2}")
 check("other session remains editable", "Add line" in body and "Budget frozen" not in body)
 

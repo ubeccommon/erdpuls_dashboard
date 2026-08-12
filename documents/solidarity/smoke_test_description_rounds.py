@@ -31,7 +31,7 @@ op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(
     http.cookiejar.CookieJar(policy=LocalPolicy())))
 
 def call(path, data=None):
-    d = urllib.parse.urlencode(data).encode() if data is not None else None
+    d = urllib.parse.urlencode(data, doseq=True).encode() if data is not None else None
     try:
         with op.open(BASE + path, data=d, timeout=10) as r:
             return r.status, r.read().decode()
@@ -56,10 +56,21 @@ call("/login", {"email": "steward@test.invalid", "password": "synthetic-test-pas
 DESC = "Nine days on the homestead: shared meals, woodland work, evening songs."
 
 # ── description at creation ──────────────────────────────────
-call(P + "/", {"label": "SYNTHETIC Session D", "days": "9", "adopted_on": "",
-               "description": DESC, "note": ""})
+# Sessions are created only through the offering form (v0.8); the
+# description travels from the offering into the session.
+def make_offering(title, description, solidarity=True):
+    d = {"title": title, "description": description, "delivery_language": ["en"],
+         "facilitator_cost": "100", "materials_cost": "0", "catering_cost": "0",
+         "space_cost": "0", "sustainability_contribution": "0",
+         "registration_deadline": "2026-09-01", "contribution_deadline_date": "2026-09-10",
+         "organizer_name": "Synthetic Organizer", "organizer_email": "organizer@test.invalid"}
+    if solidarity:
+        d["solidarity_financing"] = "1"
+    call("/dashboard/create", d)
+
+make_offering("SYNTHETIC Session D", DESC)
 st, body = call(P + "/")
-sid = re.search(P + r"/session/(\d+)", body).group(1)
+sid = re.findall(P + r"/session/(\d+)", body)[-1]
 st, body = call(f"{P}/session/{sid}")
 check("description saved at creation and shown", DESC in body)
 
@@ -71,8 +82,7 @@ st, body = call(f"{P}/session/{sid}")
 check("description editable", DESC2 in body)
 
 # duplicate label refused
-call(P + "/", {"label": "SYNTHETIC Other", "days": "5", "adopted_on": "",
-               "description": "", "note": ""})
+make_offering("SYNTHETIC Other", DESC + " A second one.")
 st, body = call(f"{P}/session/{sid}/details",
      {"label": "SYNTHETIC Other", "days": "9", "adopted_on": "", "description": DESC2})
 check("duplicate label on edit refused", "another session already has that label" in body)

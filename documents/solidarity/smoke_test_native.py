@@ -74,12 +74,21 @@ check("member role is refused (RBAC 403)", st == 403)
 adm = client()
 st, final, body = call(adm, "/login", {"email": "steward@test.invalid", "password": "synthetic-test-pass"})
 st, final, body = call(adm, P + "/")
-check("admin passes RBAC, sessions page renders", st == 200 and "New session" in body)
+check("admin passes RBAC, sessions page renders", st == 200 and "Sessions" in body)
 
-call(adm, P + "/", {"label": "SYNTHETIC Session E", "days": "9", "adopted_on": "", "note": ""})
+# Sessions are created only through the offering form (v0.8).
+call(adm, "/dashboard/create", {
+    "title": "SYNTHETIC Session E",
+    "description": ("A synthetic offering used only to open a session for this test. "
+                    "It describes nothing real."),
+    "delivery_language": "en", "facilitator_cost": "100", "materials_cost": "0",
+    "catering_cost": "0", "space_cost": "0", "sustainability_contribution": "0",
+    "registration_deadline": "2026-09-01", "contribution_deadline_date": "2026-09-10",
+    "organizer_name": "Synthetic Organizer", "organizer_email": "organizer@test.invalid",
+    "solidarity_financing": "1"})
 st, final, body = call(adm, P + "/")
 m = re.search(P + r"/session/(\d+)", body)
-check("session created and linked", bool(m))
+check("session created via the offering form", bool(m))
 sid = m.group(1)
 
 for item, amt, ti in (("Food", "90000", ""), ("Fuel and transport", "25000", ""),

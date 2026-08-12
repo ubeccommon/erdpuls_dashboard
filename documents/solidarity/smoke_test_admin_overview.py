@@ -54,6 +54,26 @@ conn.commit()
 
 call("/login", {"email": "steward@test.invalid", "password": "synthetic-test-pass"})
 
+# Sessions are created only through the offering form (v0.8), so tests
+# open one the same way a facilitator would.
+SYNTH_DESC = ("A synthetic offering used only to open a session for this test. "
+              "It describes nothing real and should never resemble a real one.")
+
+def make_session(title):
+    """Create an offering with solidarity financing ticked; return its session id."""
+    call("/dashboard/create", {
+        "title": title, "description": SYNTH_DESC, "delivery_language": ["en"],
+        "facilitator_cost": "100", "materials_cost": "0", "catering_cost": "0",
+        "space_cost": "0", "sustainability_contribution": "0",
+        "registration_deadline": "2026-09-01", "contribution_deadline_date": "2026-09-10",
+        "organizer_name": "Synthetic Organizer", "organizer_email": "organizer@test.invalid",
+        "solidarity_financing": "1"})
+    st, body = call(P + "/")
+    ids = re.findall(re.escape(P) + r"/session/(\d+)", body)
+    return ids[-1]
+
+
+
 # empty state
 st, body = call("/admin")
 check("overview renders with no sessions", st == 200 and "Solidarity sessions" in body)
@@ -61,10 +81,7 @@ m = re.search(r'stat-value">(\d+)</div>\s*<div class="stat-label">\s*<a href="/e
 check("session count starts at zero", m and m.group(1) == "0")
 
 # one standalone session, budget, round, pledges
-call(P + "/", {"label": "SYNTHETIC Overview Session", "days": "9",
-               "adopted_on": "", "description": "", "note": ""})
-st, body = call(P + "/")
-sid = re.search(P + r"/session/(\d+)", body).group(1)
+sid = make_session("SYNTHETIC Overview Session")
 call(f"{P}/session/{sid}/budget", {"line_item": "Food", "amount_uah": "50000",
                                    "status": "estimate", "is_transfer_in": "", "note": ""})
 for tok in ("TEST-O1", "TEST-O2"):
@@ -99,7 +116,7 @@ call("/dashboard/create", {
     "solidarity_financing": "1"})
 st, body = call("/admin")
 norm = " ".join(body.split())
-check("linked session counted", "1 linked to an offering" in norm)
+check("linked session counted", "2 linked to an offering" in norm)
 check("session count now two", ">2</div>" in body)
 
 # the card links into the module

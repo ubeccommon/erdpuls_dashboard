@@ -1,5 +1,5 @@
 """
-Solidarity Financing — native Erdpuls router, v0.7
+Solidarity Financing — native Erdpuls router, v0.8
 ==================================================
 Project: Solidarity Financing 2026 (working title) — Michel Garand
 Mounted at /erdpuls-verkhovyna/solidarity inside the Erdpuls dashboard.
@@ -20,6 +20,14 @@ Invariants (unchanged from the paper layer):
   - Records and computes; moves no money.
 
 Changelog:
+  v0.8 (August 2026) — sessions are created ONLY by ticking solidarity
+      financing when an offering is created. The module's own "new
+      session" form is gone and its endpoint refuses, so an offering is
+      the single source of truth for what a session is: a session now
+      always has a thing it finances, a description, an organiser and
+      deadlines, rather than a bare label someone typed. Sessions whose
+      offering is later deleted survive unlinked — a settlement account
+      must outlive the listing — but no new session can begin that way.
   v0.7 (August 2026) — a session may be linked to an Erdpuls offering
       (migration 014), chosen at offering creation by a facilitator.
       The link carries words, not money: offering costs are EUR, the
@@ -176,21 +184,18 @@ def index(request: Request, user: User = Depends(require_facilitator),
 
 
 @router.post("/")
-def create_session(request: Request, label: str = Form(...), days: str = Form(""),
-                   adopted_on: str = Form(""), description: str = Form(""),
-                   note: str = Form(""),
-                   user: User = Depends(require_facilitator),
-                   db: Session = Depends(get_db)):
-    exists = one(db, "SELECT 1 FROM solidarity.camp_session WHERE label = :l", l=label.strip())
-    if exists:
-        return back(request, "/", "A session with that label already exists.")
-    db.execute(text("""INSERT INTO solidarity.camp_session
-                       (label, days, adopted_on, description, note)
-                       VALUES (:l, :d, :a, :desc, :n)"""),
-               {"l": label.strip(), "d": int(days) if days.strip() else None,
-                "a": adopted_on or None, "desc": description.strip(), "n": note})
-    db.commit()
-    return back(request, "/")
+def create_session_refused(request: Request,
+                           user: User = Depends(require_facilitator)):
+    """Sessions are not created here.
+
+    A session exists to finance something. Creating one from a bare label
+    would leave it without the description, organiser and deadlines that
+    make it answerable, so the only door is the offering form: tick
+    solidarity financing there and the linked session opens with it.
+    """
+    return back(request, "/",
+                "Sessions are created by ticking solidarity financing when an offering "
+                "is created. Open the offering form to start one.")
 
 
 @router.get("/session/{sid}", response_class=HTMLResponse)
