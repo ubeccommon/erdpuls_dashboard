@@ -15,6 +15,7 @@ from .config import get_settings
 from .routers import api_router, web_router, auth_router
 from .routers import admin as admin_router
 from .routers.solidarity import router as solidarity_router
+from .routers.solidarity import chooser as solidarity_chooser
 from .routers.initiative_pages import router as initiative_pages_router
 
 settings = get_settings()
@@ -46,10 +47,13 @@ app.include_router(web_router)   # includes /library and /library/resource (OER)
 app.include_router(auth_router)
 app.include_router(admin_router.router)
 
-# Solidarity Financing (working title) — internal module for the Erdpuls
-# Verkhovyna initiative, mounted at /erdpuls-verkhovyna/solidarity. Behind
-# Erdpuls login with role facilitator or higher; deliberately NOT linked from
-# the public initiative page. Registered before the catch-all below.
+# Solidarity Financing (working title) — internal module, mounted per
+# initiative at /{initiative_slug}/solidarity, with a chooser at
+# /solidarity. Behind Erdpuls login with role facilitator or higher;
+# deliberately NOT linked from any public initiative page. Both routers
+# are registered before the catch-all below, which they cannot shadow:
+# the chooser is a literal path and the module's routes are two segments.
+app.include_router(solidarity_chooser)
 app.include_router(solidarity_router)
 
 

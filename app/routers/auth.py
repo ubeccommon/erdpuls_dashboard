@@ -450,12 +450,16 @@ def create_offering_page(
     if not can_create_offering(user.role):
         return RedirectResponse(url="/dashboard?error=no_create_permission", status_code=303)
     
+    from ..models import Initiative
+    initiatives = db.query(Initiative).order_by(Initiative.sort_order).all()
+
     return templates.TemplateResponse(
         "auth/create_offering.html",
         {
             "request": request,
             "lang": lang,
-            "user": user
+            "user": user,
+            "initiatives": initiatives
         }
     )
 
@@ -473,6 +477,7 @@ def create_offering(
     description_uk: Optional[str] = Form(None),
     delivery_language: List[str] = Form(default=['de']),
     currency: str = Form(default='EUR'),
+    initiative_id: str = Form(default=''),
     facilitator_cost: float = Form(0),
     materials_cost: float = Form(0),
     catering_cost: float = Form(0),
@@ -623,6 +628,7 @@ def create_offering(
         delivery_language=delivery_language,
         threshold_amount=threshold,
         currency=currency,
+        initiative_id=initiative_id or None,
         facilitator_cost=Decimal(str(facilitator_cost)),
         materials_cost=Decimal(str(materials_cost)),
         catering_cost=Decimal(str(catering_cost)),
@@ -659,16 +665,27 @@ def create_offering(
             if db.execute(_sql("SELECT 1 FROM solidarity.camp_session WHERE label = :l"),
                           {"l": label}).first():
                 label = f"{label} ({str(offering.id)[:8]})"
+            # A session must know where it happens: it is mounted under an
+            # initiative and its record keeps that place directly, so it
+            # survives this offering's deletion. An offering with no
+            # initiative therefore cannot open one.
+            if not offering.initiative_id:
+                return RedirectResponse(
+                    url="/dashboard?created=1&solidarity=no_initiative", status_code=303)
+            note = ("Opened from an Erdpuls offering. Threshold "
+                    f"{offering.threshold_amount} {offering.currency}"
+                    + ("." if offering.currency == 'UAH' else
+                       " — reference only, not converted. Enter the session budget in UAH."))
             db.execute(_sql("""INSERT INTO solidarity.camp_session
-                               (label, description, offering_id, note)
-                               VALUES (:l, :d, :o, :n)"""),
+                               (label, description, offering_id, initiative_id, note)
+                               VALUES (:l, :d, :o, :i, :n)"""),
                        {"l": label, "d": offering.description or "",
-                        "o": str(offering.id),
-                        "n": ("Opened from Erdpuls offering. Reference only, not converted: "
-                              f"threshold {offering.threshold_amount} EUR. "
-                              "Enter the session budget in UAH.")})
+                        "o": str(offering.id), "i": str(offering.initiative_id),
+                        "n": note})
             db.commit()
-            return RedirectResponse(url="/dashboard?created=1&solidarity=1", status_code=303)
+            slug = db.execute(_sql("SELECT slug FROM erdpuls_threshold.initiatives WHERE id = :i"),
+                              {"i": str(offering.initiative_id)}).scalar()
+            return RedirectResponse(url=f"/{slug}/solidarity/", status_code=303)
 
     return RedirectResponse(url="/dashboard?created=1", status_code=303)
 

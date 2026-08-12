@@ -114,6 +114,8 @@ def admin_dashboard(request: Request, db: Session = Depends(get_db)):
         _s = db.execute(_sql("""
             SELECT
               (SELECT COUNT(*) FROM solidarity.camp_session)                       AS sessions,
+              (SELECT COUNT(DISTINCT initiative_id) FROM solidarity.camp_session
+                WHERE initiative_id IS NOT NULL)                                    AS initiatives,
               (SELECT COUNT(*) FROM solidarity.camp_session WHERE offering_id IS NOT NULL) AS linked,
               (SELECT COUNT(*) FROM solidarity.bidding_round WHERE state = 'open') AS open_rounds,
               (SELECT COALESCE(SUM(amount_uah), 0) FROM solidarity.pledge)         AS pledged_uah

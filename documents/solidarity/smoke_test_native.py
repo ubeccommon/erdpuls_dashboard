@@ -19,7 +19,8 @@ threading.Thread(target=server.run, daemon=True).start()
 time.sleep(2.5)
 
 BASE = "http://127.0.0.1:8600"
-P = "/erdpuls-verkhovyna/solidarity"
+SLUG = "synthetic-test-init"
+P = f"/{SLUG}/solidarity"
 
 def client():
     # Erdpuls sets its session cookie secure=True (right, behind the HTTPS
@@ -63,6 +64,13 @@ for t in ("pledge", "token_mapping", "round_token", "bidding_round",
           "budget_line", "contribution", "supporter", "household",
           "settlement", "camp_session"):
     cur.execute(f"DELETE FROM solidarity.{t}")
+cur.execute("""INSERT INTO erdpuls_threshold.initiatives
+               (id, slug, name, location, status, blurb_en, sort_order, is_published, has_page)
+               VALUES (gen_random_uuid(), %s, 'SYNTHETIC Test Initiative', 'Nowhere real',
+                       'active', 'Synthetic initiative for tests.', 990, true, true)
+               ON CONFLICT (slug) DO NOTHING""", (SLUG,))
+cur.execute("SELECT id FROM erdpuls_threshold.initiatives WHERE slug=%s", (SLUG,))
+INIT_ID = cur.fetchone()[0]
 conn.commit(); cur.close(); conn.close()
 
 member = client()
@@ -84,7 +92,7 @@ call(adm, "/dashboard/create", {
     "delivery_language": "en", "facilitator_cost": "100", "materials_cost": "0",
     "catering_cost": "0", "space_cost": "0", "sustainability_contribution": "0",
     "registration_deadline": "2026-09-01", "contribution_deadline_date": "2026-09-10",
-    "organizer_name": "Synthetic Organizer", "organizer_email": "organizer@test.invalid",
+    "organizer_name": "Synthetic Organizer", "organizer_email": "organizer@test.invalid", "initiative_id": INIT_ID,
     "solidarity_financing": "1"})
 st, final, body = call(adm, P + "/")
 m = re.search(P + r"/session/(\d+)", body)

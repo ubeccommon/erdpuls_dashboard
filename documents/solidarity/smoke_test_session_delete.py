@@ -17,7 +17,8 @@ from app.main import app
 
 PORT = 8619
 BASE = f"http://127.0.0.1:{PORT}"
-P = "/erdpuls-verkhovyna/solidarity"
+SLUG = "synthetic-test-init"
+P = f"/{SLUG}/solidarity"
 
 threading.Thread(target=uvicorn.Server(
     uvicorn.Config(app, host="127.0.0.1", port=PORT, log_level="warning")).run,
@@ -51,6 +52,13 @@ for t in ("pledge", "token_mapping", "round_token", "bidding_round",
           "budget_line", "settlement", "camp_session"):
     cur.execute(f"DELETE FROM solidarity.{t}")
 cur.execute("DELETE FROM erdpuls_threshold.offerings")
+cur.execute("""INSERT INTO erdpuls_threshold.initiatives
+               (id, slug, name, location, status, blurb_en, sort_order, is_published, has_page)
+               VALUES (gen_random_uuid(), %s, 'SYNTHETIC Test Initiative', 'Nowhere real',
+                       'active', 'Synthetic initiative for tests.', 990, true, true)
+               ON CONFLICT (slug) DO NOTHING""", (SLUG,))
+cur.execute("SELECT id FROM erdpuls_threshold.initiatives WHERE slug=%s", (SLUG,))
+INIT_ID = cur.fetchone()[0]
 conn.commit()
 
 call("/login", {"email": "steward@test.invalid", "password": "synthetic-test-pass"})
@@ -64,7 +72,7 @@ def make_session(title):
         "facilitator_cost": "100", "materials_cost": "0", "catering_cost": "0",
         "space_cost": "0", "sustainability_contribution": "0",
         "registration_deadline": "2026-09-01", "contribution_deadline_date": "2026-09-10",
-        "organizer_name": "Synthetic Organizer", "organizer_email": "organizer@test.invalid",
+        "organizer_name": "Synthetic Organizer", "organizer_email": "organizer@test.invalid", "initiative_id": INIT_ID,
         "solidarity_financing": "1"})
     st, body = call(P + "/")
     return re.findall(P + r"/session/(\d+)", body)[-1]

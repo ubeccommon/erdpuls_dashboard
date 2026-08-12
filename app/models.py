@@ -105,6 +105,7 @@ class Offering(Base):
     # Threshold and financial breakdown
     threshold_amount = Column(Numeric(10, 2), nullable=False)
     currency = Column(String(3), nullable=False, default='EUR')
+    initiative_id = Column(UUID(as_uuid=False), ForeignKey(f'{SCHEMA}.initiatives.id'))
     facilitator_cost = Column(Numeric(10, 2), default=0)
     materials_cost = Column(Numeric(10, 2), default=0)
     catering_cost = Column(Numeric(10, 2), default=0)

@@ -18,7 +18,8 @@ from app.auth import hash_password
 
 PORT = 8614
 BASE = f"http://127.0.0.1:{PORT}"
-P = "/erdpuls-verkhovyna/solidarity"
+SLUG = "synthetic-test-init"
+P = f"/{SLUG}/solidarity"
 
 threading.Thread(target=uvicorn.Server(
     uvicorn.Config(app, host="127.0.0.1", port=PORT, log_level="warning")).run,
@@ -61,6 +62,13 @@ for role in ("creator", "facilitator"):
                    ON CONFLICT (email) DO UPDATE SET role = EXCLUDED.role,
                        password_hash = EXCLUDED.password_hash""",
                 (f"{role}@test.invalid", pw, f"Test {role.title()}", role))
+cur.execute("""INSERT INTO erdpuls_threshold.initiatives
+               (id, slug, name, location, status, blurb_en, sort_order, is_published, has_page)
+               VALUES (gen_random_uuid(), %s, 'SYNTHETIC Test Initiative', 'Nowhere real',
+                       'active', 'Synthetic initiative for tests.', 990, true, true)
+               ON CONFLICT (slug) DO NOTHING""", (SLUG,))
+cur.execute("SELECT id FROM erdpuls_threshold.initiatives WHERE slug=%s", (SLUG,))
+INIT_ID = cur.fetchone()[0]
 conn.commit()
 
 def login_as(email):
@@ -78,7 +86,7 @@ def offering_form(title, solidarity=None):
          "registration_deadline": "2026-09-01",
          "contribution_deadline_date": "2026-09-10",
          "organizer_name": "Synthetic Organizer",
-         "organizer_email": "organizer@test.invalid"}
+         "organizer_email": "organizer@test.invalid", "initiative_id": INIT_ID}
     if solidarity:
         d["solidarity_financing"] = "1"
     return d

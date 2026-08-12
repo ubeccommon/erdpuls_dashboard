@@ -42,7 +42,7 @@
                 <span class="nav-icon">🌱</span>
                 {% if lang == 'de' %}Angebote{% elif lang == 'pl' %}Oferty{% else %}Offerings{% endif %}
             </a>
-            <a href="/erdpuls-verkhovyna/solidarity/" class="admin-nav-item">
+            <a href="/solidarity" class="admin-nav-item">
                 <span class="nav-icon">🤝</span>
                 {% if lang == 'de' %}Solidarität{% elif lang == 'pl' %}Solidarność{% elif lang == 'uk' %}Солідарність{% else %}Solidarity{% endif %}
             </a>
@@ -112,10 +112,12 @@
                 <div class="stat-content">
                     <div class="stat-value">{{ stats.solidarity.sessions }}</div>
                     <div class="stat-label">
-                        <a href="/erdpuls-verkhovyna/solidarity/">{% if lang == 'de' %}Solidaritäts-Sitzungen{% elif lang == 'pl' %}Sesje solidarnościowe{% elif lang == 'uk' %}Сесії солідарності{% else %}Solidarity sessions{% endif %}</a>
+                        <a href="/solidarity">{% if lang == 'de' %}Solidaritäts-Sitzungen{% elif lang == 'pl' %}Sesje solidarnościowe{% elif lang == 'uk' %}Сесії солідарності{% else %}Solidarity sessions{% endif %}</a>
                     </div>
                     <div class="stat-detail">
-                        {{ stats.solidarity.linked }}
+                        {{ stats.solidarity.initiatives }}
+                        {% if lang == 'de' %}Initiativen{% elif lang == 'pl' %}inicjatyw{% elif lang == 'uk' %}ініціатив{% else %}initiatives{% endif %}
+                        · {{ stats.solidarity.linked }}
                         {% if lang == 'de' %}mit Angebot verknüpft{% elif lang == 'pl' %}powiązanych z ofertą{% elif lang == 'uk' %}пов'язано з пропозицією{% else %}linked to an offering{% endif %}
                         · {{ stats.solidarity.open_rounds }}
                         {% if lang == 'de' %}offene Runden{% elif lang == 'pl' %}otwartych rund{% elif lang == 'uk' %}відкритих раундів{% else %}open rounds{% endif %}
