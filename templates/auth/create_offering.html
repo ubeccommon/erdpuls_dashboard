@@ -2,16 +2,6 @@
 
 {% block title %}
 {% if lang == 'de' %}Neues Angebot{% elif lang == 'pl' %}Nowa oferta{% else %}New Offering{% endif %}
-
-<script>
-function updateCurrencySymbols() {
-    var sel = document.getElementById('currency');
-    var symbols = {EUR: '\u20ac', PLN: 'z\u0142', UAH: '\u20b4'};
-    var sym = symbols[sel.value] || sel.value;
-    document.querySelectorAll('.cur-sym').forEach(function (el) { el.textContent = sym; });
-}
-document.addEventListener('DOMContentLoaded', updateCurrencySymbols);
-</script>
 {% endblock %}
 
 {% block content %}
@@ -156,8 +146,8 @@ document.addEventListener('DOMContentLoaded', updateCurrencySymbols);
                 <label for="currency">
                     {% if lang == 'de' %}Währung{% elif lang == 'pl' %}Waluta{% elif lang == 'uk' %}Валюта{% else %}Currency{% endif %} *
                 </label>
-                <select id="currency" name="currency" onchange="updateCurrencySymbols()">
-                    <option value="EUR" selected>EUR (<span class="cur-sym">€</span>)</option>
+                <select id="currency" name="currency">
+                    <option value="EUR" selected>EUR (€)</option>
                     <option value="PLN">PLN (zł)</option>
                     <option value="UAH">UAH (₴)</option>
                 </select>
@@ -177,34 +167,34 @@ document.addEventListener('DOMContentLoaded', updateCurrencySymbols);
                 
                 <div class="cost-inputs">
                     <div class="form-group">
-                        <label for="facilitator_cost">{% if lang == 'de' %}Honorar (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Wynagrodzenie (<span class="cur-sym">€</span>){% else %}Facilitator (<span class="cur-sym">€</span>){% endif %}</label>
+                        <label for="facilitator_cost">{% if lang == 'de' %}Honorar (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Wynagrodzenie (<span class="cur-sym">€</span>){% elif lang == 'uk' %}Фасилітатор (<span class="cur-sym">€</span>){% else %}Facilitator (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="facilitator_cost" name="facilitator_cost" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="materials_cost">{% if lang == 'de' %}Materialien (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Materiały (<span class="cur-sym">€</span>){% else %}Materials (<span class="cur-sym">€</span>){% endif %}</label>
+                        <label for="materials_cost">{% if lang == 'de' %}Materialien (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Materiały (<span class="cur-sym">€</span>){% elif lang == 'uk' %}Матеріали (<span class="cur-sym">€</span>){% else %}Materials (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="materials_cost" name="materials_cost" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="catering_cost">{% if lang == 'de' %}Verpflegung (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Wyżywienie (<span class="cur-sym">€</span>){% else %}Catering (<span class="cur-sym">€</span>){% endif %}</label>
+                        <label for="catering_cost">{% if lang == 'de' %}Verpflegung (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Wyżywienie (<span class="cur-sym">€</span>){% elif lang == 'uk' %}Харчування (<span class="cur-sym">€</span>){% else %}Catering (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="catering_cost" name="catering_cost" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="space_cost">{% if lang == 'de' %}Raum (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Przestrzeń (<span class="cur-sym">€</span>){% else %}Space (<span class="cur-sym">€</span>){% endif %}</label>
+                        <label for="space_cost">{% if lang == 'de' %}Raum (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Przestrzeń (<span class="cur-sym">€</span>){% elif lang == 'uk' %}Приміщення (<span class="cur-sym">€</span>){% else %}Space (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="space_cost" name="space_cost" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="sustainability_contribution">{% if lang == 'de' %}Nachhaltigkeitsbeitrag (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Wkład na rzecz zrównoważonego rozwoju (<span class="cur-sym">€</span>){% else %}Sustainability Contribution (<span class="cur-sym">€</span>){% endif %}</label>
+                        <label for="sustainability_contribution">{% if lang == 'de' %}Nachhaltigkeitsbeitrag (<span class="cur-sym">€</span>){% elif lang == 'pl' %}Wkład na rzecz zrównoważonego rozwoju (<span class="cur-sym">€</span>){% elif lang == 'uk' %}Внесок на сталість (<span class="cur-sym">€</span>){% else %}Sustainability Contribution (<span class="cur-sym">€</span>){% endif %}</label>
                         <input type="number" id="sustainability_contribution" name="sustainability_contribution" value="0" min="0" step="0.01" class="cost-input">
                     </div>
                 </div>
                 
                 <div class="threshold-display">
-                    <span class="threshold-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}:</span>
-                    <span class="threshold-value">€<span id="threshold-total">0.00</span></span>
+                    <span class="threshold-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% elif lang == 'uk' %}Поріг{% else %}Threshold{% endif %}:</span>
+                    <span class="threshold-value"><span class="cur-sym">€</span><span id="threshold-total">0.00</span></span>
                 </div>
             </div>
 
@@ -322,6 +312,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     updateThreshold();
+
+    // Currency symbol follows the selected currency. Every amount on this
+    // offering is in that currency; nothing is converted, so the symbol is
+    // a label, not a conversion.
+    const currencySelect = document.getElementById('currency');
+    const CURRENCY_SYMBOLS = {EUR: '\u20ac', PLN: 'z\u0142', UAH: '\u20b4'};
+
+    function updateCurrencySymbols() {
+        const sym = CURRENCY_SYMBOLS[currencySelect.value] || currencySelect.value;
+        document.querySelectorAll('.cur-sym').forEach(function (el) {
+            el.textContent = sym;
+        });
+    }
+
+    if (currencySelect) {
+        currencySelect.addEventListener('change', updateCurrencySymbols);
+        updateCurrencySymbols();
+    }
+
     
     // Character counter for textareas and inputs with maxlength
     document.querySelectorAll('textarea[maxlength], input[type="text"][maxlength]').forEach(field => {
