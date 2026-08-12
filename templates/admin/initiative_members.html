@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if lang == 'de' %}Initiativen{% elif lang == 'pl' %}Inicjatywy{% else %}Initiatives{% endif %} | Erdpuls Admin
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+        <h1>{{ initiative.name }} — {% if lang == 'de' %}Mitglieder{% elif lang == 'pl' %}Członkowie{% elif lang == 'uk' %}Учасники{% else %}Members{% endif %}</h1>
+        <p class="muted">{{ initiative.location or '' }}</p>
+
+        {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+        {% include "admin/_nav.html" %}
+
+        <div class="card">
+            <p class="muted">
+                {% if lang == 'uk' %}Роль у мережі визначає, що людина може робити; членство визначає — де. Обидві мають дозволяти дію. Адміністратори та модератори платформи мають нагляд усюди й не потребують членства.{% else %}The global role decides what a person may do; membership decides where. Both must allow an action — membership never grants a power the global role withholds. Platform admins and moderators have oversight everywhere and need no membership row.{% endif %}
+            </p>
+            <table class="admin-table">
+                <tr>
+                    <th>{% if lang == 'uk' %}Особа{% else %}Person{% endif %}</th>
+                    <th>{% if lang == 'uk' %}Роль у мережі{% else %}Global role{% endif %}</th>
+                    <th>{% if lang == 'uk' %}Роль тут{% else %}Role here{% endif %}</th>
+                    <th>{% if lang == 'uk' %}Додано{% else %}Added{% endif %}</th>
+                    <th></th>
+                </tr>
+                {% for m in members %}
+                <tr>
+                    <td>{{ m.name or m.email }}<br><small class="muted">{{ m.email }}</small></td>
+                    <td>{{ m.global_role }}
+                        {% if m.membership_role in ['facilitator', 'steward'] and m.global_role in ['member', 'creator'] %}
+                        <br><small class="muted">{% if lang == 'uk' %}не може вести фінансування: потрібна роль facilitator у мережі{% else %}cannot run financing: needs the global facilitator role{% endif %}</small>
+                        {% endif %}
+                    </td>
+                    <td>{{ m.membership_role }}</td>
+                    <td>{{ m.added_at.strftime('%Y-%m-%d') if m.added_at else '' }}</td>
+                    <td>
+                        <form method="post" action="/admin/initiatives/{{ initiative.id }}/members/{{ m.id }}/remove"
+                              onsubmit="return confirm('Remove {{ m.name or m.email }} from {{ initiative.name }}?')">
+                            <button class="btn btn-small">{% if lang == 'uk' %}Вилучити{% else %}Remove{% endif %}</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not members %}
+                <tr><td colspan="5" class="muted">
+                    {% if lang == 'uk' %}Ще немає учасників.{% else %}No members yet.{% endif %}
+                </td></tr>
+                {% endif %}
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>{% if lang == 'uk' %}Додати або змінити{% else %}Add or change{% endif %}</h2>
+            <form method="post" action="/admin/initiatives/{{ initiative.id }}/members">
+                <div class="form-group">
+                    <label for="user_id">{% if lang == 'uk' %}Особа{% else %}Person{% endif %}</label>
+                    <select id="user_id" name="user_id" required>
+                        {% for c in candidates %}
+                        <option value="{{ c.id }}">{{ c.name or c.email }} ({{ c.role }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="role">{% if lang == 'uk' %}Роль тут{% else %}Role here{% endif %}</label>
+                    <select id="role" name="role">
+                        {% for r in membership_roles %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+                    </select>
+                    <small>
+                        {% if lang == 'uk' %}member — належить; facilitator — веде фінансування тут; steward — також керує складом учасників.{% else %}member — belongs here; facilitator — runs financing here; steward — also manages this membership list.{% endif %}
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="note">{% if lang == 'uk' %}Примітка{% else %}Note{% endif %}</label>
+                    <input type="text" id="note" name="note">
+                </div>
+                <button type="submit" class="btn btn-primary">{% if lang == 'uk' %}Зберегти{% else %}Save{% endif %}</button>
+            </form>
+        </div>
+
+        <p><a href="/admin/initiatives">&larr; {% if lang == 'uk' %}Усі ініціативи{% else %}All initiatives{% endif %}</a></p>
+    </div>
+</section>
+{% endblock %}

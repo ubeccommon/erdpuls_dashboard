@@ -1,5 +1,5 @@
 """
-Solidarity Financing — native Erdpuls router, v1.0
+Solidarity Financing — native Erdpuls router, v1.1
 ==================================================
 Project: Solidarity Financing 2026 (working title) — Michel Garand
 Mounted per initiative at /{initiative-slug}/solidarity inside the
@@ -21,6 +21,12 @@ Invariants (unchanged from the paper layer):
   - Records and computes; moves no money.
 
 Changelog:
+  v1.1 (August 2026) — access is now place-bound. Opening an initiative's
+      financing needs the global facilitator role AND membership of that
+      initiative at facilitator level or above. A facilitator elsewhere
+      gets 403, not a readable page. Platform admins and moderators keep
+      global oversight without holding a membership everywhere.
+      Requires migration 018.
   v1.0 (August 2026) — solidarity becomes per-initiative. The mount path
       is no longer hardcoded to one place: routes live under
       /{initiative_slug}/solidarity, sessions belong to an initiative,
@@ -91,6 +97,7 @@ from ..database import get_db
 from ..auth import get_current_user
 from ..models import User
 from ..roles import has_role_or_higher
+from ..membership import member_at_least, has_global_oversight
 
 VALID_STATUSES = ("estimate", "budget", "pledge", "settled")
 
@@ -113,26 +120,52 @@ templates = Jinja2Templates(directory="templates")
 
 # ── access: facilitator or higher, via Erdpuls RBAC ──────────
 
-def resolve_initiative(initiative_slug: str, db: Session = Depends(get_db)):
-    """Resolve the initiative this module instance belongs to.
-
-    An unknown slug is a 404, not an empty module: a financing page for a
-    place that does not exist would invite entering figures nobody could
-    ever account for.
-    """
-    init = one(db, """SELECT id, slug, name, location FROM erdpuls_threshold.initiatives
-                      WHERE slug = :s""", s=initiative_slug)
-    if not init:
-        raise HTTPException(status_code=404, detail="No such initiative.")
-    return init
-
-
 def require_facilitator(request: Request, db: Session = Depends(get_db)) -> User:
+    """Global gate: may this person run financing anywhere at all?
+
+    Place-bound access is decided separately by require_member below,
+    because the two questions are different: what a person may do, and
+    where they may do it.
+    """
     user = get_current_user(request, db)
     if not has_role_or_higher(user.role, "facilitator"):
         raise HTTPException(status_code=403,
                             detail="Solidarity financing requires the facilitator role.")
     return user
+
+
+def require_member(initiative_slug: str, request: Request,
+                   db: Session = Depends(get_db)):
+    """Place-bound gate: may this person run financing HERE?
+
+    Needs the global facilitator role and membership of this initiative
+    at facilitator level or above. Platform admins and moderators pass
+    without a membership row, since their oversight is not place-bound.
+    Returns the initiative, so handlers depend on this alone.
+    """
+    user = require_facilitator(request, db)
+    init = one(db, """SELECT id, slug, name, location FROM erdpuls_threshold.initiatives
+                      WHERE slug = :s""", s=initiative_slug)
+    if not init:
+        raise HTTPException(status_code=404, detail="No such initiative.")
+    if not member_at_least(db, user, init["id"], "facilitator"):
+        raise HTTPException(
+            status_code=403,
+            detail=("You are not a facilitator of this initiative. Financing is "
+                    "run by the people of the place it belongs to."))
+    return init
+
+
+def resolve_initiative(init=Depends(require_member)):
+    """Resolve the initiative, having checked the caller belongs to it.
+
+    An unknown slug is a 404, not an empty module: a financing page for a
+    place that does not exist would invite entering figures nobody could
+    ever account for. A known slug the caller does not belong to is a
+    403, for the same reason in reverse.
+    """
+    return init
+
 
 
 # ── helpers ──────────────────────────────────────────────────
@@ -695,12 +728,23 @@ def choose_initiative(request: Request,
     Counts are per initiative and are sums only, like every other screen
     here: how many sessions exist, not what anyone pledged.
     """
-    inits = rows(db, """SELECT i.id, i.slug, i.name, i.location,
-                               COUNT(cs.id) AS sessions
-                        FROM erdpuls_threshold.initiatives i
-                        LEFT JOIN solidarity.camp_session cs ON cs.initiative_id = i.id
-                        GROUP BY i.id, i.slug, i.name, i.location, i.sort_order
-                        ORDER BY i.sort_order""")
+    if has_global_oversight(user):
+        inits = rows(db, """SELECT i.id, i.slug, i.name, i.location,
+                                   COUNT(cs.id) AS sessions
+                            FROM erdpuls_threshold.initiatives i
+                            LEFT JOIN solidarity.camp_session cs ON cs.initiative_id = i.id
+                            GROUP BY i.id, i.slug, i.name, i.location, i.sort_order
+                            ORDER BY i.sort_order""")
+    else:
+        inits = rows(db, """SELECT i.id, i.slug, i.name, i.location,
+                                   COUNT(cs.id) AS sessions
+                            FROM erdpuls_threshold.initiatives i
+                            JOIN erdpuls_threshold.initiative_members m
+                              ON m.initiative_id = i.id AND m.user_id = :u
+                             AND m.role IN ('facilitator', 'steward')
+                            LEFT JOIN solidarity.camp_session cs ON cs.initiative_id = i.id
+                            GROUP BY i.id, i.slug, i.name, i.location, i.sort_order
+                            ORDER BY i.sort_order""", u=str(user.id))
     return templates.TemplateResponse("solidarity/choose.html", {
         "request": request, "user": user, "initiatives": inits,
         "statuses": VALID_STATUSES})

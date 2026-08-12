@@ -65,6 +65,30 @@ cur.execute("""INSERT INTO erdpuls_threshold.initiatives
                ON CONFLICT (slug) DO NOTHING""", (SLUG,))
 cur.execute("SELECT id FROM erdpuls_threshold.initiatives WHERE slug=%s", (SLUG,))
 INIT_ID = cur.fetchone()[0]
+# Access is place-bound since v1.1: a global facilitator also needs
+# membership of the initiative they are opening.
+cur.execute("""INSERT INTO erdpuls_threshold.initiatives
+           (id, slug, name, location, status, blurb_en, sort_order, is_published, has_page)
+           VALUES (gen_random_uuid(), 'synthetic-entry', 'SYNTHETIC Entry', 'Nowhere real',
+                   'active', 'Synthetic initiative for tests.', 970, true, true)
+           ON CONFLICT (slug) DO NOTHING""")
+cur.execute("""INSERT INTO erdpuls_threshold.initiatives
+           (id, slug, name, location, status, blurb_en, sort_order, is_published, has_page)
+           VALUES (gen_random_uuid(), 'synthetic-elsewhere', 'SYNTHETIC Elsewhere',
+                   'Nowhere real', 'active', 'Synthetic initiative for tests.',
+                   971, true, true)
+           ON CONFLICT (slug) DO NOTHING""")
+cur.execute("""INSERT INTO erdpuls_threshold.initiative_members (initiative_id, user_id, role)
+               SELECT i.id, u.id, 'facilitator'
+               FROM erdpuls_threshold.initiatives i, erdpuls_threshold.users u
+               WHERE i.slug = 'synthetic-entry' AND u.email = 'facilitator@test.invalid'
+               ON CONFLICT (initiative_id, user_id) DO UPDATE SET role='facilitator'""")
+# and make sure they belong to 'elsewhere' in no way at all
+cur.execute("""DELETE FROM erdpuls_threshold.initiative_members m
+               USING erdpuls_threshold.initiatives i, erdpuls_threshold.users u
+               WHERE m.initiative_id = i.id AND m.user_id = u.id
+                 AND i.slug = 'synthetic-elsewhere'
+                 AND u.email = 'facilitator@test.invalid'""")
 conn.commit()
 
 def login_as(email):
@@ -99,8 +123,11 @@ st, body = call(op_creator, P + "/")
 check("creator typing the URL is still refused (403)", st == 403)
 
 op_fac = login_as("facilitator@test.invalid")
-st, body = call(op_fac, P + "/")
-check("facilitator reaches the module (200)", st == 200 and "Sessions" in body)
+st, body = call(op_fac, "/synthetic-entry/solidarity/")
+check("facilitator reaches an initiative they belong to (200)",
+      st == 200 and "Sessions" in body)
+st, body = call(op_fac, "/synthetic-elsewhere/solidarity/")
+check("facilitator refused at an initiative they do not belong to (403)", st == 403)
 
 # ── the public page still shows nothing ──────────────────────
 anon = client()

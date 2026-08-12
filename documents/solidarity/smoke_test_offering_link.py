@@ -69,6 +69,12 @@ cur.execute("""INSERT INTO erdpuls_threshold.initiatives
                ON CONFLICT (slug) DO NOTHING""", (SLUG,))
 cur.execute("SELECT id FROM erdpuls_threshold.initiatives WHERE slug=%s", (SLUG,))
 INIT_ID = cur.fetchone()[0]
+# Solidarity financing is place-bound since v1.1; grant membership.
+cur.execute("""INSERT INTO erdpuls_threshold.initiative_members (initiative_id, user_id, role)
+               SELECT %s, id, 'facilitator' FROM erdpuls_threshold.users
+               WHERE email IN ('steward@test.invalid', 'facilitator@test.invalid')
+               ON CONFLICT (initiative_id, user_id) DO UPDATE SET role='facilitator'""",
+            (INIT_ID,))
 conn.commit()
 
 def login_as(email):

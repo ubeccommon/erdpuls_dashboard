@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, text
 
 from ..database import get_db
 from ..models import (
@@ -913,3 +913,72 @@ def admin_initiative_delete(
         url="/admin/initiatives?success=deleted",
         status_code=303
     )
+
+
+# ============================================
+# INITIATIVE MEMBERSHIP
+# ============================================
+
+@router.get("/initiatives/{initiative_id}/members", response_class=HTMLResponse)
+def admin_initiative_members(initiative_id: str, request: Request,
+                             db: Session = Depends(get_db)):
+    """Who belongs to this initiative, and in what role."""
+    user, redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+    from ..membership import members_of, MEMBERSHIP_ROLES
+    init = db.execute(text("""SELECT id, slug, name, location
+                              FROM erdpuls_threshold.initiatives WHERE id = :i"""),
+                      {"i": initiative_id}).mappings().first()
+    if not init:
+        raise HTTPException(404)
+    candidates = db.query(User).order_by(User.name, User.email).all()
+    return templates.TemplateResponse("admin/initiative_members.html", {
+        "request": request, "lang": get_lang(request), "user": user,
+        "initiative": init, "members": members_of(db, initiative_id),
+        "candidates": candidates, "membership_roles": MEMBERSHIP_ROLES,
+        "error": request.query_params.get("error", ""),
+    })
+
+
+@router.post("/initiatives/{initiative_id}/members")
+def admin_add_member(initiative_id: str, request: Request,
+                     user_id: str = Form(...), role: str = Form("member"),
+                     note: str = Form(""), db: Session = Depends(get_db)):
+    """Add or change someone's membership of this initiative."""
+    actor, redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+    from ..membership import MEMBERSHIP_ROLES
+    if role not in MEMBERSHIP_ROLES:
+        raise HTTPException(400)
+    db.execute(text("""
+        INSERT INTO erdpuls_threshold.initiative_members
+            (initiative_id, user_id, role, added_by, note)
+        VALUES (:i, :u, :r, :a, :n)
+        ON CONFLICT (initiative_id, user_id)
+        DO UPDATE SET role = EXCLUDED.role, note = EXCLUDED.note
+    """), {"i": initiative_id, "u": user_id, "r": role,
+           "a": str(actor.id), "n": note})
+    db.commit()
+    return RedirectResponse(url=f"/admin/initiatives/{initiative_id}/members",
+                            status_code=303)
+
+
+@router.post("/initiatives/{initiative_id}/members/{member_id}/remove")
+def admin_remove_member(initiative_id: str, member_id: str, request: Request,
+                        db: Session = Depends(get_db)):
+    """Remove someone from this initiative.
+
+    Removing membership does not touch their global role, and does not
+    touch any financing record they took part in: what happened, happened.
+    """
+    actor, redirect = require_admin(request, db)
+    if redirect:
+        return redirect
+    db.execute(text("""DELETE FROM erdpuls_threshold.initiative_members
+                       WHERE id = :m AND initiative_id = :i"""),
+               {"m": member_id, "i": initiative_id})
+    db.commit()
+    return RedirectResponse(url=f"/admin/initiatives/{initiative_id}/members",
+                            status_code=303)

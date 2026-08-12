@@ -450,8 +450,11 @@ def create_offering_page(
     if not can_create_offering(user.role):
         return RedirectResponse(url="/dashboard?error=no_create_permission", status_code=303)
     
-    from ..models import Initiative
-    initiatives = db.query(Initiative).order_by(Initiative.sort_order).all()
+    # Only the places this person belongs to. Offering every initiative to
+    # everyone would invite attaching work to a place one has nothing to
+    # do with, and the check below would then reject it after the fact.
+    from ..membership import initiatives_for
+    initiatives = initiatives_for(db, user, "member")
 
     return templates.TemplateResponse(
         "auth/create_offering.html",
@@ -514,6 +517,15 @@ def create_offering(
     # converted; an unknown code would make every figure on it meaningless.
     if currency not in {'EUR', 'PLN', 'UAH'}:
         return RedirectResponse(url="/dashboard/create?error=currency_invalid", status_code=303)
+
+    # An offering may only be attached to a place its author belongs to.
+    # Checked here and not only in the form, because a hand-crafted post
+    # would otherwise attach work to any initiative.
+    if initiative_id:
+        from ..membership import member_at_least
+        if not member_at_least(db, user, initiative_id, "member"):
+            return RedirectResponse(url="/dashboard/create?error=not_a_member",
+                                    status_code=303)
     delivery_language = [lang for lang in delivery_language if lang in valid_languages]
     if not delivery_language:
         delivery_language = ['de']  # Default fallback
@@ -658,7 +670,10 @@ def create_offering(
     # the UAH budget; the EUR threshold travels only as a reference note.
     if solidarity_financing:
         from ..roles import has_role_or_higher
-        if has_role_or_higher(user.role, "facilitator"):
+        from ..membership import member_at_least as _member_at_least
+        if (has_role_or_higher(user.role, "facilitator")
+                and offering.initiative_id
+                and _member_at_least(db, user, offering.initiative_id, "facilitator")):
             from sqlalchemy import text as _sql
             db.refresh(offering)
             label = offering.title[:120]
@@ -887,6 +902,15 @@ def edit_offering(
     # converted; an unknown code would make every figure on it meaningless.
     if currency not in {'EUR', 'PLN', 'UAH'}:
         return RedirectResponse(url="/dashboard/create?error=currency_invalid", status_code=303)
+
+    # An offering may only be attached to a place its author belongs to.
+    # Checked here and not only in the form, because a hand-crafted post
+    # would otherwise attach work to any initiative.
+    if initiative_id:
+        from ..membership import member_at_least
+        if not member_at_least(db, user, initiative_id, "member"):
+            return RedirectResponse(url="/dashboard/create?error=not_a_member",
+                                    status_code=303)
     delivery_language = [lang for lang in delivery_language if lang in valid_languages]
     if not delivery_language:
         delivery_language = ['de']  # Default fallback
