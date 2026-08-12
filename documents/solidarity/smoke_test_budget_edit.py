@@ -93,7 +93,10 @@ check("edit with blank status refused", "refusing to guess" in body)
 call(f"{P}/session/{sid}/new-round", {})
 st, body = call(f"{P}/session/{sid}")
 check("frozen notice shown", "Budget frozen" in body)
-check("edit controls gone when frozen", "Save" not in body)
+# "Save details" (session description) is intentionally still present when
+# frozen; what must be gone is the per-line budget edit/delete controls.
+check("budget edit controls gone when frozen",
+      "/budget/" not in body and "Delete</button>" not in body)
 check("add form gone when frozen", "Add line" not in body)
 
 # endpoints must refuse independently of the UI

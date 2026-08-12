@@ -1,5 +1,5 @@
 """
-Solidarity Financing — native Erdpuls router, v0.4
+Solidarity Financing — native Erdpuls router, v0.5
 ==================================================
 Project: Solidarity Financing 2026 (working title) — Michel Garand
 Mounted at /erdpuls-verkhovyna/solidarity inside the Erdpuls dashboard.
@@ -20,6 +20,16 @@ Invariants (unchanged from the paper layer):
   - Records and computes; moves no money.
 
 Changelog:
+  v0.5 (August 2026) — session description: what the session offers, in
+      plain words, shown above the open budget so a family reads the
+      thing and its cost together. Editable at any time (it is not a
+      figure). Requires migration 013.
+      Round deletion: a round with NO pledges can be deleted, which
+      unfreezes the budget — nobody has committed against those figures
+      yet, so nothing is broken by removing it. The moment one pledge
+      exists the round is permanent and the freeze absolute. The frozen
+      notice now states which of the two cases holds rather than
+      claiming pledges that may not exist.
   v0.4 (August 2026) — budget lines editable and deletable, but ONLY
       while the session has no bidding round. Once the first round is
       opened the budget is frozen: the figure families pledged against
@@ -116,9 +126,31 @@ def budget_locked(db: Session, sid: int) -> bool:
                       WHERE session_id = :i LIMIT 1""", i=sid) is not None
 
 
-LOCK_MESSAGE = ("The budget is frozen: a bidding round has been opened for this "
-                "session, and families pledged against these figures. Record any "
-                "correction in the settlement account instead.")
+def session_pledge_count(db: Session, sid: int) -> int:
+    """How many pledges exist across all rounds of this session.
+
+    Zero means the freeze is precautionary — a round is open but nobody
+    has committed anything, so the round may still be deleted. Above
+    zero the freeze is permanent: families have pledged against these
+    figures and the figures must not move behind them.
+    """
+    r = one(db, """SELECT COUNT(p.id) AS n FROM solidarity.pledge p
+                   JOIN solidarity.bidding_round br ON br.id = p.round_id
+                   WHERE br.session_id = :i""", i=sid)
+    return int(r["n"]) if r else 0
+
+
+LOCK_MESSAGE = ("The budget is frozen: a bidding round is open for this session. "
+                "Delete the round to edit the budget, or record the correction in "
+                "the settlement account.")
+
+LOCK_MESSAGE_PLEDGED = ("The budget is frozen: families have pledged against these "
+                        "figures. They cannot be edited. Record any correction in "
+                        "the settlement account instead.")
+
+
+def lock_message(db: Session, sid: int) -> str:
+    return LOCK_MESSAGE_PLEDGED if session_pledge_count(db, sid) else LOCK_MESSAGE
 
 
 # ── sessions + budget ────────────────────────────────────────
@@ -136,16 +168,18 @@ def index(request: Request, user: User = Depends(require_facilitator),
 
 @router.post("/")
 def create_session(request: Request, label: str = Form(...), days: str = Form(""),
-                   adopted_on: str = Form(""), note: str = Form(""),
+                   adopted_on: str = Form(""), description: str = Form(""),
+                   note: str = Form(""),
                    user: User = Depends(require_facilitator),
                    db: Session = Depends(get_db)):
     exists = one(db, "SELECT 1 FROM solidarity.camp_session WHERE label = :l", l=label.strip())
     if exists:
         return back(request, "/", "A session with that label already exists.")
-    db.execute(text("""INSERT INTO solidarity.camp_session (label, days, adopted_on, note)
-                       VALUES (:l, :d, :a, :n)"""),
+    db.execute(text("""INSERT INTO solidarity.camp_session
+                       (label, days, adopted_on, description, note)
+                       VALUES (:l, :d, :a, :desc, :n)"""),
                {"l": label.strip(), "d": int(days) if days.strip() else None,
-                "a": adopted_on or None, "n": note})
+                "a": adopted_on or None, "desc": description.strip(), "n": note})
     db.commit()
     return back(request, "/")
 
@@ -165,6 +199,7 @@ def session_view(sid: int, request: Request,
                            ORDER BY round_no""", i=sid),
         stl=one(db, "SELECT * FROM solidarity.settlement WHERE session_id = :i", i=sid),
         locked=budget_locked(db, sid),
+        pledges_exist=session_pledge_count(db, sid) > 0,
         error=request.query_params.get("error", ""))
 
 
@@ -175,7 +210,7 @@ def add_budget_line(sid: int, request: Request, line_item: str = Form(...),
                     user: User = Depends(require_facilitator),
                     db: Session = Depends(get_db)):
     if budget_locked(db, sid):
-        return back(request, f"/session/{sid}", LOCK_MESSAGE)
+        return back(request, f"/session/{sid}", lock_message(db, sid))
     try:
         db.execute(text("""INSERT INTO solidarity.budget_line
                            (session_id, line_item, amount_uah, status, is_transfer_in, note)
@@ -197,7 +232,7 @@ def edit_budget_line(sid: int, lid: int, request: Request,
                      db: Session = Depends(get_db)):
     """Edit one budget line. Refused once a round exists for the session."""
     if budget_locked(db, sid):
-        return back(request, f"/session/{sid}", LOCK_MESSAGE)
+        return back(request, f"/session/{sid}", lock_message(db, sid))
     line = one(db, """SELECT id FROM solidarity.budget_line
                       WHERE id = :l AND session_id = :s""", l=lid, s=sid)
     if not line:
@@ -223,9 +258,69 @@ def delete_budget_line(sid: int, lid: int, request: Request,
                        db: Session = Depends(get_db)):
     """Delete one budget line. Refused once a round exists for the session."""
     if budget_locked(db, sid):
-        return back(request, f"/session/{sid}", LOCK_MESSAGE)
+        return back(request, f"/session/{sid}", lock_message(db, sid))
     db.execute(text("""DELETE FROM solidarity.budget_line
                        WHERE id = :l AND session_id = :s"""), {"l": lid, "s": sid})
+    db.commit()
+    return back(request, f"/session/{sid}")
+
+
+@router.post("/session/{sid}/details")
+def edit_session_details(sid: int, request: Request, label: str = Form(...),
+                         days: str = Form(""), adopted_on: str = Form(""),
+                         description: str = Form(""),
+                         user: User = Depends(require_facilitator),
+                         db: Session = Depends(get_db)):
+    """Edit the session label, length, adoption date and description.
+
+    Not subject to the budget freeze: the description is not a figure.
+    What the session offers may need clarifying at any point, and doing
+    so changes nothing anyone pledged against.
+    """
+    s = one(db, "SELECT id FROM solidarity.camp_session WHERE id = :i", i=sid)
+    if not s:
+        raise HTTPException(404)
+    clash = one(db, """SELECT 1 FROM solidarity.camp_session
+                       WHERE label = :l AND id <> :i""", l=label.strip(), i=sid)
+    if clash:
+        return back(request, f"/session/{sid}", "another session already has that label")
+    try:
+        db.execute(text("""UPDATE solidarity.camp_session
+                           SET label = :l, days = :d, adopted_on = :a, description = :desc
+                           WHERE id = :i"""),
+                   {"l": label.strip(), "d": int(days) if days.strip() else None,
+                    "a": adopted_on or None, "desc": description.strip(), "i": sid})
+        db.commit()
+    except ValueError:
+        db.rollback()
+        return back(request, f"/session/{sid}", "days must be a whole number")
+    return back(request, f"/session/{sid}")
+
+
+@router.post("/round/{rid}/delete")
+def delete_round(rid: int, request: Request,
+                 user: User = Depends(require_facilitator),
+                 db: Session = Depends(get_db)):
+    """Delete a round that holds no pledges, unfreezing the budget.
+
+    Permitted only while the round is empty. An empty round has asked
+    nothing of anyone: no family has committed against the figures, so
+    removing it breaks no promise and the budget may be corrected. Once
+    a single pledge exists the round is permanent — deleting it would
+    erase what a family committed and quietly move the figure they
+    committed against.
+    """
+    r = one(db, "SELECT * FROM solidarity.bidding_round WHERE id = :i", i=rid)
+    if not r:
+        raise HTTPException(404)
+    sid = r["session_id"]
+    n = one(db, "SELECT COUNT(*) AS n FROM solidarity.pledge WHERE round_id = :i", i=rid)
+    if int(n["n"]) > 0:
+        return back(request, f"/session/{sid}",
+                    "This round holds pledges and cannot be deleted. Families have "
+                    "committed against these figures; record any correction in the "
+                    "settlement account.")
+    db.execute(text("DELETE FROM solidarity.bidding_round WHERE id = :i"), {"i": rid})
     db.commit()
     return back(request, f"/session/{sid}")
 

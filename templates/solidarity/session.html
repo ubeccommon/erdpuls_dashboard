@@ -17,10 +17,30 @@
 <p class=muted><a href="{{ prefix }}/">Sessions</a> · <a href="{{ prefix }}/supporters">Supporter circle</a></p>
 {% if error %}<div class=err>{{ error }}</div>{% endif %}
 
+<h2>What this session offers</h2>
+{% if s.description %}<p>{{ s.description }}</p>
+{% else %}<p class=muted>No description yet. What is on offer here — the days, the rhythm,
+the meals, what a family should expect — belongs beside the budget: a family deciding what it
+can carry is deciding about this.</p>{% endif %}
+<details><summary class=muted>Edit session details</summary>
+<form method=post action="{{ prefix }}/session/{{ s.id }}/details" class=inline>
+ <label>Label <input name=label value="{{ s.label }}" required></label>
+ <label>Days <input name=days type=number min=1 value="{{ s.days or '' }}"></label>
+ <label>Budget adopted on <input name=adopted_on type=date value="{{ s.adopted_on or '' }}"></label>
+ <label style="flex:1 1 100%">What this session offers
+  <textarea name=description rows=4 style="width:100%">{{ s.description }}</textarea></label>
+ <button>Save details</button>
+</form>
+<p class=muted>The description is not a figure, so it stays editable even when the budget is
+frozen. No child data belongs here: what is offered, not who attends.</p>
+</details>
+
 <h2>Open budget</h2>
-{% if locked %}<p class=muted><strong>Budget frozen.</strong> A bidding round has been
-opened for this session, and families pledged against these figures. They can no longer be
-edited; record any correction in the settlement account, where it stays visible.</p>{% endif %}
+{% if locked %}<p class=muted><strong>Budget frozen.</strong>
+{% if pledges_exist %}Families have pledged against these figures, so they can no longer be
+edited. Record any correction in the settlement account, where it stays visible.
+{% else %}A round is open, so the budget is held still while it runs. No pledges have been
+entered yet — delete the round below to edit the budget again.{% endif %}</p>{% endif %}
 <table><tr><th>Line item</th><th>Amount</th><th>Status</th><th>Kind</th><th>Note</th>
 {% if not locked %}<th>Edit</th>{% endif %}</tr>
 {% for l in lines %}<tr>
@@ -56,11 +76,17 @@ edited; record any correction in the settlement account, where it stays visible.
  <button>Add line</button>
 </form>{% endif %}
 <h2>Bidding rounds</h2>
-<table><tr><th>Round</th><th>State</th><th>Pledges</th><th>Total pledged</th><th>Gap</th></tr>
+<table><tr><th>Round</th><th>State</th><th>Pledges</th><th>Total pledged</th><th>Gap</th><th></th></tr>
 {% for r in rounds %}<tr>
  <td><a href="{{ prefix }}/round/{{ r.round_id }}">Round {{ r.round_no }}</a></td>
  <td>{{ r.state }}</td><td>{{ r.pledge_count }}</td><td>{{ r.total_pledged_uah }} UAH</td>
  <td>{% if r.gap_uah <= 0 %}closed, surplus {{ -r.gap_uah }} UAH{% else %}{{ r.gap_uah }} UAH open{% endif %}</td>
+ <td>{% if r.pledge_count == 0 %}
+  <form method=post action="{{ prefix }}/round/{{ r.round_id }}/delete" class=inline
+        onsubmit="return confirm('Delete round {{ r.round_no }}? It holds no pledges, and deleting it unfreezes the budget.')">
+   <button style="background:#7a3030;color:#fff">Delete round</button>
+  </form>
+ {% else %}<span class=muted>holds pledges</span>{% endif %}</td>
 </tr>{% endfor %}</table>
 <form method=post action="{{ prefix }}/session/{{ s.id }}/new-round" class=inline
       {% if not locked %}onsubmit="return confirm('Opening the first round freezes the open budget: it cannot be edited afterwards. Continue?')"{% endif %}>
