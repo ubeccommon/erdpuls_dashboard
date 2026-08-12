@@ -101,6 +101,28 @@
                 </div>
             </div>
             
+            {% if stats.solidarity %}
+            <div class="stat-card">
+                <div class="stat-icon">🤝</div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ stats.solidarity.sessions }}</div>
+                    <div class="stat-label">
+                        <a href="/erdpuls-verkhovyna/solidarity/">{% if lang == 'de' %}Solidaritäts-Sitzungen{% elif lang == 'pl' %}Sesje solidarnościowe{% elif lang == 'uk' %}Сесії солідарності{% else %}Solidarity sessions{% endif %}</a>
+                    </div>
+                    <div class="stat-detail">
+                        {{ stats.solidarity.linked }}
+                        {% if lang == 'de' %}mit Angebot verknüpft{% elif lang == 'pl' %}powiązanych z ofertą{% elif lang == 'uk' %}пов'язано з пропозицією{% else %}linked to an offering{% endif %}
+                        · {{ stats.solidarity.open_rounds }}
+                        {% if lang == 'de' %}offene Runden{% elif lang == 'pl' %}otwartych rund{% elif lang == 'uk' %}відкритих раундів{% else %}open rounds{% endif %}
+                    </div>
+                    <div class="stat-detail">
+                        {{ stats.solidarity.pledged_uah }} UAH
+                        {% if lang == 'de' %}zugesagt (nicht in EUR umgerechnet){% elif lang == 'pl' %}zadeklarowano (nie przeliczono na EUR){% elif lang == 'uk' %}заявлено (не конвертовано в EUR){% else %}pledged (not converted to EUR){% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="stat-card {% if stats.draft_offerings > 0 %}alert{% endif %}">
                 <div class="stat-icon">⏳</div>
                 <div class="stat-content">

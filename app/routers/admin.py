@@ -86,6 +86,26 @@ def admin_dashboard(request: Request, db: Session = Depends(get_db)):
         'total_contributed': db.query(func.sum(Contribution.amount_eur)).scalar() or Decimal('0'),
         'fund_balance': RegenerationFund.get_balance(db),
     }
+
+    # Solidarity financing (internal module). Counts and sums only — no
+    # token, household or per-pledge figure reaches this overview, exactly
+    # as on the module's own screens. UAH is reported as UAH and never
+    # added to the EUR totals above: the two are separate currencies and
+    # nothing here converts between them.
+    from sqlalchemy import text as _sql
+    try:
+        _s = db.execute(_sql("""
+            SELECT
+              (SELECT COUNT(*) FROM solidarity.camp_session)                       AS sessions,
+              (SELECT COUNT(*) FROM solidarity.camp_session WHERE offering_id IS NOT NULL) AS linked,
+              (SELECT COUNT(*) FROM solidarity.bidding_round WHERE state = 'open') AS open_rounds,
+              (SELECT COALESCE(SUM(amount_uah), 0) FROM solidarity.pledge)         AS pledged_uah
+        """)).mappings().first()
+        stats['solidarity'] = dict(_s) if _s else None
+    except Exception:
+        # Module not migrated on this instance — show nothing rather than fail.
+        db.rollback()
+        stats['solidarity'] = None
     
     # Recent activity
     recent_registrations = db.query(Registration).order_by(
