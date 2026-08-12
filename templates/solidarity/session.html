@@ -18,21 +18,43 @@
 {% if error %}<div class=err>{{ error }}</div>{% endif %}
 
 <h2>Open budget</h2>
-<table><tr><th>Line item</th><th>Amount</th><th>Status</th><th>Kind</th><th>Note</th></tr>
-{% for l in lines %}<tr><td>{{ l.line_item }}</td><td>{{ l.amount_uah }} UAH</td>
- <td>{{ l.status }}</td><td>{{ 'transfer-in cover' if l.is_transfer_in else 'cost' }}</td><td>{{ l.note }}</td></tr>{% endfor %}
-<tr class=total><td>Cost total</td><td>{{ vb.cost_uah }} UAH</td><td colspan=3></td></tr>
-<tr class=total><td>Transfer-in cover</td><td>{{ vb.cover_uah }} UAH</td><td colspan=3></td></tr>
-<tr class=total><td>Remainder for the round</td><td>{{ vb.remainder_uah }} UAH</td><td colspan=3></td></tr>
+{% if locked %}<p class=muted><strong>Budget frozen.</strong> A bidding round has been
+opened for this session, and families pledged against these figures. They can no longer be
+edited; record any correction in the settlement account, where it stays visible.</p>{% endif %}
+<table><tr><th>Line item</th><th>Amount</th><th>Status</th><th>Kind</th><th>Note</th>
+{% if not locked %}<th>Edit</th>{% endif %}</tr>
+{% for l in lines %}<tr>
+{% if locked %}
+ <td>{{ l.line_item }}</td><td>{{ l.amount_uah }} UAH</td>
+ <td>{{ l.status }}</td><td>{{ 'transfer-in cover' if l.is_transfer_in else 'cost' }}</td><td>{{ l.note }}</td>
+{% else %}
+ <td colspan=6><form method=post action="{{ prefix }}/session/{{ s.id }}/budget/{{ l.id }}/edit" class=inline>
+  <label>Line item <input name=line_item value="{{ l.line_item }}" required></label>
+  <label>Amount (UAH) <input name=amount_uah value="{{ l.amount_uah }}" required></label>
+  <label>Status <select name=status>{% for st in statuses %}
+   <option {% if st == l.status %}selected{% endif %}>{{ st }}</option>{% endfor %}</select></label>
+  <label>Transfer-in cover? <input type=checkbox name=is_transfer_in {% if l.is_transfer_in %}checked{% endif %}></label>
+  <label>Note <input name=note value="{{ l.note }}"></label>
+  <button>Save</button>
+ </form>
+ <form method=post action="{{ prefix }}/session/{{ s.id }}/budget/{{ l.id }}/delete" class=inline
+       onsubmit="return confirm('Delete the budget line {{ l.line_item }}?')">
+  <button style="background:#7a3030;color:#fff">Delete</button>
+ </form></td>
+{% endif %}
+</tr>{% endfor %}
+<tr class=total><td>Cost total</td><td>{{ vb.cost_uah }} UAH</td><td colspan="{{ 4 if not locked else 3 }}"></td></tr>
+<tr class=total><td>Transfer-in cover</td><td>{{ vb.cover_uah }} UAH</td><td colspan="{{ 4 if not locked else 3 }}"></td></tr>
+<tr class=total><td>Remainder for the round</td><td>{{ vb.remainder_uah }} UAH</td><td colspan="{{ 4 if not locked else 3 }}"></td></tr>
 </table>
-<form method=post action="{{ prefix }}/session/{{ s.id }}/budget" class=inline>
+{% if not locked %}<form method=post action="{{ prefix }}/session/{{ s.id }}/budget" class=inline>
  <label>Line item <input name=line_item required></label>
  <label>Amount (UAH) <input name=amount_uah required></label>
  <label>Status <select name=status>{% for st in statuses %}<option>{{ st }}</option>{% endfor %}</select></label>
  <label>Transfer-in cover? <input type=checkbox name=is_transfer_in></label>
  <label>Note <input name=note></label>
  <button>Add line</button>
-</form>
+</form>{% endif %}
 <h2>Bidding rounds</h2>
 <table><tr><th>Round</th><th>State</th><th>Pledges</th><th>Total pledged</th><th>Gap</th></tr>
 {% for r in rounds %}<tr>
@@ -40,7 +62,10 @@
  <td>{{ r.state }}</td><td>{{ r.pledge_count }}</td><td>{{ r.total_pledged_uah }} UAH</td>
  <td>{% if r.gap_uah <= 0 %}closed, surplus {{ -r.gap_uah }} UAH{% else %}{{ r.gap_uah }} UAH open{% endif %}</td>
 </tr>{% endfor %}</table>
-<form method=post action="{{ prefix }}/session/{{ s.id }}/new-round" class=inline><button>Open next round</button></form>
+<form method=post action="{{ prefix }}/session/{{ s.id }}/new-round" class=inline
+      {% if not locked %}onsubmit="return confirm('Opening the first round freezes the open budget: it cannot be edited afterwards. Continue?')"{% endif %}>
+ <button>Open next round</button></form>
+{% if not locked %}<p class=muted>Opening the first round freezes the budget above.</p>{% endif %}
 <p><a href="{{ prefix }}/session/{{ s.id }}/tokens">Tokens</a> ·
    <a href="{{ prefix }}/report/{{ s.id }}">Anonymised report</a> ·
    <a href="{{ prefix }}/session/{{ s.id }}/settlement">Settlement{{ ' (drawn up)' if stl }}</a></p><footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative page; nothing publishes before the hosts' agreement. Round views show sums only.</footer>

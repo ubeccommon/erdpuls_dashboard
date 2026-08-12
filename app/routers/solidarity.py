@@ -1,5 +1,5 @@
 """
-Solidarity Financing — native Erdpuls router, v0.3
+Solidarity Financing — native Erdpuls router, v0.4
 ==================================================
 Project: Solidarity Financing 2026 (working title) — Michel Garand
 Mounted at /erdpuls-verkhovyna/solidarity inside the Erdpuls dashboard.
@@ -20,7 +20,14 @@ Invariants (unchanged from the paper layer):
   - Records and computes; moves no money.
 
 Changelog:
-  v0.3 (August 2026) — native Erdpuls port (this file).
+  v0.4 (August 2026) — budget lines editable and deletable, but ONLY
+      while the session has no bidding round. Once the first round is
+      opened the budget is frozen: the figure families pledged against
+      cannot be rewritten behind them. Frozen sessions expose no edit
+      or delete control, and the POST endpoints refuse independently
+      of the UI (the lock is server-side, not a hidden button).
+      Corrections after a round belong in the settlement account.
+  v0.3 (August 2026) — native Erdpuls port.
   v0.2 — prefix-safe Flask standalone.  v0.1 — Flask standalone.
 
 Integration (two lines in app/main.py):
@@ -96,6 +103,24 @@ def one(db: Session, sql: str, **params):
     return db.execute(text(sql), params).mappings().first()
 
 
+def budget_locked(db: Session, sid: int) -> bool:
+    """True once any bidding round exists for this session.
+
+    The open budget is what the families pledge against. Editing a line
+    after a round has run would silently change the remainder the room
+    agreed to close, so the budget freezes when the first round opens.
+    Corrections from that point are recorded in the settlement account,
+    where they stay visible, rather than overwritten here.
+    """
+    return one(db, """SELECT 1 FROM solidarity.bidding_round
+                      WHERE session_id = :i LIMIT 1""", i=sid) is not None
+
+
+LOCK_MESSAGE = ("The budget is frozen: a bidding round has been opened for this "
+                "session, and families pledged against these figures. Record any "
+                "correction in the settlement account instead.")
+
+
 # ── sessions + budget ────────────────────────────────────────
 
 @router.get("/", response_class=HTMLResponse)
@@ -139,6 +164,7 @@ def session_view(sid: int, request: Request,
         rounds=rows(db, """SELECT * FROM solidarity.v_round_totals WHERE session_id = :i
                            ORDER BY round_no""", i=sid),
         stl=one(db, "SELECT * FROM solidarity.settlement WHERE session_id = :i", i=sid),
+        locked=budget_locked(db, sid),
         error=request.query_params.get("error", ""))
 
 
@@ -148,6 +174,8 @@ def add_budget_line(sid: int, request: Request, line_item: str = Form(...),
                     is_transfer_in: str = Form(""), note: str = Form(""),
                     user: User = Depends(require_facilitator),
                     db: Session = Depends(get_db)):
+    if budget_locked(db, sid):
+        return back(request, f"/session/{sid}", LOCK_MESSAGE)
     try:
         db.execute(text("""INSERT INTO solidarity.budget_line
                            (session_id, line_item, amount_uah, status, is_transfer_in, note)
@@ -157,6 +185,48 @@ def add_budget_line(sid: int, request: Request, line_item: str = Form(...),
         db.commit()
     except ValueError as e:
         return back(request, f"/session/{sid}", str(e))
+    return back(request, f"/session/{sid}")
+
+
+@router.post("/session/{sid}/budget/{lid}/edit")
+def edit_budget_line(sid: int, lid: int, request: Request,
+                     line_item: str = Form(...), amount_uah: str = Form(...),
+                     status: str = Form(""), is_transfer_in: str = Form(""),
+                     note: str = Form(""),
+                     user: User = Depends(require_facilitator),
+                     db: Session = Depends(get_db)):
+    """Edit one budget line. Refused once a round exists for the session."""
+    if budget_locked(db, sid):
+        return back(request, f"/session/{sid}", LOCK_MESSAGE)
+    line = one(db, """SELECT id FROM solidarity.budget_line
+                      WHERE id = :l AND session_id = :s""", l=lid, s=sid)
+    if not line:
+        raise HTTPException(404)
+    try:
+        db.execute(text("""UPDATE solidarity.budget_line
+                           SET line_item = :li, amount_uah = :a, status = :st,
+                               is_transfer_in = :ti, note = :n
+                           WHERE id = :l AND session_id = :s"""),
+                   {"li": line_item.strip(), "a": parse_amount(amount_uah),
+                    "st": need_status(status), "ti": bool(is_transfer_in),
+                    "n": note, "l": lid, "s": sid})
+        db.commit()
+    except ValueError as e:
+        db.rollback()
+        return back(request, f"/session/{sid}", str(e))
+    return back(request, f"/session/{sid}")
+
+
+@router.post("/session/{sid}/budget/{lid}/delete")
+def delete_budget_line(sid: int, lid: int, request: Request,
+                       user: User = Depends(require_facilitator),
+                       db: Session = Depends(get_db)):
+    """Delete one budget line. Refused once a round exists for the session."""
+    if budget_locked(db, sid):
+        return back(request, f"/session/{sid}", LOCK_MESSAGE)
+    db.execute(text("""DELETE FROM solidarity.budget_line
+                       WHERE id = :l AND session_id = :s"""), {"l": lid, "s": sid})
+    db.commit()
     return back(request, f"/session/{sid}")
 
 
