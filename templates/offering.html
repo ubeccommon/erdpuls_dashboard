@@ -64,36 +64,36 @@
                         {% if offering.facilitator_cost and offering.facilitator_cost > 0 %}
                         <div class="cost-item">
                             <span class="cost-label">{% if lang == 'de' %}Facilitator{% elif lang == 'pl' %}Prowadzący{% elif lang == 'uk' %}Фасилітатор{% else %}Facilitator{% endif %}</span>
-                            <span class="cost-value">€{{ offering.facilitator_cost }}</span>
+                            <span class="cost-value">{{ offering.currency_symbol }}{{ offering.facilitator_cost }}</span>
                         </div>
                         {% endif %}
                         {% if offering.materials_cost and offering.materials_cost > 0 %}
                         <div class="cost-item">
                             <span class="cost-label">{% if lang == 'de' %}Materialien{% elif lang == 'pl' %}Materiały{% elif lang == 'uk' %}Матеріали{% else %}Materials{% endif %}</span>
-                            <span class="cost-value">€{{ offering.materials_cost }}</span>
+                            <span class="cost-value">{{ offering.currency_symbol }}{{ offering.materials_cost }}</span>
                         </div>
                         {% endif %}
                         {% if offering.catering_cost and offering.catering_cost > 0 %}
                         <div class="cost-item">
                             <span class="cost-label">{% if lang == 'de' %}Verpflegung{% elif lang == 'pl' %}Wyżywienie{% elif lang == 'uk' %}Харчування{% else %}Catering{% endif %}</span>
-                            <span class="cost-value">€{{ offering.catering_cost }}</span>
+                            <span class="cost-value">{{ offering.currency_symbol }}{{ offering.catering_cost }}</span>
                         </div>
                         {% endif %}
                         {% if offering.space_cost and offering.space_cost > 0 %}
                         <div class="cost-item">
                             <span class="cost-label">{% if lang == 'de' %}Raum{% elif lang == 'pl' %}Przestrzeń{% elif lang == 'uk' %}Приміщення{% else %}Space{% endif %}</span>
-                            <span class="cost-value">€{{ offering.space_cost }}</span>
+                            <span class="cost-value">{{ offering.currency_symbol }}{{ offering.space_cost }}</span>
                         </div>
                         {% endif %}
                         {% if offering.sustainability_contribution and offering.sustainability_contribution > 0 %}
                         <div class="cost-item">
                             <span class="cost-label">{% if lang == 'de' %}Nachhaltigkeitsbeitrag{% elif lang == 'pl' %}Wkład na zrównoważony rozwój{% elif lang == 'uk' %}Внесок на сталість{% else %}Sustainability Contribution{% endif %}</span>
-                            <span class="cost-value">€{{ offering.sustainability_contribution }}</span>
+                            <span class="cost-value">{{ offering.currency_symbol }}{{ offering.sustainability_contribution }}</span>
                         </div>
                         {% endif %}
                         <div class="cost-item total">
                             <span class="cost-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% elif lang == 'uk' %}Поріг{% else %}Threshold{% endif %}</span>
-                            <span class="cost-value">€{{ offering.threshold_amount }}</span>
+                            <span class="cost-value">{{ offering.currency_symbol }}{{ offering.threshold_amount }}</span>
                         </div>
                     </div>
                 </div>
@@ -126,8 +126,8 @@
                 <!-- Progress Card -->
                 <div class="progress-card">
                     <div class="progress-header">
-                        <span class="progress-amount">€{{ offering._total }}</span>
-                        <span class="progress-of">{% if lang == 'de' %}von{% elif lang == 'pl' %}z{% elif lang == 'uk' %}з{% else %}of{% endif %} €{{ offering.threshold_amount }}</span>
+                        <span class="progress-amount">{{ offering.currency_symbol }}{{ offering._total }}</span>
+                        <span class="progress-of">{% if lang == 'de' %}von{% elif lang == 'pl' %}z{% elif lang == 'uk' %}з{% else %}of{% endif %} {{ offering.currency_symbol }}{{ offering.threshold_amount }}</span>
                     </div>
                     
                     <div class="progress-bar-container">

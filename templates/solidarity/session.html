@@ -20,9 +20,9 @@
 {% if offering %}<p class=muted>Finances the Erdpuls offering
 <a href="/dashboard/offering/{{ offering.id }}">{{ offering.title }}</a> —
 threshold {{ offering.threshold_amount }} {{ offering.currency }}.
-{% if offering.currency == 'UAH' %}Same currency as this budget, so its cost lines were
-copied across rather than converted.{% else %}Shown as a reference only: the budget below is
-in UAH and nothing was converted from it.{% endif %}
+{% if offering.currency == 'UAH' %}Same currency as this budget, so its cost lines can stand
+as the session's figures without conversion.{% else %}Shown as a reference only: the budget
+below is in UAH and nothing was converted from it.{% endif %}
 The threshold model's contributions and this round's pledges stay separate ledgers and
 do not reconcile per person.</p>{% endif %}
 {% if s.note %}<p class=muted>{{ s.note }}</p>{% endif %}
@@ -46,6 +46,14 @@ frozen. No child data belongs here: what is offered, not who attends.</p>
 </details>
 
 <h2>Open budget</h2>
+{% if can_seed %}
+<p class=muted>This budget is empty and the offering is priced in UAH, so its cost lines can be
+copied in as they stand — no conversion involved. They arrive tagged <em>estimate</em> and stay
+editable until the first round opens.</p>
+<form method=post action="{{ prefix }}/session/{{ s.id }}/seed-budget" class=inline>
+ <button>Copy the offering's cost lines</button>
+</form>
+{% endif %}
 {% if locked %}<p class=muted><strong>Budget frozen.</strong>
 {% if pledges_exist %}Families have pledged against these figures, so they can no longer be
 edited. Record any correction in the settlement account, where it stays visible.

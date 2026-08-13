@@ -47,7 +47,7 @@
                     <div class="receipt-item">
                         <span class="receipt-icon">💶</span>
                         <span class="receipt-label">{% if lang == 'de' %}Finanziell{% elif lang == 'pl' %}Finansowy{% elif lang == 'uk' %}Фінансовий{% else %}Financial{% endif %}</span>
-                        <span class="receipt-value">€{{ "%.2f"|format(contribution_data.euro) }}</span>
+                        <span class="receipt-value">{{ offering.currency_symbol }}{{ "%.2f"|format(contribution_data.euro) }}</span>
                     </div>
                     {% endif %}
 
@@ -55,7 +55,7 @@
                     <div class="receipt-item">
                         <span class="receipt-icon">🪙</span>
                         <span class="receipt-label">UBECrc Tokens</span>
-                        <span class="receipt-value">{{ "%.0f"|format(contribution_data.tokens) }} <small>(€{{ "%.2f"|format(contribution_data.tokens_eur) }})</small></span>
+                        <span class="receipt-value">{{ "%.0f"|format(contribution_data.tokens) }} <small>({{ offering.currency_symbol }}{{ "%.2f"|format(contribution_data.tokens_eur) }})</small></span>
                     </div>
                     {% endif %}
 
@@ -63,13 +63,13 @@
                     <div class="receipt-item">
                         <span class="receipt-icon">🕐</span>
                         <span class="receipt-label">{{ contribution_data.hours_category.replace('_', ' ').title() }}</span>
-                        <span class="receipt-value">{{ contribution_data.hours }}h <small>(€{{ "%.2f"|format(contribution_data.hours_eur) }})</small></span>
+                        <span class="receipt-value">{{ contribution_data.hours }}h <small>({{ offering.currency_symbol }}{{ "%.2f"|format(contribution_data.hours_eur) }})</small></span>
                     </div>
                     {% endif %}
 
                     <div class="receipt-total">
                         <span>{% if lang == 'de' %}Gesamtwert{% elif lang == 'pl' %}Łączna wartość{% elif lang == 'uk' %}Усього{% else %}Total{% endif %}</span>
-                        <span class="total-value">€{{ "%.2f"|format(contribution_data.total_eur) }}</span>
+                        <span class="total-value">{{ offering.currency_symbol }}{{ "%.2f"|format(contribution_data.total_eur) }}</span>
                     </div>
                 </div>
             </div>
@@ -81,7 +81,7 @@
                     <div class="progress-bar-fill" style="width: {{ [new_percent, 100]|min }}%"></div>
                 </div>
                 <div class="progress-stats">
-                    <span class="progress-amount">€{{ "%.2f"|format(new_total) }} / €{{ "%.2f"|format(offering.threshold_amount) }}</span>
+                    <span class="progress-amount">{{ offering.currency_symbol }}{{ "%.2f"|format(new_total) }} / {{ offering.currency_symbol }}{{ "%.2f"|format(offering.threshold_amount) }}</span>
                     <span class="progress-percent">{{ "%.0f"|format(new_percent) }}%</span>
                 </div>
 
@@ -99,11 +99,11 @@
                 {% elif new_remaining > 0 %}
                 <p class="remaining-info">
                     {% if lang == 'de' %}
-                        Noch <strong>€{{ "%.2f"|format(new_remaining) }}</strong> benötigt
+                        Noch <strong>{{ offering.currency_symbol }}{{ "%.2f"|format(new_remaining) }}</strong> benötigt
                     {% elif lang == 'pl' %}
-                        Pozostało <strong>€{{ "%.2f"|format(new_remaining) }}</strong>
-                    {% elif lang == 'uk' %}Ще потрібно <strong>€{{ "%.2f"|format(new_remaining) }}</strong>{% else %}
-                        Still need <strong>€{{ "%.2f"|format(new_remaining) }}</strong>
+                        Pozostało <strong>{{ offering.currency_symbol }}{{ "%.2f"|format(new_remaining) }}</strong>
+                    {% elif lang == 'uk' %}Ще потрібно <strong>{{ offering.currency_symbol }}{{ "%.2f"|format(new_remaining) }}</strong>{% else %}
+                        Still need <strong>{{ offering.currency_symbol }}{{ "%.2f"|format(new_remaining) }}</strong>
                     {% endif %}
                 </p>
                 {% endif %}

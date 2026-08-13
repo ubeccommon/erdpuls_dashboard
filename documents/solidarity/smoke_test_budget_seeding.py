@@ -109,7 +109,8 @@ check("remainder equals the cost with no cover yet", float(remainder) == 120000.
 
 st, body = call(f"{P}/session/{sid}")
 check("session page shows the seeded figures", "120000.00" in body)
-check("session page states the currency matched", "copied across rather than converted" in " ".join(body.split()))
+check("session page states the currency matched",
+      "without conversion" in " ".join(body.split()))
 check("session page shows the note", "editable until the first round" in " ".join(body.split()))
 check("no hardcoded EUR on a UAH offering", "threshold 120000.00 EUR" not in body)
 

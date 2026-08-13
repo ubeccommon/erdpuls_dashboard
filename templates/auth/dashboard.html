@@ -117,7 +117,7 @@
                                     <div class="progress-bar">
                                         <div class="progress-fill" style="width: {{ [offering._percent, 100]|min }}%"></div>
                                     </div>
-                                    <span>€{{ "%.0f"|format(offering._total) }} / €{{ "%.0f"|format(offering.threshold_amount) }}</span>
+                                    <span>{{ offering.currency_symbol }}{{ "%.0f"|format(offering._total) }} / {{ offering.currency_symbol }}{{ "%.0f"|format(offering.threshold_amount) }}</span>
                                 </div>
                             </td>
                             <td>{{ offering._reg_count }}{% if offering.max_participants %} / {{ offering.max_participants }}{% endif %}</td>

@@ -42,7 +42,7 @@
             
             <div class="detail-row">
                 <span class="detail-label">{% if lang == 'de' %}Betrag{% elif lang == 'pl' %}Kwota{% elif lang == 'uk' %}Сума{% else %}Amount{% endif %}</span>
-                <span class="detail-value">€{{ contribution.amount_eur|round(2) }}</span>
+                <span class="detail-value">{{ offering.currency_symbol }}{{ contribution.amount_eur|round(2) }}</span>
             </div>
             
             <div class="detail-row">
@@ -101,11 +101,11 @@
                         <strong>{% if lang == 'de' %}Überweisung durchführen{% elif lang == 'pl' %}Dokonaj przelewu{% elif lang == 'uk' %}Здійсніть банківський переказ{% else %}Complete Bank Transfer{% endif %}</strong>
                         <p>
                             {% if lang == 'de' %}
-                                Bitte überweisen Sie €{{ contribution.amount_eur|round(2) }} an unser Konto. Verweis: {{ offering.id[:8] }}
+                                Bitte überweisen Sie {{ offering.currency_symbol }}{{ contribution.amount_eur|round(2) }} an unser Konto. Verweis: {{ offering.id[:8] }}
                             {% elif lang == 'pl' %}
-                                Proszę przelać €{{ contribution.amount_eur|round(2) }} na nasze konto. Referencja: {{ offering.id[:8] }}
-                            {% elif lang == 'uk' %}Будь ласка, переказіть €{{ contribution.amount_eur|round(2) }} на наш рахунок. Призначення: {{ offering.id[:8] }}{% else %}
-                                Please transfer €{{ contribution.amount_eur|round(2) }} to our account. Reference: {{ offering.id[:8] }}
+                                Proszę przelać {{ offering.currency_symbol }}{{ contribution.amount_eur|round(2) }} na nasze konto. Referencja: {{ offering.id[:8] }}
+                            {% elif lang == 'uk' %}Будь ласка, переказіть {{ offering.currency_symbol }}{{ contribution.amount_eur|round(2) }} на наш рахунок. Призначення: {{ offering.id[:8] }}{% else %}
+                                Please transfer {{ offering.currency_symbol }}{{ contribution.amount_eur|round(2) }} to our account. Reference: {{ offering.id[:8] }}
                             {% endif %}
                         </p>
                     </div>
@@ -164,11 +164,11 @@
             
             <div class="progress-stats">
                 <div class="stat">
-                    <span class="stat-value">€{{ offering._total }}</span>
+                    <span class="stat-value">{{ offering.currency_symbol }}{{ offering._total }}</span>
                     <span class="stat-label">{% if lang == 'de' %}gesammelt{% elif lang == 'pl' %}zebrano{% elif lang == 'uk' %}зібрано{% else %}raised{% endif %}</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">€{{ offering.threshold_amount }}</span>
+                    <span class="stat-value">{{ offering.currency_symbol }}{{ offering.threshold_amount }}</span>
                     <span class="stat-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}próg{% elif lang == 'uk' %}поріг{% else %}threshold{% endif %}</span>
                 </div>
                 <div class="stat">

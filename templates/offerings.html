@@ -80,9 +80,9 @@
                         </div>
                         <div class="progress-stats">
                             <span class="progress-amount">
-                                <strong>€{{ offering._total|int }}</strong> 
+                                <strong>{{ offering.currency_symbol }}{{ offering._total|int }}</strong> 
                                 {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% elif lang == 'uk' %}з{% else %}of{% endif %} 
-                                €{{ offering.threshold_amount|int }}
+                                {{ offering.currency_symbol }}{{ offering.threshold_amount|int }}
                             </span>
                             <span class="progress-percent {% if offering._percent >= 100 %}funded{% endif %}">
                                 {{ offering._percent|round(0)|int }}%

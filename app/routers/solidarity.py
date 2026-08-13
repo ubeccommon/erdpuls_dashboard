@@ -1,5 +1,5 @@
 """
-Solidarity Financing — native Erdpuls router, v1.1
+Solidarity Financing — native Erdpuls router, v1.2
 ==================================================
 Project: Solidarity Financing 2026 (working title) — Michel Garand
 Mounted per initiative at /{initiative-slug}/solidarity inside the
@@ -21,6 +21,11 @@ Invariants (unchanged from the paper layer):
   - Records and computes; moves no money.
 
 Changelog:
+  v1.2 (August 2026) — a session whose budget is still empty can copy the
+      cost lines from its offering, when that offering is in UAH and no
+      round has opened. Sessions created before budget seeding existed
+      would otherwise have had to be deleted and remade. The page also
+      no longer claims lines "were copied" when the budget is empty.
   v1.1 (August 2026) — access is now place-bound. Opening an initiative's
       financing needs the global facilitator role AND membership of that
       initiative at facilitator level or above. A facilitator elsewhere
@@ -330,8 +335,58 @@ def session_view(sid: int, request: Request,
         stl=one(db, "SELECT * FROM solidarity.settlement WHERE session_id = :i", i=sid),
         locked=budget_locked(db, sid),
         pledges_exist=session_pledge_count(db, sid) > 0,
+        can_seed=can_seed_from_offering(db, sid, s),
+        has_lines=bool(one(db, "SELECT 1 FROM solidarity.budget_line WHERE session_id = :i LIMIT 1", i=sid)),
         delete_block=session_delete_block(db, sid),
         error=request.query_params.get("error", ""))
+
+
+def can_seed_from_offering(db: Session, sid: int, s) -> bool:
+    """May this session copy its offering's cost lines?
+
+    Only when the budget is still empty, no round has opened, and the
+    offering is priced in UAH — the same currency as the budget, so
+    copying is not a conversion. In any other currency the answer is no,
+    and stays no: converting silently is the one thing this must not do.
+    """
+    if budget_locked(db, sid) or not s["offering_id"]:
+        return False
+    if one(db, "SELECT 1 FROM solidarity.budget_line WHERE session_id = :i LIMIT 1", i=sid):
+        return False
+    o = one(db, """SELECT currency FROM erdpuls_threshold.offerings WHERE id = :o""",
+            o=s["offering_id"])
+    return bool(o) and o["currency"] == "UAH"
+
+
+@router.post("/session/{sid}/seed-budget")
+def seed_budget_from_offering(sid: int, request: Request,
+                              user: User = Depends(require_facilitator),
+                              init=Depends(resolve_initiative),
+                              db: Session = Depends(get_db)):
+    """Copy the offering's cost lines into an empty budget."""
+    s = session_of(db, sid, init)
+    if not can_seed_from_offering(db, sid, s):
+        return back(init["slug"], f"/session/{sid}",
+                    "The budget can only be copied while it is empty, no round has "
+                    "opened, and the offering is priced in UAH.")
+    o = one(db, """SELECT facilitator_cost, materials_cost, catering_cost, space_cost,
+                          sustainability_contribution
+                   FROM erdpuls_threshold.offerings WHERE id = :o""", o=s["offering_id"])
+    for label, key in (("Facilitator", "facilitator_cost"),
+                       ("Materials", "materials_cost"),
+                       ("Catering", "catering_cost"),
+                       ("Space", "space_cost"),
+                       ("Sustainability contribution", "sustainability_contribution")):
+        amount = o[key] or 0
+        if amount <= 0:
+            continue
+        db.execute(text("""INSERT INTO solidarity.budget_line
+                           (session_id, line_item, amount_uah, status, note)
+                           VALUES (:s, :li, :a, 'estimate', :n)"""),
+                   {"s": sid, "li": label, "a": amount,
+                    "n": "from the offering's cost breakdown"})
+    db.commit()
+    return back(init["slug"], f"/session/{sid}")
 
 
 @router.post("/session/{sid}/budget")

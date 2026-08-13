@@ -100,7 +100,7 @@
                                 <div class="progress-mini">
                                     <div class="progress-fill" style="width: {{ [offering._percent, 100]|min }}%"></div>
                                 </div>
-                                <span class="progress-text">€{{ offering._total|int }} / €{{ offering.threshold_amount|int }} ({{ offering._percent|int }}%)</span>
+                                <span class="progress-text">{{ offering.currency_symbol }}{{ offering._total|int }} / {{ offering.currency_symbol }}{{ offering.threshold_amount|int }} ({{ offering._percent|int }}%)</span>
                             </div>
                         </td>
                         <td>{{ offering._reg_count }}</td>

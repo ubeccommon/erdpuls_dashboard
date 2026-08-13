@@ -75,11 +75,11 @@
                         </div>
                         <div class="progress-stats">
                             <div class="stat">
-                                <span class="stat-value">€{{ "%.2f"|format(offering._total) }}</span>
+                                <span class="stat-value">{{ offering.currency_symbol }}{{ "%.2f"|format(offering._total) }}</span>
                                 <span class="stat-label">{% if lang == 'de' %}Gesammelt{% elif lang == 'pl' %}Zebrano{% else %}Collected{% endif %}</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">€{{ "%.2f"|format(offering.threshold_amount) }}</span>
+                                <span class="stat-value">{{ offering.currency_symbol }}{{ "%.2f"|format(offering.threshold_amount) }}</span>
                                 <span class="stat-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}</span>
                             </div>
                             <div class="stat">
@@ -168,7 +168,7 @@
                                         {{ contrib.contribution_type }}
                                     {% endif %}
                                 </td>
-                                <td class="amount">€{{ "%.2f"|format(contrib.amount_eur) }}</td>
+                                <td class="amount">{{ offering.currency_symbol }}{{ "%.2f"|format(contrib.amount_eur) }}</td>
                                 <td>
                                     {% if contrib.contact %}
                                         <div class="contact-info">
@@ -218,36 +218,36 @@
                         {% if offering.facilitator_cost and offering.facilitator_cost > 0 %}
                         <div class="cost-item">
                             <span>{% if lang == 'de' %}Honorar{% elif lang == 'pl' %}Wynagrodzenie{% else %}Facilitator{% endif %}</span>
-                            <span>€{{ "%.2f"|format(offering.facilitator_cost) }}</span>
+                            <span>{{ offering.currency_symbol }}{{ "%.2f"|format(offering.facilitator_cost) }}</span>
                         </div>
                         {% endif %}
                         {% if offering.materials_cost and offering.materials_cost > 0 %}
                         <div class="cost-item">
                             <span>{% if lang == 'de' %}Materialien{% elif lang == 'pl' %}Materiały{% else %}Materials{% endif %}</span>
-                            <span>€{{ "%.2f"|format(offering.materials_cost) }}</span>
+                            <span>{{ offering.currency_symbol }}{{ "%.2f"|format(offering.materials_cost) }}</span>
                         </div>
                         {% endif %}
                         {% if offering.meals_cost and offering.meals_cost > 0 %}
                         <div class="cost-item">
                             <span>{% if lang == 'de' %}Mahlzeiten{% elif lang == 'pl' %}Posiłki{% else %}Meals{% endif %}</span>
-                            <span>€{{ "%.2f"|format(offering.meals_cost) }}</span>
+                            <span>{{ offering.currency_symbol }}{{ "%.2f"|format(offering.meals_cost) }}</span>
                         </div>
                         {% endif %}
                         {% if offering.space_cost and offering.space_cost > 0 %}
                         <div class="cost-item">
                             <span>{% if lang == 'de' %}Raum{% elif lang == 'pl' %}Przestrzeń{% else %}Space{% endif %}</span>
-                            <span>€{{ "%.2f"|format(offering.space_cost) }}</span>
+                            <span>{{ offering.currency_symbol }}{{ "%.2f"|format(offering.space_cost) }}</span>
                         </div>
                         {% endif %}
                         {% if offering.sustainability_contribution and offering.sustainability_contribution > 0 %}
                         <div class="cost-item">
                             <span>{% if lang == 'de' %}Nachhaltigkeit{% elif lang == 'pl' %}Zrównoważoność{% else %}Sustainability{% endif %}</span>
-                            <span>€{{ "%.2f"|format(offering.sustainability_contribution) }}</span>
+                            <span>{{ offering.currency_symbol }}{{ "%.2f"|format(offering.sustainability_contribution) }}</span>
                         </div>
                         {% endif %}
                         <div class="cost-item cost-total">
                             <span>{% if lang == 'de' %}Gesamt{% elif lang == 'pl' %}Razem{% else %}Total{% endif %}</span>
-                            <span>€{{ "%.2f"|format(offering.threshold_amount) }}</span>
+                            <span>{{ offering.currency_symbol }}{{ "%.2f"|format(offering.threshold_amount) }}</span>
                         </div>
                     </div>
                 </div>

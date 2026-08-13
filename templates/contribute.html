@@ -128,7 +128,7 @@
                                     {% if lang == 'de' %}Betrag in Euro{% elif lang == 'pl' %}Kwota w Euro{% elif lang == 'uk' %}Сума в євро{% else %}Amount in Euro{% endif %}
                                 </label>
                                 <div class="amount-input-wrapper">
-                                    <span class="currency-symbol">€</span>
+                                    <span class="currency-symbol">{{ offering.currency_symbol }}</span>
                                     <input type="number" id="amount_eur" name="amount_eur" 
                                            min="1" step="0.01" placeholder="0.00"
                                            class="amount-input">
@@ -137,10 +137,10 @@
                             
                             <div class="quick-amounts">
                                 <span class="quick-label">{% if lang == 'de' %}Schnellauswahl:{% elif lang == 'pl' %}Szybki wybór:{% elif lang == 'uk' %}Швидкий вибір:{% else %}Quick select:{% endif %}</span>
-                                <button type="button" class="quick-btn" data-amount="10">€10</button>
-                                <button type="button" class="quick-btn" data-amount="25">€25</button>
-                                <button type="button" class="quick-btn" data-amount="50">€50</button>
-                                <button type="button" class="quick-btn" data-amount="100">€100</button>
+                                <button type="button" class="quick-btn" data-amount="10">{{ offering.currency_symbol }}10</button>
+                                <button type="button" class="quick-btn" data-amount="25">{{ offering.currency_symbol }}25</button>
+                                <button type="button" class="quick-btn" data-amount="50">{{ offering.currency_symbol }}50</button>
+                                <button type="button" class="quick-btn" data-amount="100">{{ offering.currency_symbol }}100</button>
                             </div>
                         </div>
                         
@@ -328,16 +328,16 @@
                     <div class="progress-details">
                         <div class="detail-row">
                             <span class="label">{% if lang == 'de' %}Gesammelt{% elif lang == 'pl' %}Zebrano{% elif lang == 'uk' %}Зібрано{% else %}Raised{% endif %}</span>
-                            <span class="value">€{{ offering._total }}</span>
+                            <span class="value">{{ offering.currency_symbol }}{{ offering._total }}</span>
                         </div>
                         <div class="detail-row">
                             <span class="label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% elif lang == 'uk' %}Поріг{% else %}Threshold{% endif %}</span>
-                            <span class="value">€{{ offering.threshold_amount }}</span>
+                            <span class="value">{{ offering.currency_symbol }}{{ offering.threshold_amount }}</span>
                         </div>
                         <div class="detail-row">
                             <span class="label">{% if lang == 'de' %}Verbleibend{% elif lang == 'pl' %}Pozostało{% elif lang == 'uk' %}Залишилося{% else %}Remaining{% endif %}</span>
                             <span class="value {% if offering._remaining <= 0 %}success{% endif %}">
-                                {% if offering._remaining > 0 %}€{{ offering._remaining }}{% else %}✓ {% if lang == 'de' %}Erreicht{% elif lang == 'pl' %}Osiągnięto{% elif lang == 'uk' %}Досягнуто{% else %}Met{% endif %}{% endif %}
+                                {% if offering._remaining > 0 %}{{ offering.currency_symbol }}{{ offering._remaining }}{% else %}✓ {% if lang == 'de' %}Erreicht{% elif lang == 'pl' %}Osiągnięto{% elif lang == 'uk' %}Досягнуто{% else %}Met{% endif %}{% endif %}
                             </span>
                         </div>
                     </div>

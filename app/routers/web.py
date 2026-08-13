@@ -615,7 +615,7 @@ def contribute_submit(
     # rather than silently converted.
     if contribution_type in ('token', 'hours') and not offering.allows_token_and_hours:
         return RedirectResponse(
-            url=f"/offerings/{offering_id}?error=token_hours_eur_only",
+            url=f"/offering/{offering_id}?error=token_hours_eur_only",
             status_code=303)
 
     final_amount_eur = Decimal('0')

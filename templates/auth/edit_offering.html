@@ -129,34 +129,34 @@
                 
                 <div class="cost-inputs">
                     <div class="form-group">
-                        <label for="facilitator_cost">{% if lang == 'de' %}Honorar (€){% elif lang == 'pl' %}Wynagrodzenie (€){% else %}Facilitator (€){% endif %}</label>
+                        <label for="facilitator_cost">{% if lang == 'de' %}Honorar ({{ offering.currency_symbol }}){% elif lang == 'pl' %}Wynagrodzenie ({{ offering.currency_symbol }}){% else %}Facilitator ({{ offering.currency_symbol }}){% endif %}</label>
                         <input type="number" id="facilitator_cost" name="facilitator_cost" value="{{ offering.facilitator_cost or 0 }}" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="materials_cost">{% if lang == 'de' %}Materialien (€){% elif lang == 'pl' %}Materiały (€){% else %}Materials (€){% endif %}</label>
+                        <label for="materials_cost">{% if lang == 'de' %}Materialien ({{ offering.currency_symbol }}){% elif lang == 'pl' %}Materiały ({{ offering.currency_symbol }}){% else %}Materials ({{ offering.currency_symbol }}){% endif %}</label>
                         <input type="number" id="materials_cost" name="materials_cost" value="{{ offering.materials_cost or 0 }}" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="catering_cost">{% if lang == 'de' %}Verpflegung (€){% elif lang == 'pl' %}Wyżywienie (€){% else %}Catering (€){% endif %}</label>
+                        <label for="catering_cost">{% if lang == 'de' %}Verpflegung ({{ offering.currency_symbol }}){% elif lang == 'pl' %}Wyżywienie ({{ offering.currency_symbol }}){% else %}Catering ({{ offering.currency_symbol }}){% endif %}</label>
                         <input type="number" id="catering_cost" name="catering_cost" value="{{ offering.catering_cost or 0 }}" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="space_cost">{% if lang == 'de' %}Raum (€){% elif lang == 'pl' %}Przestrzeń (€){% else %}Space (€){% endif %}</label>
+                        <label for="space_cost">{% if lang == 'de' %}Raum ({{ offering.currency_symbol }}){% elif lang == 'pl' %}Przestrzeń ({{ offering.currency_symbol }}){% else %}Space ({{ offering.currency_symbol }}){% endif %}</label>
                         <input type="number" id="space_cost" name="space_cost" value="{{ offering.space_cost or 0 }}" min="0" step="0.01" class="cost-input">
                     </div>
                     
                     <div class="form-group">
-                        <label for="sustainability_contribution">{% if lang == 'de' %}Nachhaltigkeitsbeitrag (€){% elif lang == 'pl' %}Wkład na rzecz zrównoważonego rozwoju (€){% else %}Sustainability Contribution (€){% endif %}</label>
+                        <label for="sustainability_contribution">{% if lang == 'de' %}Nachhaltigkeitsbeitrag ({{ offering.currency_symbol }}){% elif lang == 'pl' %}Wkład na rzecz zrównoważonego rozwoju ({{ offering.currency_symbol }}){% else %}Sustainability Contribution ({{ offering.currency_symbol }}){% endif %}</label>
                         <input type="number" id="sustainability_contribution" name="sustainability_contribution" value="{{ offering.sustainability_contribution or 0 }}" min="0" step="0.01" class="cost-input">
                     </div>
                 </div>
                 
                 <div class="threshold-display">
                     <span class="threshold-label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% else %}Threshold{% endif %}:</span>
-                    <span class="threshold-value">€<span id="threshold-total">{{ "%.2f"|format(offering.threshold_amount) }}</span></span>
+                    <span class="threshold-value">{{ offering.currency_symbol }}<span id="threshold-total">{{ "%.2f"|format(offering.threshold_amount) }}</span></span>
                 </div>
             </div>
 

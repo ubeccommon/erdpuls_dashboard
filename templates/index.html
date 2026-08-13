@@ -312,7 +312,7 @@
                                      style="width: {{ [offering._percent, 100]|min }}%"></div>
                             </div>
                             <div class="progress-stats">
-                                <span><strong>€{{ "%.0f"|format(offering._total) }}</strong> {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} €{{ "%.0f"|format(offering.threshold_amount) }}</span>
+                                <span><strong>{{ offering.currency_symbol }}{{ "%.0f"|format(offering._total) }}</strong> {% if lang == 'de' %}von{% elif lang == 'pl' %}z{% else %}of{% endif %} {{ offering.currency_symbol }}{{ "%.0f"|format(offering.threshold_amount) }}</span>
                                 <span><strong>{{ "%.0f"|format(offering._percent) }}%</strong> {% if lang == 'de' %}finanziert{% elif lang == 'pl' %}sfinansowane{% else %}funded{% endif %}</span>
                             </div>
                         </div>
