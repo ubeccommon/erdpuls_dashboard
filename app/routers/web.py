@@ -549,8 +549,8 @@ def contribute_page(
     offering._remaining = max(Decimal('0'), offering.threshold_amount - offering._total)
     offering._reg_count = offering.get_registration_count(db)
     
-    hours_rates = db.query(HoursRate).all()
-    token_rate = TokenRate.get_current_rate(db)
+    hours_rates = db.query(HoursRate).filter(HoursRate.currency == offering.currency).all()
+    token_rate = TokenRate.get_current_rate(db, offering.currency)
     
     return templates.TemplateResponse(
         "contribute.html",
@@ -609,17 +609,24 @@ def contribute_submit(
         )
     
     # Calculate EUR equivalent
-    # Token and hours rates are denominated in euro (tokens_per_eur,
-    # eur_per_hour). Applying them to a PLN or UAH offering would price
-    # that currency at a euro rate without saying so, so they are refused
-    # rather than silently converted.
-    if contribution_type in ('token', 'hours') and not offering.allows_token_and_hours:
-        return RedirectResponse(
-            url=f"/offering/{offering_id}?error=token_hours_eur_only",
-            status_code=303)
+    # Token and hours contributions need a rate in THIS offering's
+    # currency. Where one exists they work normally; where none does they
+    # are refused rather than priced at another currency's rate. Setting
+    # a rate is an admin decision about what a token or an hour is worth
+    # there, not something to guess at the point of contribution.
+    if contribution_type == 'token':
+        if TokenRate.get_current_rate(db, offering.currency) is None:
+            return RedirectResponse(
+                url=f"/offering/{offering_id}?error=no_token_rate_for_currency",
+                status_code=303)
+    if contribution_type == 'hours':
+        if not db.query(HoursRate).filter(HoursRate.currency == offering.currency).first():
+            return RedirectResponse(
+                url=f"/offering/{offering_id}?error=no_hours_rate_for_currency",
+                status_code=303)
 
     final_amount_eur = Decimal('0')
-    token_rate = TokenRate.get_current_rate(db)
+    token_rate = TokenRate.get_current_rate(db, offering.currency)
     
     if contribution_type == 'euro':
         if not amount_eur or amount_eur <= 0:
@@ -635,7 +642,9 @@ def contribute_submit(
                 url=f"/offering/{offering_id}/contribute?pathway={pathway}&error=invalid_amount",
                 status_code=303
             )
-        # Convert tokens to EUR
+        # Convert tokens into the offering's own currency, using the rate
+        # set for that currency. token_rate was resolved for this offering
+        # above, so nothing crosses between currencies here.
         final_amount_eur = Decimal(str(token_amount)) / token_rate.tokens_per_eur
     
     elif contribution_type == 'hours':
@@ -645,7 +654,9 @@ def contribute_submit(
                 status_code=303
             )
         # Get rate for category
-        hours_rate = db.query(HoursRate).filter(HoursRate.category == hours_category).first()
+        hours_rate = db.query(HoursRate).filter(
+            HoursRate.category == hours_category,
+            HoursRate.currency == offering.currency).first()
         if not hours_rate:
             return RedirectResponse(
                 url=f"/offering/{offering_id}/contribute?pathway={pathway}&error=invalid_category",

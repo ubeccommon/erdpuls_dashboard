@@ -682,8 +682,17 @@ def admin_settings(
     if redirect:
         return redirect
     
-    token_rate = TokenRate.get_current_rate(db)
-    hours_rates = db.query(HoursRate).all()
+    # Rates per currency. An offering can only take token or hours
+    # contributions in a currency someone has set a rate for; showing
+    # them all together is what makes a missing one visible.
+    CURRENCIES = ('EUR', 'PLN', 'UAH')
+    token_rates = {c: TokenRate.get_current_rate(db, c) for c in CURRENCIES}
+    hours_by_currency = {
+        c: db.query(HoursRate).filter(HoursRate.currency == c).all()
+        for c in CURRENCIES
+    }
+    token_rate = token_rates['EUR']
+    hours_rates = hours_by_currency['EUR']
     fund_balance = RegenerationFund.get_balance(db)
     
     return templates.TemplateResponse(
@@ -694,6 +703,9 @@ def admin_settings(
             "user": user,
             "token_rate": token_rate,
             "hours_rates": hours_rates,
+            "token_rates": token_rates,
+            "hours_by_currency": hours_by_currency,
+            "currencies": CURRENCIES,
             "fund_balance": fund_balance
         }
     )
@@ -703,16 +715,24 @@ def admin_settings(
 def admin_update_token_rate(
     request: Request,
     tokens_per_eur: float = Form(...),
+    currency: str = Form('EUR'),
     db: Session = Depends(get_db)
 ):
-    """Update token exchange rate"""
+    """Set the token rate for one currency.
+
+    A new row each time, so the history of what a token was worth is
+    kept rather than overwritten.
+    """
     user, redirect = require_admin(request, db)
     if redirect:
         return redirect
     
     # Create new rate (historical tracking)
+    if currency not in ('EUR', 'PLN', 'UAH'):
+        raise HTTPException(status_code=400, detail="Unknown currency")
     new_rate = TokenRate(
-        tokens_per_eur=Decimal(str(tokens_per_eur))
+        tokens_per_eur=Decimal(str(tokens_per_eur)),
+        currency=currency
     )
     db.add(new_rate)
     db.commit()
@@ -728,18 +748,27 @@ def admin_update_hours_rate(
     request: Request,
     category: str = Form(...),
     eur_per_hour: float = Form(...),
+    currency: str = Form('EUR'),
     description: str = Form(None),
     description_de: str = Form(None),
     description_pl: str = Form(None),
     db: Session = Depends(get_db)
 ):
-    """Update or create hours rate"""
+    """Set the value of an hour in one currency, per category.
+
+    A category exists once per currency: the same work is worth a
+    different amount in a different place, and neither figure is derived
+    from the other.
+    """
     user, redirect = require_admin(request, db)
     if redirect:
         return redirect
     
     # Find or create
-    rate = db.query(HoursRate).filter(HoursRate.category == category).first()
+    if currency not in ('EUR', 'PLN', 'UAH'):
+        raise HTTPException(status_code=400, detail="Unknown currency")
+    rate = db.query(HoursRate).filter(HoursRate.category == category,
+                                      HoursRate.currency == currency).first()
     if rate:
         rate.eur_per_hour = Decimal(str(eur_per_hour))
         rate.description = description
@@ -751,6 +780,7 @@ def admin_update_hours_rate(
         rate = HoursRate(
             category=category,
             eur_per_hour=Decimal(str(eur_per_hour)),
+            currency=currency,
             description=description
         )
         if hasattr(rate, 'description_de'):

@@ -58,7 +58,19 @@
                         </div>
                         
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Kurs aktualisieren{% elif lang == 'pl' %}Zaktualizuj kurs{% else %}Update Rate{% endif %}</button>
+                            
+                    <div class="form-group">
+                        <label for="currency_tokens_per_eur">{% if lang == 'uk' %}Валюта{% else %}Currency{% endif %}</label>
+                        <p class="muted" style="font-size:.85rem">
+                        {% for c in currencies %}{{ c }}:
+                        {% if token_rates[c] %}{{ token_rates[c].tokens_per_eur }} UBECrc = 1 {{ c }}{% else %}{% if lang == 'uk' %}не встановлено{% else %}not set{% endif %}{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}
+                    </p>
+                    <select id="currency_tokens_per_eur" name="currency">
+                            {% for c in currencies %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+                        </select>
+                        <small>{% if lang == 'uk' %}Ставка стосується лише цієї валюти. Нічого не конвертується між валютами.{% else %}The rate applies to this currency only. Nothing is converted between currencies.{% endif %}</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Kurs aktualisieren{% elif lang == 'pl' %}Zaktualizuj kurs{% else %}Update Rate{% endif %}</button>
                         </div>
                     </form>
                 </div>
@@ -71,14 +83,24 @@
                 </div>
                 <div class="admin-card-content">
                     
-                    <!-- Existing Rates -->
-                    {% if hours_rates %}
+                    <!-- Existing rates, grouped by currency. A rate is only
+                         ever shown beside its own currency: the same category
+                         is worth a different amount in a different place, and
+                         neither figure is derived from the other. -->
+                    {% for cur in currencies %}
+                    <h3 style="margin-top:1rem">{{ cur }}</h3>
+                    {% if not hours_by_currency[cur] %}
+                    <p class="muted" style="font-size:.85rem">
+                        {% if lang == 'uk' %}Ставок ще не встановлено. Поки їх немає, внески годинами для пропозицій у {{ cur }} недоступні.{% else %}No rates set yet. Until there are, hours contributions are unavailable on offerings priced in {{ cur }}.{% endif %}
+                    </p>
+                    {% endif %}
+                    {% if hours_by_currency[cur] %}
                     <div class="rates-list">
-                        {% for rate in hours_rates %}
+                        {% for rate in hours_by_currency[cur] %}
                         <div class="rate-item">
                             <div class="rate-info">
                                 <strong>{{ rate.category }}</strong>
-                                <span class="rate-amount">€{{ rate.eur_per_hour }}/{% if lang == 'de' %}Stunde{% elif lang == 'pl' %}godz{% else %}hour{% endif %}</span>
+                                <span class="rate-amount">{{ rate.eur_per_hour }} {{ rate.currency }}/{% if lang == 'de' %}Stunde{% elif lang == 'pl' %}godz{% else %}hour{% endif %}</span>
                             </div>
                             <div class="rate-description">
                                 {{ rate.get_description(lang) if rate.get_description else rate.description or '—' }}
@@ -101,6 +123,7 @@
                     </div>
                     <hr style="margin: 1.5rem 0; border-color: var(--color-border);">
                     {% endif %}
+                    {% endfor %}
                     
                     <!-- Add Rate -->
                     <h3 style="font-size: 1rem; margin-bottom: 1rem;">
@@ -138,7 +161,15 @@
                         
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Speichern{% elif lang == 'pl' %}Zapisz{% else %}Save{% endif %}</button>
-                            <button type="button" class="btn btn-outline" id="clearFormBtn" style="display: none;" onclick="clearForm()">
+                            
+                    <div class="form-group">
+                        <label for="currency_eur_per_hour">{% if lang == 'uk' %}Валюта{% else %}Currency{% endif %}</label>
+                        <select id="currency_eur_per_hour" name="currency">
+                            {% for c in currencies %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+                        </select>
+                        <small>{% if lang == 'uk' %}Ставка стосується лише цієї валюти. Нічого не конвертується між валютами.{% else %}The rate applies to this currency only. Nothing is converted between currencies.{% endif %}</small>
+                    </div>
+                    <button type="button" class="btn btn-outline" id="clearFormBtn" style="display: none;" onclick="clearForm()">
                                 {% if lang == 'de' %}Abbrechen{% elif lang == 'pl' %}Anuluj{% else %}Cancel{% endif %}
                             </button>
                         </div>

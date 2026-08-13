@@ -148,15 +148,19 @@ class Offering(Base):
     def currency_symbol(self) -> str:
         return self.CURRENCY_SYMBOLS.get(self.currency or 'EUR', self.currency or 'EUR')
 
-    @property
-    def allows_token_and_hours(self) -> bool:
-        """Token and hours contributions are EUR-only.
+    def allows_token_and_hours(self, db) -> bool:
+        """Whether token and hours contributions can be offered here.
 
-        Their rates (tokens_per_eur, eur_per_hour) are denominated in
-        euro, so applying them to a PLN or UAH offering would silently
-        price hryvnia at a euro rate. Blocked rather than guessed.
+        Not a question about which currency this is, but about whether
+        anyone has said what a token and an hour are worth in it. Rates
+        are set per currency in the admin area, at the value the region
+        actually holds — never converted from euro. Where no rate has
+        been set, the type is unavailable and the page says so.
         """
-        return (self.currency or 'EUR') == 'EUR'
+        cur = self.currency or 'EUR'
+        has_token = TokenRate.get_current_rate(db, cur) is not None
+        has_hours = db.query(HoursRate).filter(HoursRate.currency == cur).first() is not None
+        return has_token or has_hours
 
     def get_title(self, lang: str = 'en') -> str:
         if lang == 'de' and self.title_de:
@@ -414,21 +418,32 @@ class TokenRate(Base):
     
     id = Column(UUID(as_uuid=False), primary_key=True, default=generate_uuid)
     tokens_per_eur = Column(Numeric(15, 4), default=70.0, nullable=False)
+    currency = Column(String(3), nullable=False, default='EUR')
     effective_from = Column(DateTime, default=datetime.utcnow)
     effective_until = Column(DateTime)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     @classmethod
-    def get_current_rate(cls, db: Session) -> 'TokenRate':
+    def get_current_rate(cls, db: Session, currency: str = 'EUR') -> 'TokenRate':
+        """The token rate for a currency, or None if nobody has set one.
+
+        Returns None rather than a default for any currency but euro. A
+        made-up rate would price a token in hryvnia by guess; what a
+        token is worth somewhere is a decision, and the application does
+        not make it. Euro keeps its historical default so existing
+        behaviour is unchanged.
+        """
         now = datetime.utcnow()
         rate = db.query(cls).filter(
+            cls.currency == currency,
             cls.effective_from <= now,
             (cls.effective_until.is_(None)) | (cls.effective_until > now)
         ).order_by(cls.effective_from.desc()).first()
-        
+
         if not rate:
-            # Return default rate
-            return cls(tokens_per_eur=Decimal('70.0'))
+            if currency == 'EUR':
+                return cls(tokens_per_eur=Decimal('70.0'), currency='EUR')
+            return None
         return rate
     
     @classmethod
@@ -448,8 +463,9 @@ class HoursRate(Base):
     __table_args__ = {'schema': SCHEMA}
     
     id = Column(UUID(as_uuid=False), primary_key=True, default=generate_uuid)
-    category = Column(String(100), unique=True, nullable=False)
+    category = Column(String(100), nullable=False)  # unique per currency, see migration 021
     eur_per_hour = Column(Numeric(10, 2), nullable=False)
+    currency = Column(String(3), nullable=False, default='EUR')
     description = Column(Text)
     description_de = Column(Text)
     description_pl = Column(Text)

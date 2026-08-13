@@ -109,9 +109,14 @@ check("UAH symbol is hryvnia", uah.currency_symbol == "\u20b4")
 check("EUR symbol is euro", eur.currency_symbol == "\u20ac")
 
 # ── token and hours stay EUR-only ────────────────────────────
-check("EUR offering allows token and hours", eur.allows_token_and_hours is True)
-check("PLN offering does not allow token and hours", pln.allows_token_and_hours is False)
-check("UAH offering does not allow token and hours", uah.allows_token_and_hours is False)
+# Availability follows whether a rate exists in that currency, not the
+# currency itself: rates are set per region in the admin area.
+check("EUR offering allows token and hours (euro rates exist)",
+      eur.allows_token_and_hours(db) is True)
+check("PLN offering has no rates set, so no token or hours",
+      pln.allows_token_and_hours(db) is False)
+check("UAH offering has no rates set, so no token or hours",
+      uah.allows_token_and_hours(db) is False)
 eur_id, pln_id = str(eur.id), str(pln.id)
 db.close()
 

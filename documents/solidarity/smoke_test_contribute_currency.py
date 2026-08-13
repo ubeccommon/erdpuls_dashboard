@@ -100,10 +100,12 @@ for path, label in ((f"/offering/{uah}/contribute", "support only"),
     check(f"{label}: no euro sign anywhere", not leftovers)
     for lo in leftovers[:4]:
         print("      euro at:", lo)
-    check(f"{label}: token option not offered", "UBECrc Tokens" not in body)
-    check(f"{label}: hours option not offered", 'value="hours"' not in body)
-    check(f"{label}: explains why they are absent",
-          "only on offerings priced in euro" in " ".join(body.split()))
+    # Types remain offered in every currency; where no rate is set they
+    # are marked unavailable and say so, rather than disappearing.
+    check(f"{label}: token option still offered", 'value="token"' in body)
+    check(f"{label}: hours option still offered", 'value="hours"' in body)
+    check(f"{label}: unavailable types say no rate is set",
+          "No rate set in UAH" in body or "No rates set in UAH" in body)
 
 # ── the EUR contribute page is unchanged ─────────────────────
 st, body = call(f"/offering/{eur}/contribute")
@@ -116,7 +118,7 @@ check("EUR page: hours option offered", 'value="hours"' in body)
 check("EUR page: no hryvnia", HRYVNIA not in body)
 
 # ── the server still refuses euro-rated types on a UAH offering ──
-st, body = call(f"/offering/{uah}/contribute", {
+st, body = call(f"/offering/{uah}/contribute/submit", {
     "contribution_type": "token", "token_amount": "700",
     "name": "SYNTHETIC", "email": "synthetic@test.invalid"})
 cur.execute("SELECT COUNT(*) FROM erdpuls_threshold.contributions WHERE offering_id=%s", (uah,))

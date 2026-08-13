@@ -92,31 +92,34 @@
                                 </div>
                             </label>
                             
-                            <!-- Tokens: euro-rated, so only for a EUR offering -->
-                            {% if offering.currency == 'EUR' %}
-                            <label class="type-card" data-type="token">
+                            <!-- Tokens -->
+                            <label class="type-card{% if not token_rate %} unavailable{% endif %}" data-type="token">
                                 <input type="radio" name="contribution_type" value="token">
                                 <div class="type-icon">🪙</div>
                                 <div class="type-name">UBECrc Tokens</div>
                                 <div class="type-desc">
-                                    {% if lang == 'de' %}{{ token_rate.tokens_per_eur }} Tokens = €1{% elif lang == 'pl' %}{{ token_rate.tokens_per_eur }} tokenów = €1{% elif lang == 'uk' %}{{ token_rate.tokens_per_eur }} токенів = €1{% else %}{{ token_rate.tokens_per_eur }} tokens = €1{% endif %}
+                                    {% if token_rate %}
+                                    {% if lang == 'de' %}{{ token_rate.tokens_per_eur }} Tokens = 1 {{ offering.currency }}{% elif lang == 'pl' %}{{ token_rate.tokens_per_eur }} tokenów = 1 {{ offering.currency }}{% elif lang == 'uk' %}{{ token_rate.tokens_per_eur }} токенів = 1 {{ offering.currency }}{% else %}{{ token_rate.tokens_per_eur }} tokens = 1 {{ offering.currency }}{% endif %}
+                                    {% else %}
+                                    {% if lang == 'de' %}Kein Kurs in {{ offering.currency }} festgelegt{% elif lang == 'pl' %}Brak kursu w {{ offering.currency }}{% elif lang == 'uk' %}Курс у {{ offering.currency }} не встановлено{% else %}No rate set in {{ offering.currency }}{% endif %}
+                                    {% endif %}
                                 </div>
                             </label>
                             
-                            <!-- Hours: euro-rated, same reason -->
-                            <label class="type-card" data-type="hours">
+                            <!-- Hours -->
+                            <label class="type-card{% if not hours_rates %} unavailable{% endif %}" data-type="hours">
                                 <input type="radio" name="contribution_type" value="hours">
                                 <div class="type-icon">⏱️</div>
                                 <div class="type-name">{% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% elif lang == 'uk' %}Години{% else %}Hours{% endif %}</div>
                                 <div class="type-desc">
-                                    {% if lang == 'de' %}Fähigkeiten/Arbeit{% elif lang == 'pl' %}Umiejętności/praca{% elif lang == 'uk' %}Навички/праця{% else %}Skills/labor{% endif %}
+                                    {% if hours_rates %}{% if lang == 'de' %}Fähigkeiten/Arbeit{% elif lang == 'pl' %}Umiejętności/praca{% elif lang == 'uk' %}Навички/праця{% else %}Skills/labor{% endif %}
+                                    {% else %}{% if lang == 'de' %}Keine Sätze in {{ offering.currency }} festgelegt{% elif lang == 'pl' %}Brak stawek w {{ offering.currency }}{% elif lang == 'uk' %}Ставки у {{ offering.currency }} не встановлено{% else %}No rates set in {{ offering.currency }}{% endif %}{% endif %}
                                 </div>
                             </label>
-                            {% endif %}
                         </div>
-                        {% if offering.currency != 'EUR' %}
+                        {% if not token_rate or not hours_rates %}
                         <p class="muted" style="font-size:.85rem">
-                            {% if lang == 'de' %}Token- und Stundenbeiträge sind nur bei Angeboten in Euro möglich: ihre Sätze sind in Euro festgelegt und werden hier nicht umgerechnet.{% elif lang == 'pl' %}Wpłaty tokenami i godzinami są możliwe tylko przy ofertach w euro: ich stawki są ustalone w euro i nie są tu przeliczane.{% elif lang == 'uk' %}Внески токенами й годинами можливі лише для пропозицій у євро: їхні ставки визначені в євро й тут не конвертуються.{% else %}Token and hours contributions are available only on offerings priced in euro — their rates are set in euro and nothing is converted here.{% endif %}
+                            {% if lang == 'de' %}Für {{ offering.currency }} ist noch kein Token- oder Stundensatz festgelegt. Diese Beitragsarten werden erst möglich, wenn jemand festlegt, was ein Token und eine Stunde hier wert sind — umgerechnet wird nichts.{% elif lang == 'pl' %}Dla {{ offering.currency }} nie ustalono jeszcze kursu tokenów ani stawek godzinowych. Te formy wkładu staną się możliwe, gdy ktoś określi ich wartość tutaj — nic nie jest przeliczane.{% elif lang == 'uk' %}Для {{ offering.currency }} ще не встановлено курс токенів або ставки за годину. Ці види внеску стануть можливими, коли хтось визначить, скільки тут вартують токен і година — нічого не конвертується.{% else %}No token or hours rate has been set in {{ offering.currency }} yet. These contribution types become available once someone sets what a token and an hour are worth here — nothing is converted from another currency.{% endif %}
                         </p>
                         {% endif %}
                     </div>
@@ -152,8 +155,7 @@
                         </div>
                         
                         <!-- Token Amount -->
-                        {% if offering.currency == 'EUR' %}
-<div class="amount-panel hidden" id="tokenPanel">
+                        <div class="amount-panel hidden" id="tokenPanel">
                             <div class="form-group">
                                 <label for="token_amount">
                                     {% if lang == 'de' %}Anzahl Tokens{% elif lang == 'pl' %}Liczba tokenów{% elif lang == 'uk' %}Кількість токенів{% else %}Number of Tokens{% endif %}
@@ -162,7 +164,7 @@
                                        min="1" step="1" placeholder="0" class="amount-input">
                             </div>
                             <p class="conversion-note">
-                                {% if lang == 'de' %}Aktueller Kurs: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% elif lang == 'pl' %}Aktualny kurs: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% elif lang == 'uk' %}Поточний курс: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% else %}Current rate: {{ token_rate.tokens_per_eur }} UBECrc = €1.00{% endif %}
+                                {% if lang == 'de' %}Aktueller Kurs: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ offering.currency }}{% elif lang == 'pl' %}Aktualny kurs: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ offering.currency }}{% elif lang == 'uk' %}Поточний курс: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ offering.currency }}{% else %}Current rate: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ offering.currency }}{% endif %}
                             </p>
                         </div>
                         
@@ -176,7 +178,7 @@
                                     <option value="">{% if lang == 'de' %}Bitte auswählen{% elif lang == 'pl' %}Proszę wybrać{% elif lang == 'uk' %}Будь ласка, оберіть{% else %}Please select{% endif %}</option>
                                     {% for rate in hours_rates %}
                                     <option value="{{ rate.category }}" data-rate="{{ rate.eur_per_hour }}">
-                                        {{ rate.get_description(lang) or rate.category }} (€{{ rate.eur_per_hour }}/{% if lang == 'de' %}Std{% elif lang == 'pl' %}godz{% elif lang == 'uk' %}год{% else %}hr{% endif %})
+                                        {{ rate.get_description(lang) or rate.category }} ({{ offering.currency_symbol }}{{ rate.eur_per_hour }}/{% if lang == 'de' %}Std{% elif lang == 'pl' %}godz{% elif lang == 'uk' %}год{% else %}hr{% endif %})
                                     </option>
                                     {% endfor %}
                                 </select>
@@ -199,7 +201,7 @@
                             </div>
                         </div>
                     </div>
-{% endif %}
+
 
                     <!-- Step 3: Contact Information -->
                     <div class="form-section">
