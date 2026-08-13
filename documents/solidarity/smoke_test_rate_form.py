@@ -57,27 +57,23 @@ st, body = call("/admin/settings")
 check("settings renders", st == 200)
 
 # ── the label follows the currency, rather than always euro ──
-check("amount label is not hardcoded to euro",
+check("no euro-bound amount label anywhere",
       "\u20ac/hour" not in body and "\u20ac/Stunde" not in body)
-check("label has a currency placeholder that JS updates",
-      'id="rateCurrencyLabel"' in body)
-check("the currency select drives the label",
-      "rateCurrencyLabel" in body and "onchange" in body)
 
 # ── no euro-shaped default ───────────────────────────────────
-m = re.search(r'<input[^>]*id="eur_per_hour"[^>]*>', body)
-check("amount field found", m is not None)
+m = re.search(r'<input[^>]*id="amount_UAH"[^>]*>', body)
+check("UAH amount field found", m is not None)
 if m:
     check("no default value of 15", 'value="15"' not in m.group(0))
     check("field is required", "required" in m.group(0))
 check("field explains the figure is local, not converted",
-      "not converted from euro" in " ".join(body.split())
-      or "не конвертовано з євро" in " ".join(body.split()))
+      "not converted from another currency" in " ".join(body.split()))
 
 # ── Ukrainian description offered ────────────────────────────
 check("Ukrainian description field present", 'name="description_uk"' in body)
 for other in ("description", "description_de", "description_pl"):
     check(f"{other} still present", f'name="{other}"' in body)
+check("edit fills the form of that rate's own currency", "editRate(" in body)
 
 # ── and it survives a round trip ─────────────────────────────
 UK = "Прополювання, садіння, збирання врожаю"
@@ -107,19 +103,19 @@ check("get_description falls back to English otherwise",
 db.close()
 
 # ── editing prefills the Ukrainian field and the currency ────
-check("edit prefill passes the Ukrainian description", "description_uk" in body)
-check("edit prefill passes the currency", "rate.currency" in body or "UAH'" in body)
+check("edit passes the Ukrainian description", "desc_uk_" in body)
 
 
 # ── every currency can be given a rate, not only the last one ──
 st, body = call("/admin/settings")
-check("form is presented as serving every currency",
-      "decides which one the rate belongs to" in " ".join(body.split())
-      or "One form for every currency" in body)
-check("a currency with no rates points at the form",
-      "choosing PLN as the currency" in " ".join(body.split()))
+# Each currency section carries its own add form, with the currency
+# fixed — no dropdown to misread, and the label names that currency.
 for c in ("EUR", "PLN", "UAH"):
-    check(f"{c} selectable as a rate currency", f'<option value="{c}"' in body or f">{c}<" in body)
+    check(f"{c} section has its own add form", f'id="addForm_{c}"' in body)
+    check(f"{c} form fixes its currency", f'name="currency" value="{c}"' in body)
+    check(f"{c} form labels the amount {c}/hour",
+          f'>{c}/' in body or f'{c}/hour' in body)
+    check(f"{c} form has its own category field", f'id="category_{c}"' in body)
 
 # PLN is reachable in practice, not only in theory
 call("/admin/settings/hours-rate", {

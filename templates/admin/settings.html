@@ -91,7 +91,7 @@
                     <h3 style="margin-top:1rem">{{ cur }}</h3>
                     {% if not hours_by_currency[cur] %}
                     <p class="muted" style="font-size:.85rem">
-                        {% if lang == 'uk' %}Ставок ще не встановлено. Поки їх немає, внески годинами для пропозицій у {{ cur }} недоступні. Додайте ставку у формі нижче, обравши {{ cur }} як валюту.{% else %}No rates set yet. Until there are, hours contributions are unavailable on offerings priced in {{ cur }}. Add one in the form below, choosing {{ cur }} as the currency.{% endif %}
+                        {% if lang == 'uk' %}Ставок ще не встановлено. Поки їх немає, внески годинами для пропозицій у {{ cur }} недоступні.{% else %}No rates set yet. Until there are, hours contributions are unavailable on offerings priced in {{ cur }}.{% endif %}
                     </p>
                     {% endif %}
                     {% if hours_by_currency[cur] %}
@@ -108,7 +108,7 @@
                             <div class="rate-actions">
                                 <!-- Update Button -->
                                 <button type="button" class="btn btn-small btn-outline" 
-                                        onclick="populateEditForm('{{ rate.category }}', '{{ rate.eur_per_hour }}', '{{ rate.description or '' }}', '{{ rate.description_de or '' }}', '{{ rate.description_pl or '' }}', '{{ rate.description_uk or '' }}', '{{ rate.currency }}')">
+                                        onclick="editRate('{{ rate.currency }}', '{{ rate.category }}', '{{ rate.eur_per_hour }}', '{{ rate.description or '' }}', '{{ rate.description_de or '' }}', '{{ rate.description_pl or '' }}', '{{ rate.description_uk or '' }}')">
                                     {% if lang == 'de' %}Bearbeiten{% elif lang == 'pl' %}Edytuj{% else %}Edit{% endif %}
                                 </button>
                                 <!-- Delete Button -->
@@ -123,70 +123,54 @@
                     </div>
                     <hr style="margin: 1.5rem 0; border-color: var(--color-border);">
                     {% endif %}
+
+                    <details id="addForm_{{ cur }}" style="margin:.6rem 0 1.4rem">
+                        <summary style="cursor:pointer">
+                            {% if lang == 'de' %}Satz in {{ cur }} hinzufügen{% elif lang == 'pl' %}Dodaj stawkę w {{ cur }}{% elif lang == 'uk' %}Додати ставку в {{ cur }}{% else %}Add a rate in {{ cur }}{% endif %}
+                        </summary>
+                        <form action="/admin/settings/hours-rate" method="post" class="admin-form">
+                            <input type="hidden" name="currency" value="{{ cur }}">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="category_{{ cur }}">{% if lang == 'de' %}Kategorie{% elif lang == 'pl' %}Kategoria{% elif lang == 'uk' %}Категорія{% else %}Category{% endif %}</label>
+                                    <input type="text" id="category_{{ cur }}" name="category"
+                                           placeholder="{% if lang == 'uk' %}напр. garden_labor{% else %}e.g. garden_labor{% endif %}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="amount_{{ cur }}">{{ cur }}/{% if lang == 'de' %}Stunde{% elif lang == 'pl' %}godz{% elif lang == 'uk' %}година{% else %}hour{% endif %}</label>
+                                    <input type="number" id="amount_{{ cur }}" name="eur_per_hour"
+                                           step="0.01" min="0" required
+                                           placeholder="{% if lang == 'uk' %}за місцевою ставкою{% else %}the local rate{% endif %}">
+                                    <small>{% if lang == 'uk' %}Скільки коштує година цієї роботи тут — не конвертовано з іншої валюти.{% else %}What an hour of this work is worth here — not converted from another currency.{% endif %}</small>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="desc_en_{{ cur }}">{% if lang == 'uk' %}Опис (EN){% else %}Description (EN){% endif %}</label>
+                                <input type="text" id="desc_en_{{ cur }}" name="description">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="desc_de_{{ cur }}">{% if lang == 'uk' %}Опис (DE){% else %}Description (DE){% endif %}</label>
+                                    <input type="text" id="desc_de_{{ cur }}" name="description_de">
+                                </div>
+                                <div class="form-group">
+                                    <label for="desc_pl_{{ cur }}">{% if lang == 'uk' %}Опис (PL){% else %}Description (PL){% endif %}</label>
+                                    <input type="text" id="desc_pl_{{ cur }}" name="description_pl">
+                                </div>
+                                <div class="form-group">
+                                    <label for="desc_uk_{{ cur }}">{% if lang == 'uk' %}Опис (UK){% else %}Description (UK){% endif %}</label>
+                                    <input type="text" id="desc_uk_{{ cur }}" name="description_uk">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Speichern{% elif lang == 'pl' %}Zapisz{% elif lang == 'uk' %}Зберегти{% else %}Save{% endif %}</button>
+                            </div>
+                            <small>{% if lang == 'uk' %}Ставка стосується лише {{ cur }}. Нічого не конвертується між валютами. Наявну категорію буде оновлено.{% else %}This rate applies to {{ cur }} only. Nothing is converted between currencies. An existing category is updated.{% endif %}</small>
+                        </form>
+                    </details>
                     {% endfor %}
 
-                    <!-- Add Rate: one form for every currency. The Currency
-                         field below decides which one it applies to. -->
-                    <hr style="margin: 2rem 0; border-color: var(--color-border);">
-                    <p class="muted" style="font-size:.85rem">
-                        {% if lang == 'de' %}Ein Formular für alle Währungen — die Währung unten entscheidet, für welche der Satz gilt.{% elif lang == 'pl' %}Jeden formularz dla wszystkich walut — waluta poniżej decyduje, której dotyczy stawka.{% elif lang == 'uk' %}Одна форма для всіх валют — валюта нижче визначає, до якої належить ставка.{% else %}One form for every currency — the Currency field below decides which one the rate belongs to.{% endif %}
-                    </p>
-                    <h3 style="font-size: 1rem; margin-bottom: 1rem;">
-                        {% if lang == 'de' %}Stundensatz hinzufügen{% elif lang == 'pl' %}Dodaj stawkę{% else %}Add Rate{% endif %}
-                    </h3>
-                    <form action="/admin/settings/hours-rate" method="post" class="admin-form" id="hoursRateForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="category">{% if lang == 'de' %}Kategorie{% elif lang == 'pl' %}Kategoria{% else %}Category{% endif %}</label>
-                                <input type="text" id="category" name="category" 
-                                       placeholder="{% if lang == 'de' %}z.B. garden_labor{% elif lang == 'pl' %}np. garden_labor{% else %}e.g. garden_labor{% endif %}" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="eur_per_hour">
-                                    <span id="rateCurrencyLabel">EUR</span>/{% if lang == 'de' %}Stunde{% elif lang == 'pl' %}godz{% elif lang == 'uk' %}година{% else %}hour{% endif %}
-                                </label>
-                                <input type="number" id="eur_per_hour" name="eur_per_hour"
-                                       step="0.01" min="0" required
-                                       placeholder="{% if lang == 'uk' %}за місцевою ставкою{% else %}the local rate{% endif %}">
-                                <small>{% if lang == 'uk' %}Скільки коштує година цієї роботи тут — не конвертовано з євро.{% else %}What an hour of this work is worth here — not converted from euro.{% endif %}</small>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="description">{% if lang == 'de' %}Beschreibung (EN){% elif lang == 'pl' %}Opis (EN){% else %}Description (EN){% endif %}</label>
-                            <input type="text" id="description" name="description">
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="description_de">{% if lang == 'de' %}Beschreibung (DE){% elif lang == 'pl' %}Opis (DE){% else %}Description (DE){% endif %}</label>
-                                <input type="text" id="description_de" name="description_de">
-                            </div>
-                            <div class="form-group">
-                                <label for="description_pl">{% if lang == 'de' %}Beschreibung (PL){% elif lang == 'pl' %}Opis (PL){% else %}Description (PL){% endif %}</label>
-                                <input type="text" id="description_pl" name="description_pl">
-                            </div>
-                            <div class="form-group">
-                                <label for="description_uk">{% if lang == 'de' %}Beschreibung (UK){% elif lang == 'pl' %}Opis (UK){% elif lang == 'uk' %}Опис (UK){% else %}Description (UK){% endif %}</label>
-                                <input type="text" id="description_uk" name="description_uk">
-                            </div>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">{% if lang == 'de' %}Speichern{% elif lang == 'pl' %}Zapisz{% else %}Save{% endif %}</button>
-                            
-                    <div class="form-group">
-                        <label for="currency_eur_per_hour">{% if lang == 'uk' %}Валюта{% else %}Currency{% endif %}</label>
-                        <select id="currency_eur_per_hour" name="currency" onchange="document.getElementById('rateCurrencyLabel').textContent = this.value;">
-                            {% for c in currencies %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
-                        </select>
-                        <small>{% if lang == 'uk' %}Ставка стосується лише цієї валюти. Нічого не конвертується між валютами.{% else %}The rate applies to this currency only. Nothing is converted between currencies.{% endif %}</small>
-                    </div>
-                    <button type="button" class="btn btn-outline" id="clearFormBtn" style="display: none;" onclick="clearForm()">
-                                {% if lang == 'de' %}Abbrechen{% elif lang == 'pl' %}Anuluj{% else %}Cancel{% endif %}
-                            </button>
-                        </div>
-                    </form>
+                    {# per-currency add forms are rendered inside the loop above #}
                 </div>
             </div>
             
@@ -334,40 +318,21 @@
 </style>
 
 <script>
-function populateEditForm(category, eurPerHour, descEn, descDe, descPl, descUk, cur) {
-    document.getElementById('category').value = category;
-    document.getElementById('eur_per_hour').value = eurPerHour;
-    document.getElementById('description').value = descEn;
-    document.getElementById('description_de').value = descDe;
-    document.getElementById('description_pl').value = descPl;
-    if (descUk !== undefined) document.getElementById('description_uk').value = descUk;
-    if (cur !== undefined) {
-        document.getElementById('currency_eur_per_hour').value = cur;
-        document.getElementById('rateCurrencyLabel').textContent = cur;
-    }
-    
-    // Show cancel button
-    document.getElementById('clearFormBtn').style.display = 'inline-block';
-    
-    // Scroll to form
-    document.getElementById('hoursRateForm').scrollIntoView({ behavior: 'smooth' });
-    
-    // Focus on rate field (category is usually not changed)
-    document.getElementById('eur_per_hour').focus();
-}
-
-function clearForm() {
-    document.getElementById('category').value = '';
-    document.getElementById('eur_per_hour').value = '15';
-    document.getElementById('description').value = '';
-    document.getElementById('description_de').value = '';
-    document.getElementById('description_pl').value = '';
-    document.getElementById('description_uk').value = '';
-    document.getElementById('clearFormBtn').style.display = 'none';
+function editRate(cur, category, amount, descEn, descDe, descPl, descUk) {
+    // Fill the add form belonging to that currency: it sits beside the
+    // rate being edited, so the currency cannot be mistaken. Saving an
+    // existing category updates it rather than creating a second one.
+    var box = document.getElementById('addForm_' + cur);
+    if (box) { box.open = true; }
+    document.getElementById('category_' + cur).value = category;
+    document.getElementById('amount_' + cur).value = amount;
+    document.getElementById('desc_en_' + cur).value = descEn || '';
+    document.getElementById('desc_de_' + cur).value = descDe || '';
+    document.getElementById('desc_pl_' + cur).value = descPl || '';
+    document.getElementById('desc_uk_' + cur).value = descUk || '';
+    document.getElementById('category_' + cur).scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 </script>
-{% endblock %}
-
 <script>
 // The token rate is per currency. Switching the dropdown updates the
 // label and shows the rate already set for that currency, so nobody
@@ -390,3 +355,4 @@ function tokenCurrencyChanged(cur) {
     }
 }
 </script>
+{% endblock %}
