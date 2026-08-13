@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.sol table{border-collapse:collapse;width:100%;margin:.8rem 0}
+.sol th,.sol td{border:1px solid #cfc9bb;padding:.35rem .6rem;text-align:left}
+.sol th{background:#f4f2ec}.sol tr.total td{font-weight:bold;background:#faf9f5}
+.sol form.inline{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.8rem 0}
+.sol label{display:flex;flex-direction:column;font-size:.85rem}
+.sol .err{background:#fdf3d0;border:1px solid #d9c76a;padding:.5rem .8rem;margin:.6rem 0}
+.sol .muted{opacity:.75;font-size:.9rem}
+.sol footer.sol-note{margin-top:2.2rem;border-top:1px solid #cfc9bb;padding-top:.6rem;font-size:.8rem;opacity:.75}
+</style>
+{% endblock %}
+{% block title %}Sessions · Solidarity Financing{% endblock %}
+{% block content %}<div class=sol>
+<h1>{% if lang == 'uk' %}Відкритий бюджет{% else %}The open budget{% endif %}</h1>
+<p class=muted>{{ initiative.name }}{% if offering %} — {{ offering.title }}{% endif %}</p>
+
+{% if is_facilitator and not s.budget_shared %}
+<p class=err>Only you can see this: the budget is not shared with participants yet.
+Turn sharing on from the session page when it is ready to be laid open.</p>
+{% endif %}
+
+{% if s.description %}<p>{{ s.description }}</p>{% endif %}
+
+<h2>{% if lang == 'uk' %}Що коштує сесія{% else %}What the session costs{% endif %}</h2>
+<table><tr>
+  <th>{% if lang == 'uk' %}Стаття{% else %}Line item{% endif %}</th>
+  <th>{% if lang == 'uk' %}Сума{% else %}Amount{% endif %}</th>
+  <th>{% if lang == 'uk' %}Статус{% else %}Status{% endif %}</th>
+  <th>{% if lang == 'uk' %}Примітка{% else %}Note{% endif %}</th></tr>
+{% for l in lines %}<tr>
+  <td>{{ l.line_item }}</td>
+  <td>{{ l.amount_uah }} UAH</td>
+  <td>{{ l.status }}</td>
+  <td>{{ l.note }}</td></tr>{% endfor %}
+<tr class=total><td>{% if lang == 'uk' %}Разом витрати{% else %}Cost total{% endif %}</td>
+  <td>{{ vb.cost_uah }} UAH</td><td colspan=2></td></tr>
+<tr class=total><td>{% if lang == 'uk' %}Покриття колом підтримки{% else %}Supporter-circle cover{% endif %}</td>
+  <td>{{ vb.cover_uah }} UAH</td><td colspan=2></td></tr>
+<tr class=total><td>{% if lang == 'uk' %}Залишок для раунду{% else %}Remainder for the round{% endif %}</td>
+  <td>{{ vb.remainder_uah }} UAH</td><td colspan=2></td></tr>
+</table>
+
+{% if rounds %}
+<h2>{% if lang == 'uk' %}Раунди{% else %}Rounds{% endif %}</h2>
+<table><tr>
+  <th>{% if lang == 'uk' %}Раунд{% else %}Round{% endif %}</th>
+  <th>{% if lang == 'uk' %}Стан{% else %}State{% endif %}</th>
+  <th>{% if lang == 'uk' %}Заявок{% else %}Pledges{% endif %}</th>
+  <th>{% if lang == 'uk' %}Разом заявлено{% else %}Total pledged{% endif %}</th>
+  <th>{% if lang == 'uk' %}Результат{% else %}Result{% endif %}</th></tr>
+{% for r in rounds %}<tr>
+  <td>{{ r.round_no }}</td><td>{{ r.state }}</td><td>{{ r.pledge_count }}</td>
+  <td>{{ r.total_pledged_uah }} UAH</td>
+  <td>{% if r.gap_uah <= 0 %}{% if lang == 'uk' %}закрито{% else %}closed{% endif %}
+      {% else %}{% if lang == 'uk' %}бракує{% else %}gap{% endif %} {{ r.gap_uah }} UAH{% endif %}</td>
+</tr>{% endfor %}</table>
+<p class=muted>{% if lang == 'uk' %}Показано лише суми. Скільки заявила окрема родина не показує ніхто й ніколи.{% else %}Sums only. What any one family pledged is shown to nobody, ever.{% endif %}</p>
+{% endif %}
+
+<h2>{% if lang == 'uk' %}Як це працює{% else %}How this works{% endif %}</h2>
+<p>{% if lang == 'uk' %}Бюджет вище — повний. Раунд заявок відбувається особисто, у кімнаті: кожна родина пише на папірці, скільки може нести — більше, менше або нічого — складає його і кладе у скриньку. Суми додають; якщо залишок не закрито, раунд повторюють. Бюджет закриває спільнота родин як ціле, або не закриває ніхто.{% else %}The budget above is the whole of it. The bidding round happens in person, in a room: each family writes on a slip what it can carry — above the share, below it, or nothing — folds it, and puts it in the box. The slips are summed; if the remainder is not closed, the round repeats. The budget is closed by the community of families as a whole, or not at all.{% endif %}</p>
+<p>{% if lang == 'uk' %}Заявки анонімні. Тут немає форми для заявки — і не буде: папірець у скриньці надійніший за будь-який пароль.{% else %}Pledges are anonymous. There is no pledge form here, and there will not be one: a folded slip in a box is a stronger guarantee than any login.{% endif %}</p>
+
+<footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network</footer>
+</div>{% endblock %}

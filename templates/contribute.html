@@ -125,7 +125,7 @@
                         <div class="amount-panel" id="euroPanel">
                             <div class="form-group">
                                 <label for="amount_eur">
-                                    {% if lang == 'de' %}Betrag in Euro{% elif lang == 'pl' %}Kwota w Euro{% elif lang == 'uk' %}Сума в євро{% else %}Amount in Euro{% endif %}
+                                    {% if lang == 'de' %}Betrag in {{ offering.currency }}{% elif lang == 'pl' %}Kwota w {{ offering.currency }}{% elif lang == 'uk' %}Сума в {{ offering.currency }}{% else %}Amount in {{ offering.currency }}{% endif %}
                                 </label>
                                 <div class="amount-input-wrapper">
                                     <span class="currency-symbol">{{ offering.currency_symbol }}</span>

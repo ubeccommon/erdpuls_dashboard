@@ -1,5 +1,5 @@
 """
-Solidarity Financing — native Erdpuls router, v1.2
+Solidarity Financing — native Erdpuls router, v1.3
 ==================================================
 Project: Solidarity Financing 2026 (working title) — Michel Garand
 Mounted per initiative at /{initiative-slug}/solidarity inside the
@@ -21,6 +21,16 @@ Invariants (unchanged from the paper layer):
   - Records and computes; moves no money.
 
 Changelog:
+  v1.3 (August 2026) — the open budget can be shown to the families
+      taking part. Step one of the round is "lay the budget open", and a
+      family cannot pledge against figures it has not seen; this is that
+      sheet on the table, on screen. Sharing is opt-in per session and
+      off by default (migration 019). The view carries budget lines and
+      sums only — no token, no per-family pledge — and NO pledge form:
+      the round is still held in a room, where a facilitator can read the
+      gap aloud and stop a round closing by pressure rather than consent.
+      Reachable by signed-in people registered for the linked offering,
+      or members of the initiative. Never public.
   v1.2 (August 2026) — a session whose budget is still empty can copy the
       cost lines from its offering, when that offering is in UAH and no
       round has opened. Sessions created before budget seeding existed
@@ -803,3 +813,80 @@ def choose_initiative(request: Request,
     return templates.TemplateResponse("solidarity/choose.html", {
         "request": request, "user": user, "initiatives": inits,
         "statuses": VALID_STATUSES})
+
+
+# ── the open budget, for the families taking part ────────────
+
+def may_see_open_budget(db: Session, user, s) -> bool:
+    """May this signed-in person see this session's open budget?
+
+    Three ways in, and no others: a facilitator of the initiative (who
+    can always see it, sharing or not, since they run it); a member of
+    the initiative; or someone registered for the offering this session
+    finances. The last is matched by email, because registrations are
+    keyed by email rather than account — a family that signed up without
+    creating an account keeps its place in that check.
+    """
+    if member_at_least(db, user, s["initiative_id"], "facilitator"):
+        return True
+    if not s["budget_shared"]:
+        return False
+    if member_at_least(db, user, s["initiative_id"], "member"):
+        return True
+    if not s["offering_id"]:
+        return False
+    reg = one(db, """SELECT 1 FROM erdpuls_threshold.registrations
+                     WHERE offering_id = :o AND lower(email) = lower(:e)""",
+              o=str(s["offering_id"]), e=user.email)
+    return bool(reg)
+
+
+@chooser.get("/{initiative_slug}/solidarity/open/{sid}", response_class=HTMLResponse)
+def open_budget(initiative_slug: str, sid: int, request: Request,
+                db: Session = Depends(get_db)):
+    """The open budget as the families taking part see it.
+
+    Sums and budget lines only. No tokens, no per-family pledges, and no
+    pledge form: pledging happens on paper, in the room, anonymously.
+    """
+    user = get_current_user(request, db)
+    init = one(db, """SELECT id, slug, name, location FROM erdpuls_threshold.initiatives
+                      WHERE slug = :s""", s=initiative_slug)
+    if not init:
+        raise HTTPException(404)
+    s = one(db, """SELECT * FROM solidarity.camp_session
+                   WHERE id = :i AND initiative_id = :n""", i=sid, n=init["id"])
+    if not s:
+        raise HTTPException(404)
+    if not may_see_open_budget(db, user, s):
+        raise HTTPException(status_code=404, detail="No such open budget.")
+
+    offering = None
+    if s["offering_id"]:
+        offering = one(db, """SELECT id, title, currency FROM erdpuls_threshold.offerings
+                              WHERE id = :o""", o=s["offering_id"])
+    return templates.TemplateResponse("solidarity/open_budget.html", {
+        "request": request, "user": user, "initiative": init, "s": s,
+        "offering": offering,
+        "lines": rows(db, """SELECT line_item, amount_uah, status, is_transfer_in, note
+                             FROM solidarity.budget_line WHERE session_id = :i
+                             ORDER BY is_transfer_in, id""", i=sid),
+        "vb": one(db, "SELECT * FROM solidarity.v_session_budget WHERE session_id = :i", i=sid),
+        "rounds": rows(db, """SELECT round_no, state, pledge_count, total_pledged_uah, gap_uah
+                              FROM solidarity.v_round_totals WHERE session_id = :i
+                              ORDER BY round_no""", i=sid),
+        "is_facilitator": member_at_least(db, user, s["initiative_id"], "facilitator"),
+    })
+
+
+@router.post("/session/{sid}/share")
+def toggle_share(sid: int, request: Request,
+                 user: User = Depends(require_facilitator),
+                 init=Depends(resolve_initiative),
+                 db: Session = Depends(get_db)):
+    """Show or stop showing the open budget to participants."""
+    s = session_of(db, sid, init)
+    db.execute(text("""UPDATE solidarity.camp_session
+                       SET budget_shared = NOT budget_shared WHERE id = :i"""), {"i": sid})
+    db.commit()
+    return back(init["slug"], f"/session/{sid}")

@@ -93,6 +93,18 @@ entered yet — delete the round below to edit the budget again.{% endif %}</p>{
  <label>Note <input name=note></label>
  <button>Add line</button>
 </form>{% endif %}
+<h2>Showing the budget to participants</h2>
+<p class=muted>Step one of the round is to lay the budget open — a family cannot pledge
+against figures it has not seen. Sharing shows the budget lines and round sums to people
+registered for this offering and to members of this initiative. It is never public, carries
+no pledge form, and never shows what any one family pledged.
+{% if not s.budget_shared %}It is currently off.{% else %}It is currently on.{% endif %}</p>
+<form method=post action="{{ prefix }}/session/{{ s.id }}/share" class=inline
+      {% if not s.budget_shared %}onsubmit="return confirm('Show this budget to everyone registered for the offering and to members of this initiative?')"{% endif %}>
+ <button>{% if s.budget_shared %}Stop showing it{% else %}Show it to participants{% endif %}</button>
+</form>
+<p><a href="/{{ initiative.slug }}/solidarity/open/{{ s.id }}">See it as they do</a></p>
+
 <h2>Bidding rounds</h2>
 <table><tr><th>Round</th><th>State</th><th>Pledges</th><th>Total pledged</th><th>Gap</th><th></th></tr>
 {% for r in rounds %}<tr>
