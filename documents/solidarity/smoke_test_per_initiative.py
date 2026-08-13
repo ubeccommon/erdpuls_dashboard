@@ -119,7 +119,8 @@ st, body = call(f"/synthetic-alpha/solidarity/session/{sessions['synthetic-beta'
                 {"line_item": "Cross", "amount_uah": "1", "status": "estimate",
                  "is_transfer_in": "", "note": ""})
 check("cross-initiative budget write refused", st == 404)
-cur.execute("SELECT COUNT(*) FROM solidarity.budget_line WHERE session_id=%s",
+cur.execute("""SELECT COUNT(*) FROM solidarity.budget_line
+               WHERE session_id=%s AND line_item='Cross'""",
             (sessions["synthetic-beta"],))
 check("no line written across initiatives", cur.fetchone()[0] == 0)
 

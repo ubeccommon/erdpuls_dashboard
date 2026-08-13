@@ -136,7 +136,7 @@ cur.execute("SELECT cost_uah, remainder_uah FROM solidarity.v_session_budget WHE
 cost, remainder = cur.fetchone()
 check("session budget starts at zero UAH", float(cost) == 0.0 and float(remainder) == 0.0)
 check("EUR appears in the note only as a stated reference",
-      "400.00 EUR" in note and "not converted" in note)
+      "400.00 EUR" in note and "Nothing was converted" in note)
 
 # ── the module shows the link, and says what it is not ───────
 st, body = call(op_fac, f"{P}/session/{sid}")

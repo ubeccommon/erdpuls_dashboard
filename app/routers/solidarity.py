@@ -318,7 +318,7 @@ def session_view(sid: int, request: Request,
     s = session_of(db, sid, init)
     offering = None
     if s["offering_id"]:
-        offering = one(db, """SELECT id, title, threshold_amount
+        offering = one(db, """SELECT id, title, threshold_amount, currency
                               FROM erdpuls_threshold.offerings WHERE id = :o""",
                        o=s["offering_id"])
     return render("session.html", request, user, init, s=s, offering=offering,

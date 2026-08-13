@@ -687,16 +687,44 @@ def create_offering(
             if not offering.initiative_id:
                 return RedirectResponse(
                     url="/dashboard?created=1&solidarity=no_initiative", status_code=303)
-            note = ("Opened from an Erdpuls offering. Threshold "
-                    f"{offering.threshold_amount} {offering.currency}"
-                    + ("." if offering.currency == 'UAH' else
-                       " — reference only, not converted. Enter the session budget in UAH."))
-            db.execute(_sql("""INSERT INTO solidarity.camp_session
+            # The session budget is kept in UAH. When the offering is
+            # already in UAH, its cost lines ARE the session's figures and
+            # copying them is not a conversion — so they are seeded here,
+            # tagged estimate, and stay editable until the first round.
+            # In any other currency nothing is copied: converting silently
+            # is the one thing this module must never do.
+            same_currency = offering.currency == 'UAH'
+            if same_currency:
+                note = ("Opened from an Erdpuls offering. Cost lines below were copied "
+                        f"from its cost breakdown (threshold {offering.threshold_amount} UAH) "
+                        "and are editable until the first round opens.")
+            else:
+                note = ("Opened from an Erdpuls offering priced in "
+                        f"{offering.currency}: threshold {offering.threshold_amount} "
+                        f"{offering.currency}, a reference only. Nothing was converted — "
+                        "enter the session budget in UAH.")
+            session_id = db.execute(_sql("""INSERT INTO solidarity.camp_session
                                (label, description, offering_id, initiative_id, note)
-                               VALUES (:l, :d, :o, :i, :n)"""),
+                               VALUES (:l, :d, :o, :i, :n) RETURNING id"""),
                        {"l": label, "d": offering.description or "",
                         "o": str(offering.id), "i": str(offering.initiative_id),
-                        "n": note})
+                        "n": note}).scalar()
+
+            if same_currency:
+                for line_item, amount in (
+                        ("Facilitator", facilitator_cost),
+                        ("Materials", materials_cost),
+                        ("Catering", catering_cost),
+                        ("Space", space_cost),
+                        ("Sustainability contribution", sustainability_contribution)):
+                    if Decimal(str(amount)) <= 0:
+                        continue
+                    db.execute(_sql("""INSERT INTO solidarity.budget_line
+                                       (session_id, line_item, amount_uah, status, note)
+                                       VALUES (:s, :li, :a, 'estimate', :n)"""),
+                               {"s": session_id, "li": line_item,
+                                "a": Decimal(str(amount)),
+                                "n": "from the offering's cost breakdown"})
             db.commit()
             slug = db.execute(_sql("SELECT slug FROM erdpuls_threshold.initiatives WHERE id = :i"),
                               {"i": str(offering.initiative_id)}).scalar()

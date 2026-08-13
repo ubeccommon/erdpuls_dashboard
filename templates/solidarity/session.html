@@ -19,8 +19,13 @@
 
 {% if offering %}<p class=muted>Finances the Erdpuls offering
 <a href="/dashboard/offering/{{ offering.id }}">{{ offering.title }}</a> —
-threshold {{ offering.threshold_amount }} EUR, shown as a reference only. The budget below is
-in UAH and is not converted from it; the two ledgers do not reconcile per person.</p>{% endif %}
+threshold {{ offering.threshold_amount }} {{ offering.currency }}.
+{% if offering.currency == 'UAH' %}Same currency as this budget, so its cost lines were
+copied across rather than converted.{% else %}Shown as a reference only: the budget below is
+in UAH and nothing was converted from it.{% endif %}
+The threshold model's contributions and this round's pledges stay separate ledgers and
+do not reconcile per person.</p>{% endif %}
+{% if s.note %}<p class=muted>{{ s.note }}</p>{% endif %}
 
 <h2>What this session offers</h2>
 {% if s.description %}<p>{{ s.description }}</p>
