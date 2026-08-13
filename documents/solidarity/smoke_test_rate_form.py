@@ -110,6 +110,42 @@ db.close()
 check("edit prefill passes the Ukrainian description", "description_uk" in body)
 check("edit prefill passes the currency", "rate.currency" in body or "UAH'" in body)
 
+
+# ── every currency can be given a rate, not only the last one ──
+st, body = call("/admin/settings")
+check("form is presented as serving every currency",
+      "decides which one the rate belongs to" in " ".join(body.split())
+      or "One form for every currency" in body)
+check("a currency with no rates points at the form",
+      "choosing PLN as the currency" in " ".join(body.split()))
+for c in ("EUR", "PLN", "UAH"):
+    check(f"{c} selectable as a rate currency", f'<option value="{c}"' in body or f">{c}<" in body)
+
+# PLN is reachable in practice, not only in theory
+call("/admin/settings/hours-rate", {
+    "category": "synthetic_pln_rate", "eur_per_hour": "48", "currency": "PLN",
+    "description": "Synthetic work at the Polish rate"})
+cur2 = psycopg2.connect(os.environ["DATABASE_URL"]).cursor()
+cur2.execute("""SELECT currency, eur_per_hour FROM erdpuls_threshold.hours_rates
+                WHERE category='synthetic_pln_rate'""")
+row2 = cur2.fetchone()
+check("a PLN rate can be added", row2 is not None and row2[0] == "PLN")
+check("PLN amount stored as entered", row2 is not None and float(row2[1]) == 48.0)
+
+st, body = call("/admin/settings")
+check("the PLN rate is listed under PLN", "synthetic_pln_rate" in body)
+check("PLN no longer reports no rates",
+      body.find("synthetic_pln_rate") > 0)
+
+# ── the token card follows its currency too ──────────────────
+check("token label is not hardcoded to euro", "Tokens per Euro" not in body)
+check("token label has a currency placeholder", 'id="tokenCurrencyLabel"' in body)
+check("token current-rate line names a currency, not a euro sign",
+      "UBECrc = 1 EUR" in body and "UBECrc = \u20ac1" not in body)
+
+cur2.execute("DELETE FROM erdpuls_threshold.hours_rates WHERE category='synthetic_pln_rate'")
+cur2.connection.commit(); cur2.close()
+
 cur.execute("DELETE FROM erdpuls_threshold.hours_rates WHERE category='synthetic_uk_rate'")
 conn.commit(); cur.close(); conn.close()
 

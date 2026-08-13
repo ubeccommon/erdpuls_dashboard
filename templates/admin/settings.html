@@ -46,11 +46,11 @@
                     <form action="/admin/settings/token-rate" method="post" class="admin-form">
                         <div class="current-rate">
                             <span class="rate-label">{% if lang == 'de' %}Aktueller Kurs{% elif lang == 'pl' %}Aktualny kurs{% else %}Current Rate{% endif %}:</span>
-                            <span class="rate-value">{{ token_rate.tokens_per_eur if token_rate else '100' }} UBECrc = €1</span>
+                            <span class="rate-value" id="tokenRateCurrent">{{ token_rate.tokens_per_eur if token_rate else '100' }} UBECrc = 1 EUR</span>
                         </div>
                         
                         <div class="form-group">
-                            <label for="tokens_per_eur">{% if lang == 'de' %}Tokens pro Euro{% elif lang == 'pl' %}Tokenów za Euro{% else %}Tokens per Euro{% endif %}</label>
+                            <label for="tokens_per_eur">{% if lang == 'de' %}Tokens pro 1 {% elif lang == 'pl' %}Tokenów za 1 {% elif lang == 'uk' %}Токенів за 1 {% else %}Tokens per 1 {% endif %}<span id="tokenCurrencyLabel">EUR</span></label>
                             <input type="number" id="tokens_per_eur" name="tokens_per_eur" 
                                    value="{{ token_rate.tokens_per_eur if token_rate else '100' }}" 
                                    step="0.01" min="0.01" required>
@@ -65,7 +65,7 @@
                         {% for c in currencies %}{{ c }}:
                         {% if token_rates[c] %}{{ token_rates[c].tokens_per_eur }} UBECrc = 1 {{ c }}{% else %}{% if lang == 'uk' %}не встановлено{% else %}not set{% endif %}{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}
                     </p>
-                    <select id="currency_tokens_per_eur" name="currency">
+                    <select id="currency_tokens_per_eur" name="currency" onchange="tokenCurrencyChanged(this.value)">
                             {% for c in currencies %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
                         </select>
                         <small>{% if lang == 'uk' %}Ставка стосується лише цієї валюти. Нічого не конвертується між валютами.{% else %}The rate applies to this currency only. Nothing is converted between currencies.{% endif %}</small>
@@ -91,7 +91,7 @@
                     <h3 style="margin-top:1rem">{{ cur }}</h3>
                     {% if not hours_by_currency[cur] %}
                     <p class="muted" style="font-size:.85rem">
-                        {% if lang == 'uk' %}Ставок ще не встановлено. Поки їх немає, внески годинами для пропозицій у {{ cur }} недоступні.{% else %}No rates set yet. Until there are, hours contributions are unavailable on offerings priced in {{ cur }}.{% endif %}
+                        {% if lang == 'uk' %}Ставок ще не встановлено. Поки їх немає, внески годинами для пропозицій у {{ cur }} недоступні. Додайте ставку у формі нижче, обравши {{ cur }} як валюту.{% else %}No rates set yet. Until there are, hours contributions are unavailable on offerings priced in {{ cur }}. Add one in the form below, choosing {{ cur }} as the currency.{% endif %}
                     </p>
                     {% endif %}
                     {% if hours_by_currency[cur] %}
@@ -124,8 +124,13 @@
                     <hr style="margin: 1.5rem 0; border-color: var(--color-border);">
                     {% endif %}
                     {% endfor %}
-                    
-                    <!-- Add Rate -->
+
+                    <!-- Add Rate: one form for every currency. The Currency
+                         field below decides which one it applies to. -->
+                    <hr style="margin: 2rem 0; border-color: var(--color-border);">
+                    <p class="muted" style="font-size:.85rem">
+                        {% if lang == 'de' %}Ein Formular für alle Währungen — die Währung unten entscheidet, für welche der Satz gilt.{% elif lang == 'pl' %}Jeden formularz dla wszystkich walut — waluta poniżej decyduje, której dotyczy stawka.{% elif lang == 'uk' %}Одна форма для всіх валют — валюта нижче визначає, до якої належить ставка.{% else %}One form for every currency — the Currency field below decides which one the rate belongs to.{% endif %}
+                    </p>
                     <h3 style="font-size: 1rem; margin-bottom: 1rem;">
                         {% if lang == 'de' %}Stundensatz hinzufügen{% elif lang == 'pl' %}Dodaj stawkę{% else %}Add Rate{% endif %}
                     </h3>
@@ -362,3 +367,26 @@ function clearForm() {
 }
 </script>
 {% endblock %}
+
+<script>
+// The token rate is per currency. Switching the dropdown updates the
+// label and shows the rate already set for that currency, so nobody
+// overwrites a euro rate while meaning to set a hryvnia one.
+var TOKEN_RATES = {
+    {% for c in currencies %}"{{ c }}": {% if token_rates[c] %}"{{ token_rates[c].tokens_per_eur }}"{% else %}null{% endif %}{% if not loop.last %},{% endif %}
+    {% endfor %}
+};
+function tokenCurrencyChanged(cur) {
+    document.getElementById('tokenCurrencyLabel').textContent = cur;
+    var rate = TOKEN_RATES[cur];
+    var current = document.getElementById('tokenRateCurrent');
+    var field = document.getElementById('tokens_per_eur');
+    if (rate) {
+        current.textContent = rate + ' UBECrc = 1 ' + cur;
+        field.value = rate;
+    } else {
+        current.textContent = '{% if lang == "uk" %}не встановлено для{% else %}not set for{% endif %} ' + cur;
+        field.value = '';
+    }
+}
+</script>
