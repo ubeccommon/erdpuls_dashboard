@@ -54,7 +54,7 @@
                             <input type="number" id="tokens_per_eur" name="tokens_per_eur" 
                                    value="{{ token_rate.tokens_per_eur if token_rate else '100' }}" 
                                    step="0.01" min="0.01" required>
-                            <small class="form-help">{% if lang == 'de' %}Wie viele Tokens entsprechen €1{% elif lang == 'pl' %}Ile tokenów odpowiada €1{% else %}How many tokens equal €1{% endif %}</small>
+                            <small class="form-help">{% if lang == 'de' %}Wie viele Tokens entsprechen 1 Einheit der gewählten Währung{% elif lang == 'pl' %}Ile tokenów odpowiada 1 jednostce wybranej waluty{% elif lang == 'uk' %}Скільки токенів дорівнює 1 одиниці обраної валюти{% else %}How many tokens equal 1 unit of the selected currency{% endif %}</small>
                         </div>
                         
                         <div class="form-actions">
@@ -108,7 +108,7 @@
                             <div class="rate-actions">
                                 <!-- Update Button -->
                                 <button type="button" class="btn btn-small btn-outline" 
-                                        onclick="populateEditForm('{{ rate.category }}', '{{ rate.eur_per_hour }}', '{{ rate.description or '' }}', '{{ rate.description_de or '' }}', '{{ rate.description_pl or '' }}')">
+                                        onclick="populateEditForm('{{ rate.category }}', '{{ rate.eur_per_hour }}', '{{ rate.description or '' }}', '{{ rate.description_de or '' }}', '{{ rate.description_pl or '' }}', '{{ rate.description_uk or '' }}', '{{ rate.currency }}')">
                                     {% if lang == 'de' %}Bearbeiten{% elif lang == 'pl' %}Edytuj{% else %}Edit{% endif %}
                                 </button>
                                 <!-- Delete Button -->
@@ -137,9 +137,13 @@
                                        placeholder="{% if lang == 'de' %}z.B. garden_labor{% elif lang == 'pl' %}np. garden_labor{% else %}e.g. garden_labor{% endif %}" required>
                             </div>
                             <div class="form-group">
-                                <label for="eur_per_hour">€/{% if lang == 'de' %}Stunde{% elif lang == 'pl' %}godz{% else %}hour{% endif %}</label>
-                                <input type="number" id="eur_per_hour" name="eur_per_hour" 
-                                       value="15" step="0.01" min="0" required>
+                                <label for="eur_per_hour">
+                                    <span id="rateCurrencyLabel">EUR</span>/{% if lang == 'de' %}Stunde{% elif lang == 'pl' %}godz{% elif lang == 'uk' %}година{% else %}hour{% endif %}
+                                </label>
+                                <input type="number" id="eur_per_hour" name="eur_per_hour"
+                                       step="0.01" min="0" required
+                                       placeholder="{% if lang == 'uk' %}за місцевою ставкою{% else %}the local rate{% endif %}">
+                                <small>{% if lang == 'uk' %}Скільки коштує година цієї роботи тут — не конвертовано з євро.{% else %}What an hour of this work is worth here — not converted from euro.{% endif %}</small>
                             </div>
                         </div>
                         
@@ -157,6 +161,10 @@
                                 <label for="description_pl">{% if lang == 'de' %}Beschreibung (PL){% elif lang == 'pl' %}Opis (PL){% else %}Description (PL){% endif %}</label>
                                 <input type="text" id="description_pl" name="description_pl">
                             </div>
+                            <div class="form-group">
+                                <label for="description_uk">{% if lang == 'de' %}Beschreibung (UK){% elif lang == 'pl' %}Opis (UK){% elif lang == 'uk' %}Опис (UK){% else %}Description (UK){% endif %}</label>
+                                <input type="text" id="description_uk" name="description_uk">
+                            </div>
                         </div>
                         
                         <div class="form-actions">
@@ -164,7 +172,7 @@
                             
                     <div class="form-group">
                         <label for="currency_eur_per_hour">{% if lang == 'uk' %}Валюта{% else %}Currency{% endif %}</label>
-                        <select id="currency_eur_per_hour" name="currency">
+                        <select id="currency_eur_per_hour" name="currency" onchange="document.getElementById('rateCurrencyLabel').textContent = this.value;">
                             {% for c in currencies %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
                         </select>
                         <small>{% if lang == 'uk' %}Ставка стосується лише цієї валюти. Нічого не конвертується між валютами.{% else %}The rate applies to this currency only. Nothing is converted between currencies.{% endif %}</small>
@@ -321,12 +329,17 @@
 </style>
 
 <script>
-function populateEditForm(category, eurPerHour, descEn, descDe, descPl) {
+function populateEditForm(category, eurPerHour, descEn, descDe, descPl, descUk, cur) {
     document.getElementById('category').value = category;
     document.getElementById('eur_per_hour').value = eurPerHour;
     document.getElementById('description').value = descEn;
     document.getElementById('description_de').value = descDe;
     document.getElementById('description_pl').value = descPl;
+    if (descUk !== undefined) document.getElementById('description_uk').value = descUk;
+    if (cur !== undefined) {
+        document.getElementById('currency_eur_per_hour').value = cur;
+        document.getElementById('rateCurrencyLabel').textContent = cur;
+    }
     
     // Show cancel button
     document.getElementById('clearFormBtn').style.display = 'inline-block';
@@ -344,6 +357,7 @@ function clearForm() {
     document.getElementById('description').value = '';
     document.getElementById('description_de').value = '';
     document.getElementById('description_pl').value = '';
+    document.getElementById('description_uk').value = '';
     document.getElementById('clearFormBtn').style.display = 'none';
 }
 </script>

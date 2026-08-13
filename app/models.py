@@ -469,6 +469,7 @@ class HoursRate(Base):
     description = Column(Text)
     description_de = Column(Text)
     description_pl = Column(Text)
+    description_uk = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     def get_description(self, lang: str = 'en') -> str:

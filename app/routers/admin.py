@@ -752,6 +752,7 @@ def admin_update_hours_rate(
     description: str = Form(None),
     description_de: str = Form(None),
     description_pl: str = Form(None),
+    description_uk: str = Form(None),
     db: Session = Depends(get_db)
 ):
     """Set the value of an hour in one currency, per category.
@@ -776,6 +777,7 @@ def admin_update_hours_rate(
             rate.description_de = description_de
         if hasattr(rate, 'description_pl'):
             rate.description_pl = description_pl
+        rate.description_uk = description_uk
     else:
         rate = HoursRate(
             category=category,
@@ -787,6 +789,7 @@ def admin_update_hours_rate(
             rate.description_de = description_de
         if hasattr(rate, 'description_pl'):
             rate.description_pl = description_pl
+        rate.description_uk = description_uk
         db.add(rate)
     
     db.commit()
