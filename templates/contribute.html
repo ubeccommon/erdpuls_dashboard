@@ -86,13 +86,14 @@
                             <label class="type-card selected" data-type="euro">
                                 <input type="radio" name="contribution_type" value="euro" checked>
                                 <div class="type-icon">💶</div>
-                                <div class="type-name">Euro</div>
+                                <div class="type-name">{{ offering.currency }}</div>
                                 <div class="type-desc">
                                     {% if lang == 'de' %}Direkter finanzieller Beitrag{% elif lang == 'pl' %}Bezpośredni wkład finansowy{% elif lang == 'uk' %}Прямий фінансовий внесок{% else %}Direct financial contribution{% endif %}
                                 </div>
                             </label>
                             
-                            <!-- Tokens -->
+                            <!-- Tokens: euro-rated, so only for a EUR offering -->
+                            {% if offering.currency == 'EUR' %}
                             <label class="type-card" data-type="token">
                                 <input type="radio" name="contribution_type" value="token">
                                 <div class="type-icon">🪙</div>
@@ -102,7 +103,7 @@
                                 </div>
                             </label>
                             
-                            <!-- Hours -->
+                            <!-- Hours: euro-rated, same reason -->
                             <label class="type-card" data-type="hours">
                                 <input type="radio" name="contribution_type" value="hours">
                                 <div class="type-icon">⏱️</div>
@@ -111,7 +112,13 @@
                                     {% if lang == 'de' %}Fähigkeiten/Arbeit{% elif lang == 'pl' %}Umiejętności/praca{% elif lang == 'uk' %}Навички/праця{% else %}Skills/labor{% endif %}
                                 </div>
                             </label>
+                            {% endif %}
                         </div>
+                        {% if offering.currency != 'EUR' %}
+                        <p class="muted" style="font-size:.85rem">
+                            {% if lang == 'de' %}Token- und Stundenbeiträge sind nur bei Angeboten in Euro möglich: ihre Sätze sind in Euro festgelegt und werden hier nicht umgerechnet.{% elif lang == 'pl' %}Wpłaty tokenami i godzinami są możliwe tylko przy ofertach w euro: ich stawki są ustalone w euro i nie są tu przeliczane.{% elif lang == 'uk' %}Внески токенами й годинами можливі лише для пропозицій у євро: їхні ставки визначені в євро й тут не конвертуються.{% else %}Token and hours contributions are available only on offerings priced in euro — their rates are set in euro and nothing is converted here.{% endif %}
+                        </p>
+                        {% endif %}
                     </div>
                     
                     <!-- Step 2: Amount Details -->
@@ -145,7 +152,8 @@
                         </div>
                         
                         <!-- Token Amount -->
-                        <div class="amount-panel hidden" id="tokenPanel">
+                        {% if offering.currency == 'EUR' %}
+<div class="amount-panel hidden" id="tokenPanel">
                             <div class="form-group">
                                 <label for="token_amount">
                                     {% if lang == 'de' %}Anzahl Tokens{% elif lang == 'pl' %}Liczba tokenów{% elif lang == 'uk' %}Кількість токенів{% else %}Number of Tokens{% endif %}
@@ -191,7 +199,8 @@
                             </div>
                         </div>
                     </div>
-                    
+{% endif %}
+
                     <!-- Step 3: Contact Information -->
                     <div class="form-section">
                         <h3 class="section-title">
