@@ -405,9 +405,17 @@ def engage_selection(offering_id: str, request: Request, db: Session = Depends(g
     offering._percent = round((float(offering._total) / float(offering.threshold_amount)) * 100, 1) if offering.threshold_amount else 0
     offering._reg_count = offering.get_registration_count(db)
     
+    # Which contribution types this offering can actually take: tokens and
+    # hours need a rate in its own currency, and the page should not
+    # promise what the server would refuse.
+    token_rate = TokenRate.get_current_rate(db, offering.currency)
+    hours_rates = db.query(HoursRate).filter(
+        HoursRate.currency == offering.currency).all()
+
     return templates.TemplateResponse(
         "engage.html",
-        {"request": request, "lang": lang, "user": user, "offering": offering}
+        {"request": request, "lang": lang, "user": user, "offering": offering,
+         "token_rate": token_rate, "hours_rates": hours_rates}
     )
 
 

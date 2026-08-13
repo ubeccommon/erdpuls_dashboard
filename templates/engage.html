@@ -91,7 +91,7 @@
                         {% if lang == 'de' %}Ermöglichen Sie die Teilnahme anderer{% elif lang == 'pl' %}Umożliw uczestnictwo innych{% elif lang == 'uk' %}Дайте змогу іншим взяти участь{% else %}Enable others to participate{% endif %}
                     </li>
                     <li>
-                        {% if lang == 'de' %}Euro, Tokens oder Stunden{% elif lang == 'pl' %}Euro, tokeny lub godziny{% elif lang == 'uk' %}Євро, токени або години{% else %}Euro, tokens, or hours{% endif %}
+                        {% set kinds = [] %}{% if token_rate %}{% set kinds = kinds + [{'de': 'Tokens', 'pl': 'tokeny', 'uk': 'токени', 'en': 'tokens'}] %}{% endif %}{% if hours_rates %}{% set kinds = kinds + [{'de': 'Stunden', 'pl': 'godziny', 'uk': 'години', 'en': 'hours'}] %}{% endif %}{{ offering.currency }}{% for k in kinds %}{% if loop.last and not loop.first %}{% if lang == 'de' %} oder {% elif lang == 'pl' %} lub {% elif lang == 'uk' %} або {% else %}, or {% endif %}{% elif loop.first %}{% if lang == 'de' %}, {% elif lang == 'pl' %}, {% elif lang == 'uk' %}, {% else %}, {% endif %}{% else %}, {% endif %}{{ k[lang] if k[lang] is defined else k['en'] }}{% endfor %}
                     </li>
                     <li>
                         {% if lang == 'de' %}Privatsphäre geschützt{% elif lang == 'pl' %}Prywatność chroniona{% elif lang == 'uk' %}Приватність захищено{% else %}Privacy protected{% endif %}
