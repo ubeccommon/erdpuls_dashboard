@@ -19,6 +19,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from ..database import get_db
+from .. import fx
 from ..models import (
     Offering, Registration, Contribution, ContributionContact,
     TokenRate, HoursRate, EngagementType, RegistrationType,
@@ -517,6 +518,25 @@ def participate_submit(
 # PATHWAYS 2 & 3: CONTRIBUTE (with/without participation)
 # ============================================
 
+def _fx_preview(db, offering, give_currency):
+    """What one unit of the giving currency is worth here, for the form.
+
+    Returns None when no conversion is involved, or when no rate can be
+    had at all — the page then says so rather than showing a figure it
+    cannot stand behind.
+    """
+    if give_currency == offering.currency:
+        return None
+    try:
+        one, rate, rate_date, provider, stale = fx.convert(
+            db, 1, give_currency, offering.currency)
+        return {"one": one, "rate": rate, "rate_date": rate_date,
+                "provider": provider, "stale": stale,
+                "from": give_currency, "to": offering.currency}
+    except fx.RateUnavailable:
+        return None
+
+
 @router.get("/offering/{offering_id}/contribute", response_class=HTMLResponse)
 def contribute_page(
     offering_id: str, 
@@ -557,8 +577,15 @@ def contribute_page(
     offering._remaining = max(Decimal('0'), offering.threshold_amount - offering._total)
     offering._reg_count = offering.get_registration_count(db)
     
-    hours_rates = db.query(HoursRate).filter(HoursRate.currency == offering.currency).all()
-    token_rate = TokenRate.get_current_rate(db, offering.currency)
+    # A supporter may not be in the offering's country. They choose the
+    # currency they actually give in; the rates shown follow that choice,
+    # because a token and an hour are priced per currency and nothing is
+    # converted between them.
+    give_currency = request.query_params.get("currency", offering.currency)
+    if give_currency not in ("EUR", "PLN", "UAH"):
+        give_currency = offering.currency
+    hours_rates = db.query(HoursRate).filter(HoursRate.currency == give_currency).all()
+    token_rate = TokenRate.get_current_rate(db, give_currency)
     
     return templates.TemplateResponse(
         "contribute.html",
@@ -569,7 +596,12 @@ def contribute_page(
             "offering": offering,
             "pathway": pathway,
             "hours_rates": hours_rates,
-            "token_rate": token_rate
+            "token_rate": token_rate,
+            "give_currency": give_currency,
+            "give_symbol": {"EUR": "\u20ac", "PLN": "z\u0142", "UAH": "\u20b4"}.get(give_currency, give_currency),
+            "currencies": ["EUR", "PLN", "UAH"],
+            "other_currency_totals": offering.get_other_currency_totals(db),
+            "fx_preview": _fx_preview(db, offering, give_currency)
         }
     )
 
@@ -594,6 +626,7 @@ def contribute_submit(
     contact_phone: str = Form(None),
     contact_notes: str = Form(None),
     referral: str = Form(None),
+    currency: str = Form(None),
     db: Session = Depends(get_db)
 ):
     """Process contribution submission"""
@@ -616,25 +649,31 @@ def contribute_submit(
             status_code=303
         )
     
-    # Calculate EUR equivalent
-    # Token and hours contributions need a rate in THIS offering's
-    # currency. Where one exists they work normally; where none does they
-    # are refused rather than priced at another currency's rate. Setting
-    # a rate is an admin decision about what a token or an hour is worth
-    # there, not something to guess at the point of contribution.
+    # The currency the supporter actually gives in. It defaults to the
+    # offering's own, but a supporter abroad may give in theirs — and the
+    # contribution is then stored as what it was, in that currency.
+    # Nothing is converted: see get_total_contributed for what that means
+    # for the offering's progress.
+    give_currency = currency if currency in ('EUR', 'PLN', 'UAH') else offering.currency
+
+    # Token and hours contributions need a rate in the currency being
+    # given. Where one exists they work normally; where none does they are
+    # refused rather than priced at another currency's rate. Setting a
+    # rate is a decision about what a token or an hour is worth there, not
+    # something to guess at the point of contribution.
     if contribution_type == 'token':
-        if TokenRate.get_current_rate(db, offering.currency) is None:
+        if TokenRate.get_current_rate(db, give_currency) is None:
             return RedirectResponse(
                 url=f"/offering/{offering_id}?error=no_token_rate_for_currency",
                 status_code=303)
     if contribution_type == 'hours':
-        if not db.query(HoursRate).filter(HoursRate.currency == offering.currency).first():
+        if not db.query(HoursRate).filter(HoursRate.currency == give_currency).first():
             return RedirectResponse(
                 url=f"/offering/{offering_id}?error=no_hours_rate_for_currency",
                 status_code=303)
 
     final_amount_eur = Decimal('0')
-    token_rate = TokenRate.get_current_rate(db, offering.currency)
+    token_rate = TokenRate.get_current_rate(db, give_currency)
     
     if contribution_type == 'euro':
         if not amount_eur or amount_eur <= 0:
@@ -673,9 +712,30 @@ def contribute_submit(
         final_amount_eur = Decimal(str(hours_amount)) * hours_rate.eur_per_hour
     
     # Create contribution
+    # A gift made in another currency is converted ONCE, now, at today's
+    # rate, and that figure is frozen onto the record along with the rate,
+    # its date and who published it. It is never recomputed: a total that
+    # drifted with the market would not be a total.
+    converted = final_amount_eur
+    fx_rate = fx_rate_date = fx_provider = None
+    if give_currency != offering.currency:
+        try:
+            converted, fx_rate, fx_rate_date, fx_provider, _stale = fx.convert(
+                db, final_amount_eur, give_currency, offering.currency)
+        except fx.RateUnavailable:
+            return RedirectResponse(
+                url=f"/offering/{offering_id}/contribute?pathway={pathway}"
+                    f"&currency={give_currency}&error=rate_unavailable",
+                status_code=303)
+
     contribution = Contribution(
         offering_id=offering_id,
         amount_eur=final_amount_eur,
+        currency=give_currency,
+        amount_converted=converted,
+        fx_rate=fx_rate,
+        fx_rate_date=fx_rate_date,
+        fx_provider=fx_provider,
         contribution_type=contribution_type,
         engagement_type=EngagementType.SUPPORT_AND_PARTICIPATE if wants_to_participate else EngagementType.SUPPORT_ONLY,
         wants_to_participate=wants_to_participate,

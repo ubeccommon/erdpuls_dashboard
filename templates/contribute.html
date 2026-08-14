@@ -73,6 +73,25 @@
                 <!-- Contribution Form -->
                 <form action="/offering/{{ offering.id }}/contribute/submit" method="POST" class="contribute-form" id="contributeForm">
                     <input type="hidden" name="pathway" value="{{ pathway }}">
+
+                    <!-- Step 0: the currency being given in. A supporter
+                         abroad may not hold the offering's currency. -->
+                    <div class="form-section">
+                        <div class="form-group">
+                            <label for="currency">
+                                {% if lang == 'de' %}Währung Ihres Beitrags{% elif lang == 'pl' %}Waluta Twojej wpłaty{% elif lang == 'uk' %}Валюта вашого внеску{% else %}The currency you are giving in{% endif %}
+                            </label>
+                            <select id="currency" name="currency"
+                                    onchange="window.location.href = '/offering/{{ offering.id }}/contribute?pathway={{ pathway }}&currency=' + this.value;">
+                                {% for c in currencies %}
+                                <option value="{{ c }}" {% if c == give_currency %}selected{% endif %}>{{ c }}{% if c == offering.currency %} — {% if lang == 'uk' %}валюта пропозиції{% else %}the offering's own{% endif %}{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                            <small>
+                                {% if give_currency == offering.currency %}{% if lang == 'uk' %}Це валюта самої пропозиції, тож ваш внесок зараховується до її порогу.{% else %}This is the offering's own currency, so your contribution counts toward its threshold.{% endif %}{% elif fx_preview %}{% if lang == 'uk' %}Пропозицію оцінено в {{ offering.currency }}. Ваш внесок запишуть у {{ give_currency }} як є, і переведуть за курсом того дня: 1 {{ give_currency }} = {{ fx_preview.one }} {{ offering.currency }} ({{ fx_preview.rate_date }}). Курс зафіксують на вашому внеску й більше не перераховуватимуть.{% else %}This offering is priced in {{ offering.currency }}. Your gift is recorded in {{ give_currency }} as given, and counted at that day's rate: 1 {{ give_currency }} = {{ fx_preview.one }} {{ offering.currency }} ({{ fx_preview.rate_date }}). The rate is frozen onto your contribution and never recalculated.{% endif %}{% if fx_preview.stale %} <strong>{% if lang == 'uk' %}Це останній відомий курс — свіжіший зараз недоступний.{% else %}This is the last known rate — a current one could not be fetched just now.{% endif %}</strong>{% endif %}{% else %}{% if lang == 'uk' %}Курс обміну зараз недоступний, тому внесок у {{ give_currency }} не можна перевести в {{ offering.currency }}. Спробуйте пізніше або оберіть {{ offering.currency }}.{% else %}No exchange rate is available just now, so a gift in {{ give_currency }} cannot be counted toward this {{ offering.currency }} offering. Try again shortly, or give in {{ offering.currency }}.{% endif %}{% endif %}
+                            </small>
+                        </div>
+                    </div>
                     
                     <!-- Step 1: Contribution Type -->
                     <div class="form-section">
@@ -86,7 +105,7 @@
                             <label class="type-card selected" data-type="euro">
                                 <input type="radio" name="contribution_type" value="euro" checked>
                                 <div class="type-icon">💶</div>
-                                <div class="type-name">{{ offering.currency }}</div>
+                                <div class="type-name">{{ give_currency }}</div>
                                 <div class="type-desc">
                                     {% if lang == 'de' %}Direkter finanzieller Beitrag{% elif lang == 'pl' %}Bezpośredni wkład finansowy{% elif lang == 'uk' %}Прямий фінансовий внесок{% else %}Direct financial contribution{% endif %}
                                 </div>
@@ -99,9 +118,9 @@
                                 <div class="type-name">UBECrc Tokens</div>
                                 <div class="type-desc">
                                     {% if token_rate %}
-                                    {% if lang == 'de' %}{{ token_rate.tokens_per_eur }} Tokens = 1 {{ offering.currency }}{% elif lang == 'pl' %}{{ token_rate.tokens_per_eur }} tokenów = 1 {{ offering.currency }}{% elif lang == 'uk' %}{{ token_rate.tokens_per_eur }} токенів = 1 {{ offering.currency }}{% else %}{{ token_rate.tokens_per_eur }} tokens = 1 {{ offering.currency }}{% endif %}
+                                    {% if lang == 'de' %}{{ token_rate.tokens_per_eur }} Tokens = 1 {{ give_currency }}{% elif lang == 'pl' %}{{ token_rate.tokens_per_eur }} tokenów = 1 {{ give_currency }}{% elif lang == 'uk' %}{{ token_rate.tokens_per_eur }} токенів = 1 {{ give_currency }}{% else %}{{ token_rate.tokens_per_eur }} tokens = 1 {{ give_currency }}{% endif %}
                                     {% else %}
-                                    {% if lang == 'de' %}Kein Kurs in {{ offering.currency }} festgelegt{% elif lang == 'pl' %}Brak kursu w {{ offering.currency }}{% elif lang == 'uk' %}Курс у {{ offering.currency }} не встановлено{% else %}No rate set in {{ offering.currency }}{% endif %}
+                                    {% if lang == 'de' %}Kein Kurs in {{ give_currency }} festgelegt{% elif lang == 'pl' %}Brak kursu w {{ give_currency }}{% elif lang == 'uk' %}Курс у {{ give_currency }} не встановлено{% else %}No rate set in {{ give_currency }}{% endif %}
                                     {% endif %}
                                 </div>
                             </label>
@@ -113,13 +132,13 @@
                                 <div class="type-name">{% if lang == 'de' %}Stunden{% elif lang == 'pl' %}Godziny{% elif lang == 'uk' %}Години{% else %}Hours{% endif %}</div>
                                 <div class="type-desc">
                                     {% if hours_rates %}{% if lang == 'de' %}Fähigkeiten/Arbeit{% elif lang == 'pl' %}Umiejętności/praca{% elif lang == 'uk' %}Навички/праця{% else %}Skills/labor{% endif %}
-                                    {% else %}{% if lang == 'de' %}Keine Sätze in {{ offering.currency }} festgelegt{% elif lang == 'pl' %}Brak stawek w {{ offering.currency }}{% elif lang == 'uk' %}Ставки у {{ offering.currency }} не встановлено{% else %}No rates set in {{ offering.currency }}{% endif %}{% endif %}
+                                    {% else %}{% if lang == 'de' %}Keine Sätze in {{ give_currency }} festgelegt{% elif lang == 'pl' %}Brak stawek w {{ give_currency }}{% elif lang == 'uk' %}Ставки у {{ give_currency }} не встановлено{% else %}No rates set in {{ give_currency }}{% endif %}{% endif %}
                                 </div>
                             </label>
                         </div>
                         {% if not token_rate or not hours_rates %}
                         <p class="muted" style="font-size:.85rem">
-                            {% if lang == 'de' %}Für {{ offering.currency }} ist noch kein Token- oder Stundensatz festgelegt. Diese Beitragsarten werden erst möglich, wenn jemand festlegt, was ein Token und eine Stunde hier wert sind — umgerechnet wird nichts.{% elif lang == 'pl' %}Dla {{ offering.currency }} nie ustalono jeszcze kursu tokenów ani stawek godzinowych. Te formy wkładu staną się możliwe, gdy ktoś określi ich wartość tutaj — nic nie jest przeliczane.{% elif lang == 'uk' %}Для {{ offering.currency }} ще не встановлено курс токенів або ставки за годину. Ці види внеску стануть можливими, коли хтось визначить, скільки тут вартують токен і година — нічого не конвертується.{% else %}No token or hours rate has been set in {{ offering.currency }} yet. These contribution types become available once someone sets what a token and an hour are worth here — nothing is converted from another currency.{% endif %}
+                            {% if lang == 'de' %}Für {{ give_currency }} ist noch kein Token- oder Stundensatz festgelegt. Diese Beitragsarten werden erst möglich, wenn jemand festlegt, was ein Token und eine Stunde hier wert sind — umgerechnet wird nichts.{% elif lang == 'pl' %}Dla {{ give_currency }} nie ustalono jeszcze kursu tokenów ani stawek godzinowych. Te formy wkładu staną się możliwe, gdy ktoś określi ich wartość tutaj — nic nie jest przeliczane.{% elif lang == 'uk' %}Для {{ give_currency }} ще не встановлено курс токенів або ставки за годину. Ці види внеску стануть можливими, коли хтось визначить, скільки тут вартують токен і година — нічого не конвертується.{% else %}No token or hours rate has been set in {{ give_currency }} yet. These contribution types become available once someone sets what a token and an hour are worth here — nothing is converted from another currency.{% endif %}
                         </p>
                         {% endif %}
                     </div>
@@ -135,10 +154,10 @@
                         <div class="amount-panel" id="euroPanel">
                             <div class="form-group">
                                 <label for="amount_eur">
-                                    {% if lang == 'de' %}Betrag in {{ offering.currency }}{% elif lang == 'pl' %}Kwota w {{ offering.currency }}{% elif lang == 'uk' %}Сума в {{ offering.currency }}{% else %}Amount in {{ offering.currency }}{% endif %}
+                                    {% if lang == 'de' %}Betrag in {{ give_currency }}{% elif lang == 'pl' %}Kwota w {{ give_currency }}{% elif lang == 'uk' %}Сума в {{ give_currency }}{% else %}Amount in {{ give_currency }}{% endif %}
                                 </label>
                                 <div class="amount-input-wrapper">
-                                    <span class="currency-symbol">{{ offering.currency_symbol }}</span>
+                                    <span class="currency-symbol">{{ give_symbol }}</span>
                                     <input type="number" id="amount_eur" name="amount_eur" 
                                            min="1" step="0.01" placeholder="0.00"
                                            class="amount-input">
@@ -147,10 +166,10 @@
                             
                             <div class="quick-amounts">
                                 <span class="quick-label">{% if lang == 'de' %}Schnellauswahl:{% elif lang == 'pl' %}Szybki wybór:{% elif lang == 'uk' %}Швидкий вибір:{% else %}Quick select:{% endif %}</span>
-                                <button type="button" class="quick-btn" data-amount="10">{{ offering.currency_symbol }}10</button>
-                                <button type="button" class="quick-btn" data-amount="25">{{ offering.currency_symbol }}25</button>
-                                <button type="button" class="quick-btn" data-amount="50">{{ offering.currency_symbol }}50</button>
-                                <button type="button" class="quick-btn" data-amount="100">{{ offering.currency_symbol }}100</button>
+                                <button type="button" class="quick-btn" data-amount="10">{{ give_symbol }}10</button>
+                                <button type="button" class="quick-btn" data-amount="25">{{ give_symbol }}25</button>
+                                <button type="button" class="quick-btn" data-amount="50">{{ give_symbol }}50</button>
+                                <button type="button" class="quick-btn" data-amount="100">{{ give_symbol }}100</button>
                             </div>
                         </div>
                         
@@ -164,7 +183,7 @@
                                        min="1" step="1" placeholder="0" class="amount-input">
                             </div>
                             <p class="conversion-note">
-                                {% if lang == 'de' %}Aktueller Kurs: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ offering.currency }}{% elif lang == 'pl' %}Aktualny kurs: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ offering.currency }}{% elif lang == 'uk' %}Поточний курс: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ offering.currency }}{% else %}Current rate: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ offering.currency }}{% endif %}
+                                {% if lang == 'de' %}Aktueller Kurs: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ give_currency }}{% elif lang == 'pl' %}Aktualny kurs: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ give_currency }}{% elif lang == 'uk' %}Поточний курс: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ give_currency }}{% else %}Current rate: {{ token_rate.tokens_per_eur }} UBECrc = 1 {{ give_currency }}{% endif %}
                             </p>
                         </div>
                         
@@ -178,7 +197,7 @@
                                     <option value="">{% if lang == 'de' %}Bitte auswählen{% elif lang == 'pl' %}Proszę wybrać{% elif lang == 'uk' %}Будь ласка, оберіть{% else %}Please select{% endif %}</option>
                                     {% for rate in hours_rates %}
                                     <option value="{{ rate.category }}" data-rate="{{ rate.eur_per_hour }}">
-                                        {{ rate.get_description(lang) or rate.category }} ({{ offering.currency_symbol }}{{ rate.eur_per_hour }}/{% if lang == 'de' %}Std{% elif lang == 'pl' %}godz{% elif lang == 'uk' %}год{% else %}hr{% endif %})
+                                        {{ rate.get_description(lang) or rate.category }} ({{ give_symbol }}{{ rate.eur_per_hour }}/{% if lang == 'de' %}Std{% elif lang == 'pl' %}godz{% elif lang == 'uk' %}год{% else %}hr{% endif %})
                                     </option>
                                     {% endfor %}
                                 </select>
@@ -345,6 +364,19 @@
                             <span class="label">{% if lang == 'de' %}Schwelle{% elif lang == 'pl' %}Próg{% elif lang == 'uk' %}Поріг{% else %}Threshold{% endif %}</span>
                             <span class="value">{{ offering.currency_symbol }}{{ offering.threshold_amount }}</span>
                         </div>
+                        {% if other_currency_totals %}
+                        {% for cur, amt in other_currency_totals %}
+                        <div class="detail-row">
+                            <span class="label">{% if lang == 'uk' %}З них у{% else %}Of which given in{% endif %} {{ cur }}</span>
+                            <span class="value">{{ amt }} {{ cur }}</span>
+                        </div>
+                        {% endfor %}
+                        <div class="detail-row">
+                            <span class="label" style="font-size:.75rem;opacity:.8">
+                                {% if lang == 'uk' %}Переведено за курсом дня внеску й зафіксовано.{% else %}Converted at the rate of the day each was given, and frozen there.{% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
                         <div class="detail-row">
                             <span class="label">{% if lang == 'de' %}Verbleibend{% elif lang == 'pl' %}Pozostało{% elif lang == 'uk' %}Залишилося{% else %}Remaining{% endif %}</span>
                             <span class="value {% if offering._remaining <= 0 %}success{% endif %}">

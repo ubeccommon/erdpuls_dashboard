@@ -11,7 +11,7 @@ from datetime import datetime
 from decimal import Decimal
 from sqlalchemy import (
     Column, String, Boolean, Integer, DateTime, Text, 
-    Numeric, ForeignKey, UniqueConstraint, func
+    Numeric, ForeignKey, UniqueConstraint, func, Date
 )
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship, Session
@@ -200,9 +200,37 @@ class Offering(Base):
         return ', '.join(display_names) if display_names else lang_names['de'].get(lang, 'German')
     
     def get_total_contributed(self, db: Session) -> Decimal:
-        result = db.query(func.coalesce(func.sum(Contribution.amount_eur), 0))\
+        """Total given, in THIS offering's own currency.
+
+        Gifts made in another currency were converted once, at the rate
+        of the day they were given, and that figure was frozen onto the
+        contribution. This sums those frozen figures rather than
+        recomputing anything: a total that moved with today's rate would
+        not be a total, and yesterday's settled account would change
+        overnight without anyone giving a thing.
+        """
+        result = db.query(func.coalesce(func.sum(
+            func.coalesce(Contribution.amount_converted, Contribution.amount_eur)), 0))\
             .filter(Contribution.offering_id == self.id).scalar()
         return Decimal(str(result)) if result else Decimal('0')
+
+    def get_totals_by_currency(self, db: Session):
+        """Every currency given to this offering, each with its own total.
+
+        Returns a list of (currency, total). Nothing is summed across
+        currencies: a euro and a hryvnia are different things, and the
+        page says so rather than implying a rate it does not have.
+        """
+        rows = db.query(Contribution.currency,
+                        func.coalesce(func.sum(Contribution.amount_eur), 0))\
+            .filter(Contribution.offering_id == self.id)\
+            .group_by(Contribution.currency).all()
+        return [(c, Decimal(str(a))) for c, a in rows]
+
+    def get_other_currency_totals(self, db: Session):
+        """Totals given in currencies other than this offering's own."""
+        own = self.currency or 'EUR'
+        return [(c, a) for c, a in self.get_totals_by_currency(db) if c != own]
     
     def get_registration_count(self, db: Session) -> int:
         """Count all registrations (both participate-only and linked)."""
@@ -323,7 +351,12 @@ class Contribution(Base):
     offering_id = Column(UUID(as_uuid=False), ForeignKey(f'{SCHEMA}.offerings.id'), nullable=False)
     
     # Financial details
-    amount_eur = Column(Numeric(10, 2), nullable=False)
+    amount_eur = Column(Numeric(10, 2), nullable=False)  # in `currency`, not necessarily euro
+    currency = Column(String(3), nullable=False, default='EUR')
+    amount_converted = Column(Numeric(14, 2))   # in the offering's currency, frozen
+    fx_rate = Column(Numeric(20, 10))           # rate used at the moment of giving
+    fx_rate_date = Column(Date)
+    fx_provider = Column(String(40))
     contribution_type = Column(String(50), default='euro')  # euro, token, hours
     token_amount = Column(Numeric(15, 2))
     hours_category = Column(String(100))
@@ -482,15 +515,24 @@ class HoursRate(Base):
         return self.description or ''
     
     @classmethod
-    def hours_to_eur(cls, hours: float, category: str, db: Session) -> Decimal:
-        """Convert hours to EUR equivalent based on category rate."""
-        rate = db.query(cls).filter(cls.category == category).first()
+    def hours_to_eur(cls, hours: float, category: str, db: Session,
+                     currency: str = 'EUR') -> Decimal:
+        """What these hours are worth in the given currency.
+
+        Scoped to that currency: the same category is priced differently
+        in different places, and picking whichever row happened to match
+        the category first would silently apply another region's rate.
+        Returns 0 when no rate exists — the callers refuse the
+        contribution before reaching here, and a made-up fallback would
+        turn a missing decision into a number nobody chose.
+        """
+        rate = db.query(cls).filter(cls.category == category,
+                                    cls.currency == currency).first()
         if not rate:
-            # Default to garden_labor rate if category not found
-            rate = db.query(cls).filter(cls.category == 'garden_labor').first()
+            rate = db.query(cls).filter(cls.category == 'garden_labor',
+                                        cls.currency == currency).first()
         if not rate:
-            # Fallback default
-            return Decimal(str(hours)) * Decimal('10.0')
+            return Decimal('0')
         return Decimal(str(hours)) * rate.eur_per_hour
 
 
