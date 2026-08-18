@@ -1,26 +1,15 @@
 {% extends "base.html" %}
-{% block head %}
-<style>
-.sol table{border-collapse:collapse;width:100%;margin:.8rem 0}
-.sol th,.sol td{border:1px solid #cfc9bb;padding:.35rem .6rem;text-align:left}
-.sol th{background:#f4f2ec}.sol tr.total td{font-weight:bold;background:#faf9f5}
-.sol form.inline{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.8rem 0}
-.sol label{display:flex;flex-direction:column;font-size:.85rem}
-.sol .err{background:#fdf3d0;border:1px solid #d9c76a;padding:.5rem .8rem;margin:.6rem 0}
-.sol .muted{opacity:.75;font-size:.9rem}
-.sol footer.sol-note{margin-top:2.2rem;border-top:1px solid #cfc9bb;padding-top:.6rem;font-size:.8rem;opacity:.75}
-</style>
-{% endblock %}
+{% block head %}{% include "solidarity/_styles.html" %}{% endblock %}
 {% block title %}Sessions · Solidarity Financing{% endblock %}
 {% block content %}<div class=sol>
 <h1>Solidarity financing</h1>
 <p class=muted>Financing runs under a place. Choose the initiative whose sessions you want
 to see — each keeps its own budgets, rounds and settlements.</p>
-<table><tr><th>Initiative</th><th>Location</th><th>Sessions</th></tr>
+<table class=stack><tr class=hdr><th>Initiative</th><th>Location</th><th>Sessions</th></tr>
 {% for i in initiatives %}<tr>
- <td><a href="/{{ i.slug }}/solidarity/">{{ i.name }}</a></td>
- <td>{{ i.location or '' }}</td>
- <td>{{ i.sessions }}</td>
+ <td data-label="Initiative"><a href="/{{ i.slug }}/solidarity/">{{ i.name }}</a></td>
+ <td data-label="Location">{{ i.location or '' }}</td>
+ <td data-label="Sessions">{{ i.sessions }}</td>
 </tr>{% endfor %}</table>
 {% if not initiatives %}<p class=muted>No initiatives exist yet.</p>{% endif %}
 <footer class="sol-note">Michel Garand — Solidarity Financing — CC BY-SA 4.0 — stewardship@ubec.network. Internal prototype: not linked from the initiative pages; nothing publishes before the hosts' agreement. Round views show sums only.</footer>

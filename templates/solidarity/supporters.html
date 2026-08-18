@@ -1,16 +1,5 @@
 {% extends "base.html" %}
-{% block head %}
-<style>
-.sol table{border-collapse:collapse;width:100%;margin:.8rem 0}
-.sol th,.sol td{border:1px solid #cfc9bb;padding:.35rem .6rem;text-align:left}
-.sol th{background:#f4f2ec}.sol tr.total td{font-weight:bold;background:#faf9f5}
-.sol form.inline{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.8rem 0}
-.sol label{display:flex;flex-direction:column;font-size:.85rem}
-.sol .err{background:#fdf3d0;border:1px solid #d9c76a;padding:.5rem .8rem;margin:.6rem 0}
-.sol .muted{opacity:.75;font-size:.9rem}
-.sol footer.sol-note{margin-top:2.2rem;border-top:1px solid #cfc9bb;padding-top:.6rem;font-size:.8rem;opacity:.75}
-</style>
-{% endblock %}
+{% block head %}{% include "solidarity/_styles.html" %}{% endblock %}
 {% block title %}Supporter circle · Solidarity Financing{% endblock %}
 {% block content %}<div class=sol>
 <h1>Supporter circle</h1>
@@ -18,13 +7,17 @@
 {% if error %}<div class=err>{{ error }}</div>{% endif %}
 
 <h2>Period summaries (sums and counts only)</h2>
-<table><tr><th>Period</th><th>Contributions</th><th>Pledged</th><th>Settled</th></tr>
-{% for p in periods %}<tr><td>{{ p.period }}</td><td>{{ p.contributions }}</td>
- <td>{{ p.pledged_uah }} UAH</td><td>{{ p.settled_uah }} UAH</td></tr>{% endfor %}</table>
+<table class=stack><tr class=hdr><th>Period</th><th>Contributions</th><th>Pledged</th><th>Settled</th></tr>
+{% for p in periods %}<tr><td data-label="Period">{{ p.period }}</td>
+ <td data-label="Contributions">{{ p.contributions }}</td>
+ <td data-label="Pledged">{{ p.pledged_uah }} UAH</td>
+ <td data-label="Settled">{{ p.settled_uah }} UAH</td></tr>{% endfor %}</table>
 <h2>Supporters</h2>
-<table><tr><th>Token</th><th>Name (optional)</th><th>Contributions</th><th>Total</th></tr>
-{% for s in sups %}<tr><td>{{ s.token }}</td><td>{{ s.display_name or 'on paper' }}</td>
- <td>{{ s.n }}</td><td>{{ s.total }} UAH</td></tr>{% endfor %}</table>
+<table class=stack><tr class=hdr><th>Token</th><th>Name (optional)</th><th>Contributions</th><th>Total</th></tr>
+{% for s in sups %}<tr><td data-label="Token">{{ s.token }}</td>
+ <td data-label="Name">{{ s.display_name or 'on paper' }}</td>
+ <td data-label="Contributions">{{ s.n }}</td>
+ <td data-label="Total">{{ s.total }} UAH</td></tr>{% endfor %}</table>
 <form method=post action="{{ prefix }}/supporters" class=inline>
  <label>Token <input name=token placeholder="S-01" required></label>
  <label>Name (optional) <input name=display_name></label>

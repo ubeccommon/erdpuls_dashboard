@@ -1,5 +1,5 @@
 """
-Solidarity Financing — native Erdpuls router, v1.3
+Solidarity Financing — native Erdpuls router, v1.4
 ==================================================
 Project: Solidarity Financing 2026 (working title) — Michel Garand
 Mounted per initiative at /{initiative-slug}/solidarity inside the
@@ -21,6 +21,14 @@ Invariants (unchanged from the paper layer):
   - Records and computes; moves no money.
 
 Changelog:
+  v1.4 (August 2026) — the screens read on a phone. No route, query or
+      figure changed: the nine templates now share one stylesheet
+      (templates/solidarity/_styles.html) which, below 640px, turns each
+      record table into one labelled card per row, lays totals out as a
+      line, gives every field its own row with finger-sized controls, and
+      sets 16px inputs so iOS does not zoom on focus. It matters most for
+      the open budget: a family reads it on a phone, and a six-column
+      table scrolled sideways is not "laid open".
   v1.3 (August 2026) — the open budget can be shown to the families
       taking part. Step one of the round is "lay the budget open", and a
       family cannot pledge against figures it has not seen; this is that

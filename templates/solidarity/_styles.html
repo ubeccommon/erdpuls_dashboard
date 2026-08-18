@@ -1,0 +1,68 @@
+<style>
+/* ============================================
+   Solidarity Financing — shared screen styles
+   One file for all solidarity templates.
+   Desktop appearance unchanged; a phone layout
+   added below 640px.
+   ============================================ */
+
+.sol{max-width:68rem;margin:0 auto;padding:1.5rem 1.25rem 3rem}
+.sol h1{overflow-wrap:break-word;font-size:clamp(1.5rem,5vw,2.25rem)}
+.sol h2{overflow-wrap:break-word}
+.sol table{border-collapse:collapse;width:100%;margin:.8rem 0}
+.sol th,.sol td{border:1px solid #cfc9bb;padding:.35rem .6rem;text-align:left;overflow-wrap:break-word}
+.sol th{background:#f4f2ec}.sol tr.total td{font-weight:bold;background:#faf9f5}
+.sol form.inline{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;margin:.8rem 0}
+.sol label{display:flex;flex-direction:column;font-size:.85rem}
+.sol input,.sol select,.sol textarea{font:inherit;max-width:100%;box-sizing:border-box}
+.sol .err{background:#fdf3d0;border:1px solid #d9c76a;padding:.5rem .8rem;margin:.6rem 0}
+.sol .muted{opacity:.75;font-size:.9rem}
+.sol details summary{padding:.35rem 0;cursor:pointer}
+.sol footer.sol-note{margin-top:2.2rem;border-top:1px solid #cfc9bb;padding-top:.6rem;font-size:.8rem;opacity:.75}
+
+/* ── Phone layout ─────────────────────────────
+   Record tables (class="stack") drop their
+   header row and become one card per record,
+   each cell labelled from its data-label.
+   Cells left empty by a colspan are hidden
+   rather than rendered as empty boxes.
+   Tables without .stack keep their grid and
+   scroll sideways inside their own box, so a
+   wide table never widens the page itself.
+   ───────────────────────────────────────────── */
+@media (max-width:640px){
+  .sol{padding:1rem .85rem 2.5rem}
+
+  .sol table:not(.stack){display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+  .sol table.stack,
+  .sol table.stack tbody,
+  .sol table.stack tr,
+  .sol table.stack td{display:block;width:100%}
+  .sol table.stack{border-collapse:separate;border-spacing:0}
+  .sol table.stack tr.hdr{display:none}
+  .sol table.stack tr{border:1px solid #cfc9bb;border-radius:6px;margin:0 0 .7rem;overflow:hidden}
+  /* A total is a line, not a card: name on the
+     left, figure on the right, as on paper. */
+  .sol table.stack tr.total{background:#faf9f5;display:flex;flex-wrap:wrap;
+    justify-content:space-between;align-items:baseline;gap:.5rem;padding:.5rem .7rem}
+  .sol table.stack tr.total td{border:0;padding:0;width:auto}
+  .sol table.stack td{border:0;border-bottom:1px dotted #ded8ca;padding:.5rem .7rem}
+  .sol table.stack td:last-child{border-bottom:0}
+  .sol table.stack td:empty{display:none}
+  .sol table.stack td[data-label]::before{
+    content:attr(data-label);display:block;
+    font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;
+    opacity:.6;margin-bottom:.1rem}
+
+  /* Forms: one field per row, tap targets at
+     finger size, 16px inputs so iOS does not
+     zoom the page on focus. */
+  .sol form.inline{gap:.55rem}
+  .sol form.inline label{flex:1 1 100%;font-size:.9rem}
+  .sol input,.sol select,.sol textarea{width:100%;font-size:16px;padding:.5rem .55rem}
+  .sol input[type=checkbox]{width:auto;min-width:1.15rem;min-height:1.15rem;align-self:flex-start}
+  .sol form.inline button{width:100%;min-height:2.75rem}
+  .sol details summary{padding:.5rem 0}
+}
+</style>
