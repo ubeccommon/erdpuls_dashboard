@@ -1,61 +1,88 @@
 ---
 title: "Integration — Solidarity Module in erdpuls_dashboard"
-subtitle: "Native FastAPI router, tested inside the real Erdpuls application"
+subtitle: "Native FastAPI router, per initiative, tested inside the real Erdpuls application"
 author: "Michel Garand"
 date: "August 2026"
-version: "v0.3"
+version: "v0.4"
 lang: "en"
 license: "CC BY-SA 4.0"
 project: "Solidarity Financing 2026 (working title)"
-status: "living draft v0.3 — native-module integration notes; internal until the hosts have read and agreed"
+status: "living draft v0.4 — native-module integration notes; internal until the hosts have read and agreed"
 document: "INTEGRATION.md"
 type: "prototype-artifact"
 ---
 
-*The answer to "do we need Flask": no. The whole ubec.network platform runs FastAPI, and erdpuls_dashboard already ships FastAPI, uvicorn, SQLAlchemy, PostgreSQL, Jinja2, bcrypt auth, and a role system with a facilitator role. The prototype is now a native module of that codebase — the Flask standalone (v0.1, v0.2) is superseded and kept only as history.*
+*The answer to "do we need Flask": no. The whole ubec.network platform runs FastAPI, and erdpuls_dashboard already ships FastAPI, uvicorn, SQLAlchemy, PostgreSQL, Jinja2, bcrypt auth, and a role system with a facilitator role. The prototype is a native module of that codebase — the Flask standalone (v0.1, v0.2) is superseded and kept only as history.*
 
 * * *
 
-## What Was Verified
+## What Changed Since v0.3
 
-Read from the public ubeccommon repos: erdpuls_dashboard runs FastAPI 0.109 with uvicorn, SQLAlchemy 2.0.25 against PostgreSQL (database ubec_erdpuls, schema erdpuls_threshold, search_path set per connection), Jinja2 templates extending base.html, session-cookie auth with secure cookies, and RBAC with roles member, creator, facilitator, moderator, admin.
+These notes were written when the module was one router mounted at a single hard-coded path. Three things have happened since, and v0.3 no longer describes what is running.
 
-Then verified live: the module below was installed into a checkout of erdpuls_dashboard, the full application booted with it, and a fifteen-check test drove the entire financing flow through Erdpuls's real login and role system — anonymous refused, member role refused with 403, admin passing, and the sums-only guarantee holding on every screen. The public initiative page is untouched: no solidarity link appears on it.
+Financing became per initiative. The router mounts at /{initiative_slug}/solidarity, with a chooser at /solidarity listing the initiatives a facilitator may open. Nothing about the model is bound to one place; each initiative keeps its own sessions, budgets, rounds and settlements.
 
-* * *
+The budget can be laid open. A session's budget may be shown to people registered for the linked offering and to members of the initiative — lines and sums only, no token, no per-family pledge, and no pledge form. The round is still held in a room.
 
-## The Module — Four Pieces
-
-1. **db/scripts/012_solidarity_financing.sql** — creates a dedicated `solidarity` schema in the existing ubec_erdpuls database. No Erdpuls table is touched; rollback is one DROP SCHEMA. All invariants live in the schema: status enum (untagged figures unrepresentable), token-only pledges, optional token-to-household mapping that report views never join, no child data anywhere.
-2. **app/routers/solidarity.py** — the FastAPI router, prefix /erdpuls-verkhovyna/solidarity. Auth is Erdpuls's own get_current_user plus has_role_or_higher(role, "facilitator"): the platform's existing facilitator role is exactly the round facilitator. Raw SQL via SQLAlchemy text() against the solidarity schema.
-3. **templates/solidarity/** — seven templates extending the Erdpuls base.html, so the module wears the platform's own frame and navigation.
-4. **smoke_test_native.py** — the fifteen checks, runnable on the server after deploy.
+Money is handled in more than one currency without ever being silently converted. Contribution rates are per currency; where a conversion is genuinely needed the rate comes from Frankfurter (api.frankfurter.dev) against EUR and is frozen onto the contribution at the moment of giving. It is never recomputed afterwards, so a record says what it said on the day.
 
 * * *
 
-## Install on the Server
+## The Module Today
+
+**Schema.** db/scripts/012_solidarity_financing.sql creates a dedicated `solidarity` schema in the existing ubec_erdpuls database, extended by the migrations that followed it (013, 014, 017 through 022, 024). No Erdpuls table is touched; rollback is one DROP SCHEMA. The invariants live in the schema rather than in application code: the status enum makes an untagged figure unrepresentable, pledges carry a token and never a household, and the optional token-to-household mapping is a table the report views do not join. No child data has a column to live in.
+
+**Router.** app/routers/solidarity.py, at v1.4. Two routers are registered: the per-initiative module and the chooser. Auth is Erdpuls's own get_current_user plus has_role_or_higher for the facilitator role, and, since v1.1, membership of the initiative being opened — a facilitator elsewhere is not a facilitator here. Raw SQL through SQLAlchemy text() against the solidarity schema.
+
+**Templates.** templates/solidarity/ — nine screens extending the Erdpuls base.html, plus one shared stylesheet, _styles.html, which all nine include. The module wears the platform's own frame and navigation.
+
+**Tests.** documents/solidarity/ holds the smoke tests, one per behaviour that could quietly break: access and membership, budget editing and the freeze, offering links, currency rates and conversion, the open budget, session and user deletion, and the phone layout. They run against the real application on the server after a deploy.
+
+* * *
+
+## The Screens on a Phone
+
+Added at module v1.4. Below 640px each record table drops its header row and becomes one card per row, every cell labelled from its own header; totals lay out as a line, name left and figure right, as on paper; each form field takes its own row with finger-sized controls; and inputs are set at 16px so iOS does not zoom the page when one is tapped.
+
+This matters most for the open budget, which is the one screen a family reads rather than a facilitator: a six-column table scrolled sideways on a phone is not a budget laid open. The Ukrainian labels come from the same conditionals already in that template, so the participant view is labelled in the language it is read in.
+
+Two core Erdpuls pages were corrected in the same pass, outside this module: the progress card on the offering and contribute pages stayed pinned when the layout collapsed to one column, so it covered the text as a phone scrolled. It now scrolls with the page below 900px.
+
+What the tests can prove is that the markup is there. How it reads on a real phone, in Ukrainian, at the screen size a family actually carries, is still to be checked by looking.
+
+* * *
+
+## Updating the Server
+
+Changes arrive as a self-extracting installer script, run from the root of a checkout. The order matters, and the installer step comes first: running git before it produces a confusing clean tree and nothing to commit.
 
 ```bash
-cd /path/to/erdpuls_dashboard
-cp solidarity.py app/routers/
-cp -r templates/solidarity templates/
-psql -U erdpuls -d ubec_erdpuls -f db/scripts/012_solidarity_financing.sql
+cd /home/ubec/ubec_commons/ubec_erdpuls
+bash ~/install_<name>.sh --force
+python3 documents/solidarity/smoke_test_<name>.py
+git add -A && git commit -m "<what changed>"
+git push
 ```
 
-Then two lines in app/main.py, after the existing include_router calls:
+Then the served checkout follows the remote rather than being installed into a second time, so the two trees stay identical:
 
-```python
-from .routers.solidarity import router as solidarity_router
-app.include_router(solidarity_router)
+```bash
+cd /srv/ubec/erdpuls
+git pull
+sudo systemctl restart ubec-erdpuls.service
 ```
 
-Restart the Erdpuls service. No new dependency, no new process, no proxy change, no new database: the module rides everything already running.
+A migration, where one is needed, is applied with psql against ubec_erdpuls before the restart. Template-only updates need none, and say so in their header.
 
 * * *
 
 ## Access and Standing
 
-Access is by Erdpuls account with role facilitator or higher — assign the role through the existing admin screens. The module is not linked from the public Erdpuls Verkhovyna page and must not be until the hosts have read and agreed; the fifteenth check asserts exactly this. Later, if the participants want the families entering their own pledges from their own accounts, the member role and per-route gates are already in place to build on — that is a participants' decision, not a default.
+Access is by Erdpuls account with role facilitator or higher, plus membership of the initiative — both assigned through the existing admin screens. The module is not linked from any public initiative page and must not be until the hosts have read and agreed; a test asserts exactly this.
+
+Later, if the participants want families entering their own pledges from their own accounts, the member role and the per-route gates are already in place to build on. That is a participants' decision, not a default — and the working assumption remains the opposite one: the folded slip in a box is a stronger guarantee of anonymity than any login.
+
+Cryptocurrency rails are deferred, not rejected, and nothing in the schema or the router anticipates them. They are reopened when the participants decide on rails, when professional legal and tax advice has been taken, and when Ukraine's virtual-assets framework is in force.
 
 * * *
 
