@@ -679,6 +679,22 @@
     top: 2rem;
 }
 
+/* Below 900px the grid is a single column, so the card is no longer
+   beside anything — pinned, it just covers what is being read. Let it
+   scroll away with the rest. On wider screens, hold it clear of the
+   fixed UBEC bar, and cap it so a card taller than the window can
+   still be scrolled past. */
+@media (max-width: 900px) {
+    .progress-sidebar { position: static; top: auto; max-height: none; }
+}
+@media (min-width: 901px) {
+    .progress-sidebar {
+        top: calc(var(--nav-height, 64px) + 1rem);
+        max-height: calc(100vh - var(--nav-height, 64px) - 2rem);
+        overflow-y: auto;
+    }
+}
+
 .progress-card {
     background: white;
     border: 1px solid #e8e4df;
